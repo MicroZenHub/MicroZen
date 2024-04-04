@@ -2,7 +2,9 @@
   "name": "@micco/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "prepare": "nx g @nx-dotnet/core:restore"
+  },
   "private": true,
   "dependencies": {
     "@angular/animations": "~16.1.0",
@@ -27,6 +29,7 @@
     "@angular/cli": "~16.1.0",
     "@angular/compiler-cli": "~16.1.0",
     "@angular/language-service": "~16.1.0",
+    "@nx-dotnet/core": "^2.2.0",
     "@nx/cypress": "16.5.5",
     "@nx/eslint-plugin": "16.5.5",
     "@nx/jest": "16.5.5",
@@ -56,4 +59,3 @@
     "includedScripts": []
   }
 }
-
