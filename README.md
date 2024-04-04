@@ -1,10 +1,10 @@
-![micco_logo.png](micco_logo.png)
-# About Micco
-Introducing **Micco**, a revolutionary Microservice Management tool designed to streamline the complexities of modern software architectures. 
+![microzen_logo.png](assets/microzen_color_logo.png)
+# About MicroZen
+Introducing **MicroZen**, a revolutionary Microservice Management tool designed to streamline the complexities of modern software architectures. 
 
-With an intuitive graphical user interface (GUI) and simplicity at its core, Micco empowers developers and architects to effortlessly catalogue microservices and micro-frontend applications, offering unparalleled visibility and control over the intricacies of their systems. 
+With an intuitive graphical user interface (GUI) and simplicity at its core, MicroZen empowers developers and architects to effortlessly catalogue microservices and micro-frontend applications, offering unparalleled visibility and control over the intricacies of their systems. 
 
-From health checks to comprehensive mapping of application and API interactions, Micco provides a centralized platform for orchestrating seamless authentication, service mapping, and uptime observability within distributed architectures.
+From health checks to comprehensive mapping of application and API interactions, MicroZen provides a centralized platform for orchestrating seamless authentication, service mapping, and uptime observability within distributed architectures.
 
 ## Main Features Include:
 
