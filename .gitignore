@@ -6,11 +6,10 @@ tmp
 /out-tsc
 
 # dependencies
-core/node_modules
+node_modules
 
 # IDEs and editors
 /.idea
-*.idea/*
 .project
 .classpath
 .c9/
@@ -39,5 +38,4 @@ testem.log
 .DS_Store
 Thumbs.db
 
-**/.nx/cache
-/.idea/
+.nx/cache
