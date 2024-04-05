@@ -13,7 +13,7 @@
           "error",
           {
             "type": "attribute",
-            "prefix": "micco",
+            "prefix": "MicroZen",
             "style": "camelCase"
           }
         ],
@@ -21,7 +21,7 @@
           "error",
           {
             "type": "element",
-            "prefix": "micco",
+            "prefix": "MicroZen",
             "style": "kebab-case"
           }
         ],

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "Micco.Core.Api";
+option csharp_namespace = "MicroZen.Core.Api";
 
 package greet;
 

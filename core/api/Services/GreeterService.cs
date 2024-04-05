@@ -1,7 +1,7 @@
 using Grpc.Core;
-using Micco.Core.Api;
+using MicroZen.Core.Api;
 
-namespace Micco.Core.Api.Services;
+namespace MicroZen.Core.Api.Services;
 
 public class GreeterService : Greeter.GreeterBase
 {

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'micco-home',
+  selector: 'MicroZen-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })

@@ -1,4 +1,4 @@
-namespace Micco.Core.Api.Test;
+namespace MicroZen.Core.Api.Test;
 
 public class UnitTest1
 {

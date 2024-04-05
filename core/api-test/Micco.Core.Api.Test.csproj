@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\api\Micco.Core.Api.csproj" />
+    <ProjectReference Include="..\api\MicroZen.Core.Api.csproj" />
   </ItemGroup>
 
 </Project>
