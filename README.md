@@ -15,7 +15,7 @@ From health checks to comprehensive mapping of application and API interactions,
 - **Comprehensive Security**: Ensure data integrity and confidentiality with robust authentication mechanisms and secure AES-512 encrypting of sensitive data.
 - **Scalability**: Accommodate the growth and complexity of microservice architectures with ease.
 - **Centralized Management**: Simplify the management of microservices through a centralized platform.
-- **Efficient Workflow**: Streamline development workflows and enhance productivity with seamless integration.# Quick Start Guide
+- **Efficient Workflow**: Streamline development workflows and enhance productivity with seamless integration.
 
 # QuickStart Guide
 // TODO: Add QuickStart steps here
