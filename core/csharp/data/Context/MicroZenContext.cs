@@ -31,7 +31,7 @@ public partial class MicroZenContext : DbContext
     {
 	    modelBuilder.UseEncryption(new EncryptionProvider(
 		    Config()["EncryptionKey"] ??
-		    throw new ArgumentNullException("EncryptionKey")));
+		    throw new ArgumentNullException("EncryptionKey", "Please initialize your encryption key.")));
 	    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 
