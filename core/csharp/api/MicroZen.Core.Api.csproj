@@ -9,18 +9,30 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="Grpc.AspNetCore.HealthChecks" />
     <PackageReference Include="Grpc.AspNetCore.Server.Reflection" />
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Grpc.Tools" />
     <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" />
     <PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Protobuf Include="Protos\client.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\organization.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\organization-user.proto" GrpcServices="Server" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\data\MicroZen.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageVersion Update="Grpc.Tools" Version="2.62.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageVersion>
   </ItemGroup>
 </Project>

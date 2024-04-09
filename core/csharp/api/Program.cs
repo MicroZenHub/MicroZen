@@ -53,5 +53,7 @@ app.UseSwaggerUI(c =>
 });
 
 // Configure the HTTP request pipeline.
-app.MapGrpcService<GreeterService>();
+app.MapGrpcService<ClientsService>();
+app.MapGrpcService<OrganizationsService>();
+app.MapGrpcService<OrganizationUsersService>();
 app.Run();

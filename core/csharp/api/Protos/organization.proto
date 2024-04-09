@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option csharp_namespace = "MicroZen.Grpc.Entities";
+
+import "google/protobuf/wrappers.proto";
+import "google/api/annotations.proto";
+import "Protos/client.proto";
+import "Protos/organization-user.proto";
+
+// The service for managing organizations.
+service Organizations {
+  rpc GetOrganization(GetOrganizationRequest) returns (Organization);
+}
+
+// Request for getting an organization.
+message GetOrganizationRequest {
+  // The ID of the organization to get.
+  string id = 1;
+}
+
+// An organization.
+message Organization {
+  // The ID of the organization.
+  string id = 1;
+  // The name of the organization.
+  string name = 2;
+  // The description of the organization (optional).
+  google.protobuf.StringValue description = 3;
+  // The URL of the organization's avatar (optional).
+  google.protobuf.StringValue avatarUrl = 4;
+  // The URL of the organization's website (optional).
+  google.protobuf.StringValue websiteUrl = 5;
+  // The users that are part of the organization.
+  repeated OrganizationUser organizationUsers = 6;
+  // The clients that are part of the organization.
+  repeated Client clients = 7;
+}

@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option csharp_namespace = "MicroZen.Grpc.Entities";
+
+import "google/protobuf/wrappers.proto";
+import "google/api/annotations.proto";
+
+// The OrganizationUsers service definition.
+service OrganizationUsers {
+  // Get all users in an organization.
+  rpc GetOrganizationUsers(GetOrganizationUsersRequest) returns (GetOrganizationUsersResponse);
+}
+
+// The request message containing the user's organization ID.
+message GetOrganizationUsersRequest {
+  // The organization ID.
+  string organizationId = 1;
+}
+
+// The response message containing the users in the organization.
+message GetOrganizationUsersResponse {
+  // The users in the organization.
+  repeated OrganizationUser users = 1;
+}
+
+// The user in an organization.
+message OrganizationUser {
+  // The user ID.
+  int32 id = 1;
+  // The user's external system Id (assumes GUID type ID, but can accomodate int32 type through string conversion).
+  string userId = 2;
+  // The user's first name (optional).
+  google.protobuf.StringValue firstName = 3;
+  // The user's last name (optional).
+  google.protobuf.StringValue lastName = 4;
+  // The user's email address.
+  string email = 5;
+  // The organization ID.
+  int32 organizationId = 6;
+  // The organization name.
+  string organizationName = 7;
+}

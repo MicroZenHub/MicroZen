@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+option csharp_namespace = "MicroZen.Grpc.Entities";
+
+// The service for managing Client (apps/apis).
+service Clients {
+  rpc GetClient (ClientRequest) returns (Client);
+}
+
+// The type of the client.
+enum ClientType {
+  // The client type is a server based api.
+  SERVER = 0;
+  // The client is a web app.
+  WEB = 1;
+  // The client is a desktop app.
+  DESKTOP = 2;
+  // The client is a mobile app.
+  MOBILE = 3;
+}
+
+message ClientRequest {
+  // The ID of the client.
+  string id = 1;
+}
+
+// The request message containing the user's name.
+message Client {
+  // The ID of the client.
+  string id = 1;
+  // The name of the client.
+  string name = 2;
+  ClientType type = 3;
+}

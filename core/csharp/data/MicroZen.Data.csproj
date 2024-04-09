@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-  
   <ItemGroup>
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.32.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.32.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
@@ -17,5 +17,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Protobuf Include="..\api\Protos\client.proto" GrpcServices="Client" Link="Protos\client.proto" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageVersion Update="Grpc.Net.ClientFactory" Version="2.62.0" />
+  </ItemGroup>
 </Project>
