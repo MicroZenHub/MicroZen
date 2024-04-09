@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MicroZen.Data.Security.Encryption.Extensions;
+using MicroZen.Data.Security.Encryption.Utils;
 
 namespace MicroZen.Data.Context;
 
@@ -20,15 +22,23 @@ public partial class MicroZenContext : DbContext
       if (optionsBuilder.IsConfigured)
         return;
 
-      var config = new ConfigurationBuilder()
-        .SetBasePath(Directory.GetCurrentDirectory())
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
-        .Build();
+      var config = Config();
       var connectionString = config.GetConnectionString("MicroZenContext");
       optionsBuilder.UseNpgsql(connectionString);
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+	    modelBuilder.UseEncryption(new EncryptionProvider(
+		    Config()["EncryptionKey"] ??
+		    throw new ArgumentNullException("EncryptionKey")));
 	    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+    }
+
+    private static IConfigurationRoot Config() =>
+	    new ConfigurationBuilder()
+		    .SetBasePath(Directory.GetCurrentDirectory())
+		    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+		    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+		    .Build();
 }
