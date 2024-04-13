@@ -49,7 +49,7 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-  c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+  c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroZen API v1");
 });
 
 // Configure the HTTP request pipeline.
