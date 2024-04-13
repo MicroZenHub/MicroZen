@@ -5,7 +5,10 @@ using MicroZen.Grpc.Entities;
 
 namespace MicroZen.Core.Api.Services;
 
-/// <inheritdoc />
+/// <summary>
+/// The Clients gRPC/REST service.
+/// </summary>
+/// <param name="db"><see cref="MicroZenContext"/></param>
 public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 {
 	/// <inheritdoc />

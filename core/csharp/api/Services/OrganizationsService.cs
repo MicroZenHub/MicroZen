@@ -4,7 +4,10 @@ using MicroZen.Grpc.Entities;
 
 namespace MicroZen.Core.Api.Services;
 
-/// <inheritdoc />
+/// <summary>
+/// The Organizations gRPC/REST service.
+/// </summary>
+/// <param name="db"><see cref="MicroZenContext"/></param>
 public class OrganizationsService(MicroZenContext db) : Organizations.OrganizationsBase
 {
 	/// <inheritdoc />

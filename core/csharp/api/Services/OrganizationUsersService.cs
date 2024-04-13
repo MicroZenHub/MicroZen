@@ -6,7 +6,8 @@ using MicroZen.Grpc.Entities;
 namespace MicroZen.Core.Api.Services;
 
 /// <summary>
-/// The Organization Users service.
+/// The Organization Users gRPC/REST service.
+/// <param name="db"><see cref="MicroZenContext"/></param>
 /// </summary>
 public class OrganizationUsersService(MicroZenContext db) : OrganizationUsers.OrganizationUsersBase
 {
