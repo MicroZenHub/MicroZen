@@ -1,14 +1,14 @@
 using Grpc.Core;
+using MicroZen.Data.Context;
+using MicroZen.Grpc.Entities;
 
 namespace MicroZen.Core.Api.Services;
 
 /// <inheritdoc />
-public class OrganizationsService
+public class OrganizationsService(MicroZenContext db) : Organizations.OrganizationsBase
 {
-
-	// /// <inheritdoc />
-	// public override Task<Organization> GetOrganization(GetOrganizationRequest request, ServerCallContext context)
-	// {
-	// 	return base.GetOrganization(request, context);
-	// }
+	/// <inheritdoc />
+	public override async Task<OrganizationMessage> GetOrganization(GetOrganizationRequest request, ServerCallContext context) =>
+		(await db.Organizations.FindAsync(request.Id))?.ToMessage() ??
+		throw new RpcException(new Status(StatusCode.NotFound, "Organization not found"));
 }

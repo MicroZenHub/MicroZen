@@ -1,23 +1,41 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using MicroZen.Data.Security.Encryption.Utils;
 using MicroZen.Data.Entities;
 using MicroZen.Data.Security.Encryption.Extensions;
-using MicroZen.Data.Security.Encryption.Utils;
 
 namespace MicroZen.Data.Context;
 
+/// <inheritdoc />
 public class MicroZenContext : DbContext
 {
+	/// <summary>
+	/// The MicroZen Context name.
+	/// </summary>
 	public const string MicroZenContextName = "MicroZenContext";
-    public MicroZenContext() { }
 
+	/// <inheritdoc />
+	public MicroZenContext() { }
+
+    /// <inheritdoc />
     public MicroZenContext(DbContextOptions<MicroZenContext> options) : base(options) { }
 
+    /// <summary>
+    /// The Clients DbSet.
+    /// </summary>
     public DbSet<Client> Clients => Set<Client>();
+
+    /// <summary>
+    /// The Organizations DbSet.
+    /// </summary>
     public DbSet<Organization> Organizations => Set<Organization>();
+
+    /// <summary>
+    /// The OrganizationUsers DbSet.
+    /// </summary>
     public DbSet<OrganizationUser> OrganizationUsers => Set<OrganizationUser>();
 
+    /// <inheritdoc />
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       if (optionsBuilder.IsConfigured)
@@ -28,11 +46,12 @@ public class MicroZenContext : DbContext
       optionsBuilder.UseNpgsql(connectionString);
     }
 
+    /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 	    modelBuilder.UseEncryption(new EncryptionProvider(
-		    Config()["EncryptionKey"] ??
-		    throw new ArgumentNullException("EncryptionKey", "Please initialize your encryption key.")));
+		    Config()[EncryptionProvider.EncryptionKeyVarName] ??
+		    throw new ArgumentNullException(EncryptionProvider.EncryptionKeyVarName, "Please initialize your encryption key.")));
 	    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 

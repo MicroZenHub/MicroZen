@@ -15,7 +15,7 @@ service Clients {
   // Get all the OAuth Client credentials for clients that are allowed to use the OAuth2 server.
   rpc GetAllowedOAuthClientCredentials (ClientRequest) returns (MultipleClientCredentials) {
     option (google.api.http) = {
-      get: "/api/v1/client/{clientId}/allowed-clients/"
+      get: "/api/v1/client/{clientId}/allowed-clients"
     };
   };
 }

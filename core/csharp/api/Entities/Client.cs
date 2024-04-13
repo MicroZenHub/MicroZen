@@ -4,15 +4,42 @@ using MicroZen.Grpc.Entities;
 
 namespace MicroZen.Data.Entities;
 
+/// <summary>
+/// The Application Client entity.
+/// </summary>
 public class Client : BaseEntity<ClientMessage>
 {
+  /// <summary>
+  /// The Client unique identifier.
+  /// </summary>
   public int Id { get; set; }
+
+  /// <summary>
+  /// The Client name.
+  /// </summary>
   public required string Name { get; set; }
+
+  /// <summary>
+  /// The type the client is.
+  /// <example>Server=0, Web=1, Desktop=2, Mobile=3</example>
+  /// <returns><see cref="ClientType"/></returns>
+  /// </summary>
   public required ClientType Type { get; set; }
+
+  /// <summary>
+  /// The Client description.
+  /// </summary>
   public string? Description { get; set; }
+  /// <summary>
+  /// The OAuth2 configuration for the client (optional).
+  /// </summary>
   public virtual OAuth2ClientConfig? OAuth2Config { get; set; }
+  /// <summary>
+  /// The clients allowed to access this client.
+  /// </summary>
   public virtual ICollection<Client> AllowedClients { get; set; } = new List<Client>();
 
+  /// <inheritdoc />
   public override ClientMessage ToMessage() =>
 	  new ClientMessage
 	  {
@@ -31,9 +58,9 @@ public class ClientConfig : IEntityTypeConfiguration<Client>
   {
     builder.ToTable("Clients");
     builder.HasKey(c => c.Id);
-    builder.Property(c => c.Name).IsRequired();
+    builder.Property(c => c.Name).HasMaxLength(200).IsRequired();
     builder.Property(c => c.Type).IsRequired();
-    builder.Property(c => c.Description).IsRequired(false);
+    builder.Property(c => c.Description).HasMaxLength(500).IsRequired(false);
     builder.HasOne(c => c.OAuth2Config).WithOne().HasForeignKey<OAuth2ClientConfig>(c => c.Id);
     builder.HasMany<Client>(c => c.AllowedClients).WithMany().UsingEntity(j => j.ToTable("ClientAllowedClients"));
   }

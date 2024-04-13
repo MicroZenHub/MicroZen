@@ -9,6 +9,7 @@ import "Protos/organization-user.proto";
 
 // The service for managing organizations.
 service Organizations {
+  // Gets an organization by ID.
   rpc GetOrganization(GetOrganizationRequest) returns (OrganizationMessage) {
     option (google.api.http) = {
       get: "/api/v1/organizations/{id}"

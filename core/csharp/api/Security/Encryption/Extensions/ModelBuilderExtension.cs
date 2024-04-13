@@ -6,8 +6,17 @@ using MicroZen.Data.Security.Encryption.Interfaces;
 
 namespace MicroZen.Data.Security.Encryption.Extensions;
 
+/// <summary>
+/// Extension for ModelBuilder to use encryption.
+/// </summary>
 public static class ModelBuilderExtension
 {
+	/// <summary>
+	/// Use encryption for the properties which are marked with EncryptColumn Attribute.
+	/// </summary>
+	/// <param name="modelBuilder"><see cref="ModelBuilder"/></param>
+	/// <param name="encryptionProvider"><see cref="IEncryptionProvider"/></param>
+	/// <exception cref="ArgumentNullException">Throws if modelBuilder or encryptionProvider is null</exception>
 	public static void UseEncryption(this ModelBuilder modelBuilder, IEncryptionProvider encryptionProvider)
 	{
 		if (modelBuilder is null)

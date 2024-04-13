@@ -1,17 +1,23 @@
-using System;
-using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using MicroZen.Data.Security.Encryption.Interfaces;
 
 namespace MicroZen.Data.Security.Encryption.Utils;
 
+/// <inheritdoc />
 public class EncryptionProvider(string key) : IEncryptionProvider
 {
+	/// <summary>
+	/// The encryption key Variable name.
+	/// <remarks>Must be set as config value of "EncryptionKey"</remarks>
+	/// </summary>
+	public const string EncryptionKeyVarName = "EncryptionKey";
+
+	/// <inheritdoc />
 	public string Encrypt(string dataToEncrypt)
 	{
 		if (string.IsNullOrEmpty(key))
-			throw new ArgumentNullException("EncryptionKey", "Please initialize your encryption key.");
+			throw new ArgumentNullException(EncryptionKeyVarName, "Please initialize your encryption key.");
 
 		if (string.IsNullOrEmpty(dataToEncrypt))
 			return string.Empty;
@@ -27,9 +33,9 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 			var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 			using (var memoryStream = new MemoryStream())
 			{
-				using (var cryptoStream = new CryptoStream((Stream)memoryStream, encryptor, CryptoStreamMode.Write))
+				using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
 				{
-					using (var streamWriter = new StreamWriter((Stream)cryptoStream))
+					using (var streamWriter = new StreamWriter(cryptoStream))
 					{
 						streamWriter.Write(dataToEncrypt);
 					}
@@ -41,10 +47,11 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 		return result;
 	}
 
+	/// <inheritdoc />
 	public string Decrypt(string dataToDecrypt)
 	{
 		if (string.IsNullOrEmpty(key))
-			throw new ArgumentNullException("EncryptionKey", "Please initialize your encryption key.");
+			throw new ArgumentNullException(EncryptionKeyVarName, "Please initialize your encryption key.");
 
 		if (string.IsNullOrEmpty(dataToDecrypt))
 			return string.Empty;
@@ -58,8 +65,8 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 
 		var buffer = Convert.FromBase64String(dataToDecrypt);
 		using var memoryStream = new MemoryStream(buffer);
-		using var cryptoStream = new CryptoStream((Stream)memoryStream, decryptor, CryptoStreamMode.Read);
-		using var streamReader = new StreamReader((Stream)cryptoStream);
+		using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
+		using var streamReader = new StreamReader(cryptoStream);
 		return streamReader.ReadToEnd();
 	}
 }

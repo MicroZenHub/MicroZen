@@ -8,13 +8,17 @@ import "google/api/annotations.proto";
 // The OrganizationUsers service definition.
 service OrganizationUsers {
   // Get all users in an organization.
-  rpc GetOrganizationUsers(GetOrganizationUsersRequest) returns (GetOrganizationUsersResponse);
+  rpc GetOrganizationUsers(GetOrganizationUsersRequest) returns (GetOrganizationUsersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/users/organization/{organizationId}"
+    };
+  };
 }
 
 // The request message containing the user's organization ID.
 message GetOrganizationUsersRequest {
   // The organization ID.
-  string organizationId = 1;
+  int32 organizationId = 1;
 }
 
 // The response message containing the users in the organization.
