@@ -1,9 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>MicroZen.OAuth2</Title>
+        <Description>OAuth2 client library to manage OAuth2 authentication dynamically through the MicroZen API.</Description>
+        <Authors>MicroZen</Authors>
+        <Company>MinkInk, LLC - DBA MicroZen</Company>
+        <Copyright>2024 MinkInk, LLC.</Copyright>
+        <Version>0.0.1.0</Version>
+        <PackageId>MicroZen.OAuth2</PackageId>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
-
 </Project>
