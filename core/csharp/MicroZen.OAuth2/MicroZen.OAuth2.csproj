@@ -14,4 +14,7 @@
         <PackageId>MicroZen.OAuth2</PackageId>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
+    <ItemGroup>
+      <None Remove="src\README.md" />
+    </ItemGroup>
 </Project>
