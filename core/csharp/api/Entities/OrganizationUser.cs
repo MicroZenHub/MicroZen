@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MicroZen.Data.Security.Encryption.Attributes;
+using MicroZen.Grpc.Entities;
+
 namespace MicroZen.Data.Entities;
 
-public class OrganizationUser : BaseEntity
+public class OrganizationUser : BaseEntity<OrganizationUserMessage>
 {
 	public int Id { get; set; }
 	[EncryptColumn]
@@ -16,6 +18,17 @@ public class OrganizationUser : BaseEntity
 	public required string Email { get; set; }
 	public required int OrganizationId { get; set; }
 	public virtual required Organization Organization { get; set; }
+
+	public override OrganizationUserMessage ToMessage() =>
+		new OrganizationUserMessage
+		{
+			Id = Id,
+			UserId = UserId.ToString(),
+			FirstName = FirstName,
+			LastName = LastName,
+			Email = Email,
+			OrganizationId = OrganizationId
+		};
 }
 
 public class OrganizationUserConfig : IEntityTypeConfiguration<OrganizationUser>

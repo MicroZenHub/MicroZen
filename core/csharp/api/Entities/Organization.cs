@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MicroZen.Grpc.Entities;
+
 namespace MicroZen.Data.Entities;
 
-public class Organization : BaseEntity
+public class Organization : BaseEntity<OrganizationMessage>
 {
 	public int Id { get; set; }
 	public required string Name { get; set; }
@@ -11,10 +13,21 @@ public class Organization : BaseEntity
 	public string? WebsiteUrl { get; set; }
 	public virtual ICollection<OrganizationUser> OrganizationUsers { get; set; } = new List<OrganizationUser>();
 	public virtual ICollection<Client> Clients { get; set; } = new List<Client>();
+
+	public override OrganizationMessage ToMessage() =>
+		new OrganizationMessage
+		{
+			Id = Id,
+			Name = Name,
+			Description = Description ?? string.Empty,
+			AvatarUrl = AvatarUrl ?? string.Empty,
+			WebsiteUrl = WebsiteUrl ?? string.Empty
+		};
 }
 
 public class OrganizationConfig : IEntityTypeConfiguration<Organization>
 {
+	/// <inheritdoc />
 	public void Configure(EntityTypeBuilder<Organization> builder)
 	{
 		builder.ToTable("Organizations");
