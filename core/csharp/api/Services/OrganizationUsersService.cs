@@ -7,8 +7,8 @@ namespace MicroZen.Core.Api.Services;
 
 /// <summary>
 /// The Organization Users gRPC/REST service.
-/// <param name="db"><see cref="MicroZenContext"/></param>
 /// </summary>
+/// <param name="db"><see cref="MicroZenContext"/></param>
 public class OrganizationUsersService(MicroZenContext db) : OrganizationUsers.OrganizationUsersBase
 {
 	/// <inheritdoc />
