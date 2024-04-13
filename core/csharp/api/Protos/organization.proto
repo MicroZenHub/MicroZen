@@ -9,7 +9,11 @@ import "Protos/organization-user.proto";
 
 // The service for managing organizations.
 service Organizations {
-  rpc GetOrganization(GetOrganizationRequest) returns (Organization);
+  rpc GetOrganization(GetOrganizationRequest) returns (OrganizationMessage) {
+    option (google.api.http) = {
+      get: "/api/v1/organizations/{id}"
+    };
+  }
 }
 
 // Request for getting an organization.
@@ -19,9 +23,9 @@ message GetOrganizationRequest {
 }
 
 // An organization.
-message Organization {
+message OrganizationMessage {
   // The ID of the organization.
-  string id = 1;
+  int32 id = 1;
   // The name of the organization.
   string name = 2;
   // The description of the organization (optional).
@@ -31,7 +35,7 @@ message Organization {
   // The URL of the organization's website (optional).
   google.protobuf.StringValue websiteUrl = 5;
   // The users that are part of the organization.
-  repeated OrganizationUser organizationUsers = 6;
+  repeated OrganizationUserMessage organizationUsers = 6;
   // The clients that are part of the organization.
-  repeated Client clients = 7;
+  repeated ClientMessage clients = 7;
 }

@@ -2,9 +2,22 @@ syntax = "proto3";
 
 option csharp_namespace = "MicroZen.Grpc.Entities";
 
-// The service for managing Client (apps/apis).
+import "google/api/annotations.proto";
+
+// The service for managing Clients.
 service Clients {
-  rpc GetClient (ClientRequest) returns (Client);
+  // Get a client by its ID.
+  rpc GetClient (ClientRequest) returns (ClientMessage) {
+    option (google.api.http) = {
+      get: "/api/v1/clients/{id}"
+    };
+  };
+  // Get all the OAuth Client credentials for clients that are allowed to use the OAuth2 server.
+  rpc GetAllowedOAuthClientCredentials (ClientRequest) returns (MultipleClientCredentials) {
+    option (google.api.http) = {
+      get: "/api/v1/client/{clientId}/allowed-clients/"
+    };
+  };
 }
 
 // The type of the client.
@@ -21,14 +34,32 @@ enum ClientType {
 
 message ClientRequest {
   // The ID of the client.
-  string id = 1;
+  int32 id = 1;
+}
+
+message MultipleClientCredentials {
+  repeated ClientCredentials credentials = 1;
+}
+
+message ClientCredentials {
+  // The ID of the client.
+  int32 id = 1;
+  // The OAuth ClientId.
+  string clientId = 2;
+  // The client secret.
+  string clientSecret = 3;
+  // The client type.
+  ClientType type = 4;
 }
 
 // The request message containing the user's name.
-message Client {
+message ClientMessage {
   // The ID of the client.
-  string id = 1;
+  int32 id = 1;
   // The name of the client.
   string name = 2;
+  // The type of the client.
   ClientType type = 3;
+  // The description of the client.
+  string description = 4;
 }

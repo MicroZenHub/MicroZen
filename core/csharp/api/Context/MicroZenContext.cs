@@ -1,21 +1,22 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using MicroZen.Data.Entities;
 using MicroZen.Data.Security.Encryption.Extensions;
 using MicroZen.Data.Security.Encryption.Utils;
 
 namespace MicroZen.Data.Context;
 
-public partial class MicroZenContext : DbContext
+public class MicroZenContext : DbContext
 {
-    public MicroZenContext()
-    {
-    }
+	public const string MicroZenContextName = "MicroZenContext";
+    public MicroZenContext() { }
 
-    public MicroZenContext(DbContextOptions<MicroZenContext> options)
-        : base(options)
-    {
-    }
+    public MicroZenContext(DbContextOptions<MicroZenContext> options) : base(options) { }
+
+    public DbSet<Client> Clients => Set<Client>();
+    public DbSet<Organization> Organizations => Set<Organization>();
+    public DbSet<OrganizationUser> OrganizationUsers => Set<OrganizationUser>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -23,7 +24,7 @@ public partial class MicroZenContext : DbContext
         return;
 
       var config = Config();
-      var connectionString = config.GetConnectionString("MicroZenContext");
+      var connectionString = config.GetConnectionString(MicroZenContextName);
       optionsBuilder.UseNpgsql(connectionString);
     }
 

@@ -17,22 +17,15 @@
     <PackageReference Include="Grpc.Tools" />
     <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" />
     <PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
   
   <ItemGroup>
-    <Protobuf Include="Protos\client.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\organization.proto" GrpcServices="Server" />
-    <Protobuf Include="Protos\organization-user.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\data\MicroZen.Data.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageVersion Update="Grpc.Tools" Version="2.62.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageVersion>
+    <Protobuf Include="Protos\client.proto" />
+    <Protobuf Include="Protos\organization-user.proto" />
+    <Protobuf Include="Protos\organization.proto" />
   </ItemGroup>
 </Project>

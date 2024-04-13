@@ -20,11 +20,11 @@ message GetOrganizationUsersRequest {
 // The response message containing the users in the organization.
 message GetOrganizationUsersResponse {
   // The users in the organization.
-  repeated OrganizationUser users = 1;
+  repeated OrganizationUserMessage users = 1;
 }
 
 // The user in an organization.
-message OrganizationUser {
+message OrganizationUserMessage {
   // The user ID.
   int32 id = 1;
   // The user's external system Id (assumes GUID type ID, but can accomodate int32 type through string conversion).
