@@ -1,10 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "api\MicroZen.Core.Api.csproj", "{A70F4913-747D-4027-A0E2-E1D49D3A5AF2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api", "MicroZen.Api\MicroZen.Api.csproj", "{A70F4913-747D-4027-A0E2-E1D49D3A5AF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Test", "api-test\MicroZen.Core.Api.Test.csproj", "{D3591A09-0EA1-4DB8-9000-BD18ADF0187A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Api.Test", "MicroZen.Api.Test\MicroZen.Api.Test.csproj", "{D3591A09-0EA1-4DB8-9000-BD18ADF0187A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroZen.OAuth2", "MicroZen.OAuth2\MicroZen.OAuth2.csproj", "{FB5AFFAA-D8A5-4984-B157-2DFA2F5DEEEF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroZen.OAuth2", "MicroZen.OAuth2\MicroZen.OAuth2.csproj", "{7D1AEEF0-958A-4337-A194-2AEED1E33C40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,9 +32,9 @@ Global
 		{D3591A09-0EA1-4DB8-9000-BD18ADF0187A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3591A09-0EA1-4DB8-9000-BD18ADF0187A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3591A09-0EA1-4DB8-9000-BD18ADF0187A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FB5AFFAA-D8A5-4984-B157-2DFA2F5DEEEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB5AFFAA-D8A5-4984-B157-2DFA2F5DEEEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FB5AFFAA-D8A5-4984-B157-2DFA2F5DEEEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FB5AFFAA-D8A5-4984-B157-2DFA2F5DEEEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D1AEEF0-958A-4337-A194-2AEED1E33C40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D1AEEF0-958A-4337-A194-2AEED1E33C40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D1AEEF0-958A-4337-A194-2AEED1E33C40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D1AEEF0-958A-4337-A194-2AEED1E33C40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

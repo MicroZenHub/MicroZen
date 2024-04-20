@@ -1,5 +1,7 @@
 using Microsoft.OpenApi.Models;
 using MicroZen.Core.Api.Services;
+using MicroZen.OAuth2.Providers;
+using MicroZen.OAuth2.Providers.Cognito;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddGrpc().AddJsonTranscoding();
 builder.Services.AddGrpcHealthChecks();
 builder.Services.AddGrpcReflection();
+builder.Services.AddTransient<MicroZenAuthProvider<CognitoAuthServiceProvider>>();
 
 builder.Services.AddGrpcSwagger();
 builder.Services.AddSwaggerGen(c =>

@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\api\MicroZen.Core.Api.csproj" />
+    <ProjectReference Include="../MicroZen.Api/MicroZen.Api.csproj" />
   </ItemGroup>
 
 </Project>

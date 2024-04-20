@@ -28,4 +28,8 @@
     <Protobuf Include="Protos\organization-user.proto" />
     <Protobuf Include="Protos\organization.proto" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\MicroZen.OAuth2\MicroZen.OAuth2.csproj" />
+  </ItemGroup>
 </Project>
