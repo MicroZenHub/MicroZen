@@ -3,17 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using MicroZen.Data.Security.Encryption.Utils;
 using MicroZen.Data.Entities;
 using MicroZen.Data.Security.Encryption.Extensions;
+using static MicroZen.Data.Context.Variables;
 
 namespace MicroZen.Data.Context;
 
 /// <inheritdoc />
 public class MicroZenContext : DbContext
 {
-	/// <summary>
-	/// The MicroZen Context name.
-	/// </summary>
-	internal const string MicroZenContextName = "MicroZenContext";
-
 	/// <inheritdoc />
 	public MicroZenContext() { }
 
