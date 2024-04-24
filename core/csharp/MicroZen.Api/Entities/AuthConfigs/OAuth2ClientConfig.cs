@@ -41,7 +41,7 @@ public class OAuth2ClientConfig
 	/// Whether to require PKCE for the OAuth2 Client.
 	/// <value>false</value>
 	/// </summary>
-	public bool RequirePkce { get; set; }
+	public bool? RequirePkce { get; set; }
 }
 
 /// <summary>

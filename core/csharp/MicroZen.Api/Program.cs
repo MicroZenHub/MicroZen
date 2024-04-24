@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MicroZen.Core.Api.Services;
 using MicroZen.Data.Context;
+using static MicroZen.Data.Context.Variables;
 using MicroZen.OAuth2.Definitions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,7 +51,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddDbContext<DbContext, MicroZenContext>(options =>
 {
-	options.UseNpgsql(builder.Configuration.GetConnectionString("MicroZenContext"));
+	options.UseNpgsql(builder.Configuration.GetConnectionString(MicroZenConnectionString));
 });
 
 var app = builder.Build();
