@@ -22,13 +22,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <Protobuf Include="Protos\client.proto" />
-    <Protobuf Include="Protos\organization-user.proto" />
-    <Protobuf Include="Protos\organization.proto" />
+    <Protobuf Include="Protos\client.proto" Link="Protos/client.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\organization-user.proto" Link="Protos/organization-user.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\organization.proto" Link="Protos/organization.proto" GrpcServices="Server" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="..\MicroZen.OAuth2\MicroZen.OAuth2.csproj" />
   </ItemGroup>

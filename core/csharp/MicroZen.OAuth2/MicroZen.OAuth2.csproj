@@ -19,16 +19,17 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
     <ItemGroup>
+      <PackageReference Include="Grpc.AspNetCore" />
+      <PackageReference Include="Google.Protobuf" />
+      <PackageReference Include="Grpc.Net.ClientFactory" />
+      <PackageReference Include="Grpc.Tools" />
+      <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
       <PackageReference Include="System.Configuration.ConfigurationManager" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+      <PackageReference Include="System.Reactive" />
     </ItemGroup>
     <ItemGroup>
       <None Include="README.md" Pack="true" PackagePath="\" />
-    </ItemGroup>
-    <ItemGroup>
-      <Reference Include="Microsoft.AspNetCore">
-        <HintPath>..\..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\8.0.0\Microsoft.AspNetCore.dll</HintPath>
-      </Reference>
     </ItemGroup>
 </Project>

@@ -12,7 +12,7 @@ public class MicroZenContext : DbContext
 	/// <summary>
 	/// The MicroZen Context name.
 	/// </summary>
-	public const string MicroZenContextName = "MicroZenContext";
+	internal const string MicroZenContextName = "MicroZenContext";
 
 	/// <inheritdoc />
 	public MicroZenContext() { }

@@ -25,16 +25,22 @@ To get started with MicroZen.OAuth2, follow these steps:
 {
   "MicroZen": {
     "AuthorityUrl": "https://authority.microzen.io/{YOUR_ORGANIZATION_ID}",
-    "ClientKey": "YOUR_CLIENT_KEY"
+    "ClientKey": "YOUR_CLIENT_KEY",
+    "Interval": "5"
   }
 }
 ```
+> NOTE: Interval is optional and is measured in minutes
 
 Environment variable format
 ```bash
-MICROZEN_AUTHORITY_URL="https://authority.microzen.io/{YOUR_ORGANIZATION_ID}"
-MICROZEN_CLIENT_KEY="YOUR_CLIENT_KEY"
+MicroZen__AuthorityUrl="https://authority.microzen.io/{YOUR_ORGANIZATION_ID}"
+MicroZen__ClientKey="YOUR_CLIENT_KEY"
+MicroZen__Interval="5"
 ```
+
+> NOTE: Interval is optional and is measured in minutes
+
 6. In your project's `Program.cs` file add the following code to configure the `MicroZen.OAuth2` service:
 
 ```csharp

@@ -1,16 +1,17 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using MicroZen.Core.Api.Services;
-using MicroZen.OAuth2.Providers;
-using MicroZen.OAuth2.Providers.Cognito;
+using MicroZen.Data.Context;
+using MicroZen.OAuth2.Definitions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCors();
+builder.Services.AddMicroZenOAuth2(MicroZenProvider.Cognito);
 builder.Services.AddGrpc().AddJsonTranscoding();
 builder.Services.AddGrpcHealthChecks();
 builder.Services.AddGrpcReflection();
-builder.Services.AddTransient<MicroZenAuthProvider<CognitoAuthServiceProvider>>();
-
 builder.Services.AddGrpcSwagger();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -47,8 +48,18 @@ builder.Services.AddSwaggerGen(c =>
   c.IncludeXmlComments(filePath);
   c.IncludeGrpcXmlComments(filePath, includeControllerXmlComments: true);
 });
+builder.Services.AddDbContext<DbContext, MicroZenContext>(options =>
+{
+	options.UseNpgsql(builder.Configuration.GetConnectionString("MicroZenContext"));
+});
 
 var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+	app.UseHsts();
+
+app.UseHttpsRedirection();
+app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -59,4 +70,9 @@ app.UseSwaggerUI(c =>
 app.MapGrpcService<ClientsService>();
 app.MapGrpcService<OrganizationsService>();
 app.MapGrpcService<OrganizationUsersService>();
+app.MapGrpcReflectionService();
+app.MapGrpcHealthChecksService();
+
+app.MigrateOnStart();
+
 app.Run();

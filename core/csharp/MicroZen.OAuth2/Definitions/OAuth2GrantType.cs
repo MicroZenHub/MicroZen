@@ -12,7 +12,7 @@ public class OAuth2GrantType(string value)
 	/// <summary>
 	/// OAuth2 Authorization Code Grant Type
 	/// </summary>
-	public static readonly OAuth2GrantType AuthorizationCode = new OAuth2GrantType("authorization_code");
+	public static readonly OAuth2GrantType AuthorizationCode = new ("authorization_code");
 
 	/// <summary>
 	/// OAuth2 Authorization Code Grant Type with PKCE
