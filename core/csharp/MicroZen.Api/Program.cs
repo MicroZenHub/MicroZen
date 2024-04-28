@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using MicroZen.Api.Definitions;
+using MicroZen.Api.Security.APIKeys.Attribute;
 using MicroZen.Core.Api.Services;
 using MicroZen.Data.Context;
 using static MicroZen.Data.Context.Variables;
@@ -9,7 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddCors();
-builder.Services.AddMicroZenOAuth2(MicroZenProvider.Cognito);
+var policies = new Dictionary<string, AuthorizationPolicy>()
+{
+	{
+		Constants.APIKeyAuthPolicy,
+		new AuthorizationPolicyBuilder()
+			.AddAuthenticationSchemes([JwtBearerDefaults.AuthenticationScheme])
+			.RequireAuthenticatedUser()
+			.AddRequirements(new APIKeyRequirement()).Build()
+	},
+};
+builder.Services.AddMicroZenOAuth2(MicroZenProvider.Cognito, policies, grantTypes: OAuth2GrantType.AuthorizationCodeWithPKCE);
 builder.Services.AddGrpc().AddJsonTranscoding();
 builder.Services.AddGrpcHealthChecks();
 builder.Services.AddGrpcReflection();
@@ -71,6 +85,7 @@ app.UseSwaggerUI(c =>
 app.MapGrpcService<ClientsService>();
 app.MapGrpcService<OrganizationsService>();
 app.MapGrpcService<OrganizationUsersService>();
+app.MapGrpcService<ClientApiKeysService>();
 app.MapGrpcReflectionService();
 app.MapGrpcHealthChecksService();
 

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MicroZen.Data.Security.Encryption.Attributes;
 using MicroZen.Data.Security.Encryption.Converters;
-using MicroZen.Data.Security.Encryption.Interfaces;
+using MicroZen.Data.Security.Encryption.Utils;
 
 namespace MicroZen.Data.Security.Encryption.Extensions;
 

@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+option csharp_namespace = "MicroZen.Grpc.Entities";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service ClientApiKeys {
+    rpc RequestClientApiKey (RequestClientApiKeyRequest) returns (RequestClientApiKeyResponse) {
+        option (google.api.http) = {
+            post: "/api/v1/client-api-key"
+            body: "*"
+        };
+    };
+    rpc UpdateClientApiKey (UpdateClientApiKeyRequest) returns (UpdateClientApiKeyResponse) {
+        option (google.api.http) = {
+            put: "/api/v1/client-api-key"
+            body: "*"
+        };
+    };
+    rpc DisableClientApiKey (DisableClientApiKeyRequest) returns (DisableClientApiKeyResponse) {
+        option (google.api.http) = {
+            delete: "/api/v1/client-api-key"
+            body: "*"
+        };
+    };
+}
+
+message RequestClientApiKeyRequest {
+    int32 client_id = 1;
+    google.protobuf.Timestamp expires_on = 2;
+}
+
+message RequestClientApiKeyResponse {
+    string api_key = 1;
+}
+
+message UpdateClientApiKeyRequest {
+    string api_key = 2;
+    google.protobuf.Timestamp expires_on = 3;
+}
+
+message UpdateClientApiKeyResponse {
+    string api_key = 1;
+    google.protobuf.Timestamp expires_on = 3;
+}
+
+message DisableClientApiKeyRequest {
+    string api_key = 1;
+}
+
+message DisableClientApiKeyResponse {
+    string api_key = 1;
+    google.protobuf.Timestamp disabled_on = 2;
+}
+
+message ClientApiKeyMessage {
+  string id = 1;
+  string api_key = 2;
+  google.protobuf.Timestamp expires_on = 3;
+  int32 client_id = 4;
+  google.protobuf.Timestamp created_on = 5;
+  google.protobuf.Timestamp disabled_on = 6;
+  bool is_disabled = 7;
+}

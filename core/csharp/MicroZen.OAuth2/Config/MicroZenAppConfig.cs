@@ -1,5 +1,8 @@
 namespace MicroZen.OAuth2.Config;
 
+/// <summary>
+/// The MicroZen App Configuration
+/// </summary>
 public class MicroZenAppConfig
 {
 	/// <summary>
@@ -8,9 +11,9 @@ public class MicroZenAppConfig
 	public required string AuthorityUrl { get; set; }
 
 	/// <summary>
-	/// The MicroZen AppId for this app
+	/// The MicroZen APIKey for this app
 	/// </summary>
-	public required string AppId { get; set; }
+	public required string APIKey { get; set; }
 
 	/// <summary>
 	/// The minute interval at which to ping the MicroZen server

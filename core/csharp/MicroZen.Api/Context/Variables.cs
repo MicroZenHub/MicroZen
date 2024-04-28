@@ -1,5 +1,8 @@
 namespace MicroZen.Data.Context;
 
+/// <summary>
+/// Common Variables for the MicroZen API
+/// </summary>
 public static class Variables
 {
 	/// <summary>

@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MicroZen.OAuth2.Definitions;
 using MicroZen.OAuth2.Providers.Cognito.Flows;
@@ -23,10 +22,10 @@ public static class CognitoAuthServiceProvider
 	///		<typeparam name="TKey"><see cref="string" /></typeparam>
 	///		<typeparam name="TValue"><see cref="AuthorizationPolicy" /></typeparam>
 	/// </param>
-	/// <param name="grantTypes"><see cref="OAuth2GrantType"/> params</param>
+	/// <param name="grantTypes"><see cref="OAuth2GrantType" /> params</param>
 	public static void AddAWSCognitoMicroZenOAuth2(this IServiceCollection services, Dictionary<string,AuthorizationPolicy>? policies = null, params OAuth2GrantType[] grantTypes)
 	{
-		AddOAuth2JwtAuthentication(services);
+		AddOAuth2JwtAuthentication(services, grantTypes);
 		AddOAuth2Authorization(services, policies);
 	}
 
@@ -57,17 +56,13 @@ public static class CognitoAuthServiceProvider
 		{
 			builder.AddAuthorizationCodeJwtBearer(services);
 		}
-		if(grantTypes.Contains(OAuth2GrantType.ClientCredentials))
+		else if(grantTypes.Contains(OAuth2GrantType.ClientCredentials))
 		{
 			builder.AddClientCredentialsJwtBearer(services);
 		}
-		if(grantTypes.Contains(OAuth2GrantType.DeviceCode))
+		else
 		{
-			// builder.AddDeviceCodeJWTBearer(services, tokenConfig);
-		}
-		if(grantTypes.Contains(OAuth2GrantType.RefreshToken))
-		{
-			// builder.AddRefreshTokenJWTBearer(services, tokenConfig);
+			throw new NotImplementedException("The OAuth2 Grant Types '" + string.Join(",", grantTypes.Select(x => x.ToString())) + "' are not supported by the MicroZen Cognito provider.");
 		}
 	}
 

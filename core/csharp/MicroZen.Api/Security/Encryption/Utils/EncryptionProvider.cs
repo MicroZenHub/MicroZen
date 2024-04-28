@@ -1,8 +1,27 @@
 using System.Security.Cryptography;
 using System.Text;
-using MicroZen.Data.Security.Encryption.Interfaces;
 
 namespace MicroZen.Data.Security.Encryption.Utils;
+
+/// <summary>
+/// Interface for encryption and decryption.
+/// </summary>
+public interface IEncryptionProvider
+{
+	/// <summary>
+	/// Encrypts the data.
+	/// </summary>
+	/// <param name="dataToEncrypt">The data which will be encrypted.</param>
+	/// <returns>string</returns>
+	string Encrypt(string dataToEncrypt);
+
+	/// <summary>
+	/// Decrypts the data.
+	/// </summary>
+	/// <param name="dataToDecrypt">The data which will be decrypted.</param>
+	/// <returns>string</returns>
+	string Decrypt(string dataToDecrypt);
+}
 
 /// <inheritdoc />
 public class EncryptionProvider(string key) : IEncryptionProvider

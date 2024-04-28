@@ -21,10 +21,12 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="System.IO.Hashing" />
   </ItemGroup>
 
   <ItemGroup>
     <Protobuf Include="Protos\client.proto" Link="Protos/client.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos\client-api-key.proto" Link="Protos/client-api-key.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\organization-user.proto" Link="Protos/organization-user.proto" GrpcServices="Server" />
     <Protobuf Include="Protos\organization.proto" Link="Protos/organization.proto" GrpcServices="Server" />
   </ItemGroup>

@@ -22,6 +22,11 @@ public class MicroZenContext : DbContext
     public DbSet<Client> Clients => Set<Client>();
 
     /// <summary>
+    /// The ClientAPIKeys DbSet.
+    /// </summary>
+    public DbSet<ClientAPIKey> ClientAPIKeys => Set<ClientAPIKey>();
+
+    /// <summary>
     /// The Organizations DbSet.
     /// </summary>
     public DbSet<Organization> Organizations => Set<Organization>();
@@ -56,5 +61,6 @@ public class MicroZenContext : DbContext
 		    .SetBasePath(Directory.GetCurrentDirectory())
 		    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 		    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+		    .AddEnvironmentVariables()
 		    .Build();
 }

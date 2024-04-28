@@ -2,7 +2,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using MicroZen.OAuth2.Config;
 
 namespace MicroZen.OAuth2.State;
@@ -21,7 +20,7 @@ public class MicroZenState<TState> : IDisposable
 	public IObservable<TState?> State => _oauth2Subject.AsObservable();
 
 	/// <summary>
-	/// Initializes a new instance of the <see cref="MicroZenState"/> class.
+	/// Initializes a new instance of the <see cref="MicroZenState{TState}"/> class.
 	/// </summary>
 	public MicroZenState(IConfiguration configuration)
 	{
@@ -41,9 +40,7 @@ public class MicroZenState<TState> : IDisposable
 		}
 	}
 
-	// TODO: Create Method to Initialize pinging to the MicroZen Server
-
-	private Task<OAuth2State?> FetchMicroZenClients(string apiUrl)
+	private async Task<OAuth2State?> FetchMicroZenClients(string apiUrl)
 	{
 		var channel = GrpcChannel.ForAddress(apiUrl);
 		Console.WriteLine("Pretend Hitting an Http Endpoint or Grpc Method");

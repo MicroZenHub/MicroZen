@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MicroZen.Data.Security.Encryption.Interfaces;
+using MicroZen.Data.Security.Encryption.Utils;
+
 namespace MicroZen.Data.Security.Encryption.Converters;
 
 internal sealed class EncryptionConverter(IEncryptionProvider encryptionProvider, ConverterMappingHints? mappingHints = null) :

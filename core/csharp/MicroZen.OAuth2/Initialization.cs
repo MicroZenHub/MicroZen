@@ -27,10 +27,7 @@ public static class Initialization
 		services.AddSingleton<MicroZenState<OAuth2State>>();
 		if (serviceProvider == Cognito)
 		{
-			if (policies is not null)
 				services.AddAWSCognitoMicroZenOAuth2(policies, grantTypes);
-			else
-				services.AddAWSCognitoMicroZenOAuth2(grantTypes);
 		}
 		else
 		{

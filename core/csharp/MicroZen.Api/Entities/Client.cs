@@ -30,14 +30,21 @@ public class Client : BaseEntity<ClientMessage>
   /// The Client description.
   /// </summary>
   public string? Description { get; set; }
+
   /// <summary>
   /// The OAuth2 configuration for the client (optional).
   /// </summary>
   public virtual OAuth2ClientConfig? OAuth2Config { get; set; }
+
   /// <summary>
   /// The clients allowed to access this client.
   /// </summary>
   public virtual ICollection<Client> AllowedClients { get; set; } = new List<Client>();
+
+  /// <summary>
+  /// The API Keys associated with the client.
+  /// </summary>
+  public virtual ICollection<ClientAPIKey> APIKeys { get; set; } = new List<ClientAPIKey>();
 
   /// <inheritdoc />
   public override ClientMessage ToMessage() =>

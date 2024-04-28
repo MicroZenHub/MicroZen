@@ -95,6 +95,51 @@ namespace MicroZen.Api.Migrations
                     b.ToTable("Clients", (string)null);
                 });
 
+            modelBuilder.Entity("MicroZen.Data.Entities.ClientAPIKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ApiKey")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ExpiresOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApiKey")
+                        .IsUnique();
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("ClientAPIKeys", (string)null);
+                });
+
             modelBuilder.Entity("MicroZen.Data.Entities.OAuth2ClientConfig", b =>
                 {
                     b.Property<int>("Id")
@@ -251,6 +296,17 @@ namespace MicroZen.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("MicroZen.Data.Entities.ClientAPIKey", b =>
+                {
+                    b.HasOne("MicroZen.Data.Entities.Client", "Client")
+                        .WithMany("APIKeys")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
             modelBuilder.Entity("MicroZen.Data.Entities.OAuth2ClientConfig", b =>
                 {
                     b.HasOne("MicroZen.Data.Entities.Client", null)
@@ -273,6 +329,8 @@ namespace MicroZen.Api.Migrations
 
             modelBuilder.Entity("MicroZen.Data.Entities.Client", b =>
                 {
+                    b.Navigation("APIKeys");
+
                     b.Navigation("OAuth2Config");
                 });
 
