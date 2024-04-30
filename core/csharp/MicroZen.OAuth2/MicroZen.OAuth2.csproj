@@ -1,35 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <LangVersion>12</LangVersion>
-        <Configuration>Release</Configuration>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Title>MicroZen.OAuth2</Title>
-        <Description>OAuth2 client library to manage OAuth2 authentication dynamically through the MicroZen API.</Description>
-        <Authors>MicroZen</Authors>
-        <Company>MinkInk, LLC - DBA MicroZen</Company>
-        <Copyright>2024 MinkInk, LLC.</Copyright>
-        <Version>0.0.1.0</Version>
-        <PackageId>MicroZen.OAuth2</PackageId>
-        <IncludeSymbols>true</IncludeSymbols>
-        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-    </PropertyGroup>
-    <ItemGroup>
-      <PackageReference Include="Grpc.AspNetCore" />
-      <PackageReference Include="Google.Protobuf" />
-      <PackageReference Include="Grpc.Net.ClientFactory" />
-      <PackageReference Include="Grpc.Tools" />
-      <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-      <PackageReference Include="System.Configuration.ConfigurationManager" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-      <PackageReference Include="System.Reactive" />
-    </ItemGroup>
-    <ItemGroup>
-      <None Include="README.md" Pack="true" PackagePath="\" />
-    </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12</LangVersion>
+    <Configuration>Release</Configuration>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IncludeHttpRuleProtos>true</IncludeHttpRuleProtos>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>MicroZen.OAuth2</Title>
+    <Description>OAuth2 client library to manage OAuth2 authentication dynamically through the MicroZen API.</Description>
+    <Authors>MicroZen</Authors>
+    <Company>MinkInk, LLC - DBA MicroZen</Company>
+    <Copyright>2024 MinkInk, LLC.</Copyright>
+    <Version>0.0.1.0</Version>
+    <PackageId>MicroZen.OAuth2</PackageId>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Google.Protobuf" />
+    <PackageReference Include="Grpc.Net.ClientFactory" />
+    <PackageReference Include="Grpc.Tools" />
+    <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="System.Reactive" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="..\MicroZen.Api\Protos\client.proto" GrpcServices="Client" Link="Protos\client.proto" ProtoRoot="../MicroZen.Api/Protos" />
+  </ItemGroup>
 </Project>
