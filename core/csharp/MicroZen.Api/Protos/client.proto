@@ -22,18 +22,21 @@ service Clients {
       get: "/api/v1/client/{id}/allowed-clients"
     };
   };
+  // Create a new OAuth2 client.
   rpc CreateClient (ClientMessage) returns (ClientMessage) {
     option (google.api.http) = {
       post: "/api/v1/clients"
       body: "*"
     };
   };
+  // Update an existing OAuth2 client.
   rpc UpdateClient (ClientMessage) returns (ClientMessage) {
     option (google.api.http) = {
       put: "/api/v1/clients/{id}"
       body: "*"
     };
   };
+  // Delete an OAuth2 client.
   rpc DeleteClient (DeleteClientRequest) returns (DeleteClientResponse) {
     option (google.api.http) = {
       delete: "/api/v1/clients/{id}"
@@ -71,7 +74,7 @@ enum GrantType {
   ResourceOwnerPassword = 6;
 }
 
-
+// The Client request message containing the client ID.
 message ClientRequest {
   // The ID of the client.
   int32 id = 1;
@@ -96,6 +99,7 @@ message DeleteClientResponse {
   google.protobuf.Timestamp deletedOn = 2;
 }
 
+// The OAuth2 client credentials for a client.
 message OAuth2Credentials {
   // The ID of the client.
   int32 id = 1;

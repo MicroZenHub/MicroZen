@@ -40,8 +40,8 @@ public class MicroZenOAuth2State : IDisposable
 		}
 		catch (Exception ex)
 		{
-			// Log the exception
-			// Log.Error(ex, "Error fetching MicroZen Clients");
+			// ReSharper disable once TemplateIsNotCompileTimeConstantProblem
+			_logger.LogError(ex.Message, ex.InnerException?.Message, ex.StackTrace);
 		}
 	}
 

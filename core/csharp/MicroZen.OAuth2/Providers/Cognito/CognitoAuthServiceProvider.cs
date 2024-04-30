@@ -18,9 +18,7 @@ public static class CognitoAuthServiceProvider
 	/// </summary>
 	/// <param name="services"><see cref="IServiceCollection"/></param>
 	/// <param name="policies">
-	///		<see cref="Dictionary{TKey,TValue}"></see>
-	///		<typeparam name="TKey"><see cref="string" /></typeparam>
-	///		<typeparam name="TValue"><see cref="AuthorizationPolicy" /></typeparam>
+	///		<see cref="Dictionary{TKey,TValue}"/> - TKey = <see cref="string"/>, TValue = <see cref="AuthorizationPolicy"/>
 	/// </param>
 	/// <param name="grantTypes"><see cref="OAuth2GrantType" /> params</param>
 	public static void AddAWSCognitoMicroZenOAuth2(this IServiceCollection services, Dictionary<string,AuthorizationPolicy>? policies = null, params OAuth2GrantType[] grantTypes)
