@@ -63,16 +63,16 @@ public static class ClientCredentials
 		return state.Value.ClientCredentials.GroupBy(
 			oAuth2Credentials => new { oAuth2Credentials.UserPoolId, oAuth2Credentials.Region },
 			oAuth2Credentials => new { oAuth2Credentials.ClientId, oAuth2Credentials.ClientSecret },
-			(regionUserPoolId, clientCreds) =>
+			(regionUserPoolId, clientCredentialGroups) =>
 			{
-				var clientCredentials = clientCreds.ToList();
+				var clientCredentials = clientCredentialGroups.ToList();
 				return new UserPoolClients
-				{
-					UserPoolId = regionUserPoolId.UserPoolId,
-					Region = regionUserPoolId.Region,
-					ClientIds = clientCredentials.Select(x => x.ClientId).ToArray(),
-					ClientSecrets = clientCredentials.Select(x => x.ClientSecret).ToArray()
-				};
+				(
+					UserPoolId: regionUserPoolId.UserPoolId,
+					Region: regionUserPoolId.Region,
+					ClientIds: clientCredentials.Select(x => x.ClientId).ToArray(),
+					ClientSecrets: clientCredentials.Select(x => x.ClientSecret).ToArray()
+				);
 			}).ToList();
 	}
 }

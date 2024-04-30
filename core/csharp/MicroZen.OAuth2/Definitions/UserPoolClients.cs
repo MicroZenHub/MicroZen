@@ -3,26 +3,10 @@ namespace MicroZen.OAuth2.Definitions;
 /// <summary>
 /// Represents the credentials of the OAuth2 clients that are allowed to access the app grouped by UserPoolId and Region
 /// </summary>
-public record UserPoolClients
-{
-	/// <summary>
-	/// The UserPoolId of the Cognito User Pool
-	/// </summary>
-	public required string UserPoolId { get; init; }
-
-	/// <summary>
-	/// The AWS Region of the Cognito User Pool
-	/// </summary>
-	public required string Region { get; init; }
-
-	/// <summary>
-	/// The ClientIds of the OAuth2 clients that are allowed to access the app
-	/// </summary>
-	public required string[] ClientIds { get; init; }
-
-
-	/// <summary>
-	/// The ClientSecrets of the OAuth2 clients that are allowed to access the app
-	/// </summary>
-	public required string[] ClientSecrets { get; init; }
-}
+/// <param name="UserPoolId"><see cref="string" /> - The User Pool Id</param>
+/// <param name="Region"><see cref="string" /> - The AWS Region</param>
+/// <param name="ClientIds">
+///		<see cref="Array"/> of <see cref="string"/>
+/// </param>
+/// <param name="ClientSecrets"><see cref="Array"/> of <see cref="string"/> - The ClientSecrets of the OAuth2 clients that are allowed to access the app</param>
+public record UserPoolClients(string UserPoolId, string Region, string[] ClientIds, string[] ClientSecrets);
