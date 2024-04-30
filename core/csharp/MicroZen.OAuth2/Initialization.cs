@@ -24,7 +24,7 @@ public static class Initialization
 	/// <exception cref="NotSupportedException">Thrown when </exception>
 	public static void AddMicroZenOAuth2(this IServiceCollection services, MicroZenProvider serviceProvider, Dictionary<string,AuthorizationPolicy>? policies = null, params OAuth2GrantType[] grantTypes)
 	{
-		services.AddSingleton<MicroZenState<OAuth2State>>();
+		services.AddSingleton<MicroZenOAuth2State>();
 		if (serviceProvider == Cognito)
 		{
 				services.AddAWSCognitoMicroZenOAuth2(policies, grantTypes);

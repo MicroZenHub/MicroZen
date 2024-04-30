@@ -77,15 +77,19 @@ message ClientRequest {
   int32 id = 1;
 }
 
+// The response message containing the client credentials for allowed clients.
 message MultipleClientCredentials {
+  // The OAuth2 credentials for the clients.
   repeated OAuth2Credentials credentials = 1;
 }
 
+// The DeleteClient request message.
 message DeleteClientRequest {
   // The ID of the client.
   int32 id = 1;
 }
 
+// The DeleteClient response message.
 message DeleteClientResponse {
   // The ID of the client that was deleted.
   int32 id = 1;
@@ -96,11 +100,15 @@ message OAuth2Credentials {
   // The ID of the client.
   int32 id = 1;
   // The OAuth ClientId.
-  string clientId = 2;
+  string client_id = 2;
   // The client secret.
-  string clientSecret = 3;
+  string client_secret = 3;
+  // The client UserPoolId
+  string user_pool_id = 4;
+  // The client region
+  string region = 5;
   // The client type.
-  ClientType type = 4;
+  ClientType type = 6;
 }
 
 // The request message containing the user's name.

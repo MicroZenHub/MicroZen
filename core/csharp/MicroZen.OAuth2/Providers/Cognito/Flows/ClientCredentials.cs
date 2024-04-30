@@ -19,28 +19,48 @@ public static class ClientCredentials
 	/// <param name="services"><see cref="IServiceCollection" /></param>
 	public static void AddClientCredentialsJwtBearer(this AuthenticationBuilder builder, IServiceCollection services)
 	{
-		var oAuth2Service = services.BuildServiceProvider().GetRequiredService<MicroZenState<OAuth2State>>();
+		var oAuth2Service = services.BuildServiceProvider().GetRequiredService<MicroZenOAuth2State>();
 
 		oAuth2Service
 			.State
 			.Take(1)
 			.Subscribe((state) =>
 			{
-				builder.AddJwtBearer(options =>
-				{
-					var cognitoIdpUrl = $"https://cognito-idp.{state.Region}.amazonaws.com/{state.UserPoolId}";
-					options.TokenValidationParameters = new TokenValidationParameters
+				if (state == null) return;
+
+				var clientsGroupedByUserPoolId = state.Value.ClientCredentials.GroupBy(
+					oAuth2Credentials => new { oAuth2Credentials.UserPoolId, oAuth2Credentials.Region },
+					oAuth2Credentials => new { oAuth2Credentials.ClientId, oAuth2Credentials.ClientSecret },
+					(regionUserPoolId, clientCreds) =>
 					{
-						ValidIssuer = cognitoIdpUrl,
-						ValidAudiences = state.ClientIds ?? [],
-						IssuerSigningKeys = state.ClientSecrets?.Select(clientSecret => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(clientSecret))) ?? [],
-						ValidateIssuerSigningKey = true,
-						ValidateIssuer = true,
-						ValidateLifetime = true,
-						ValidateAudience = false,
-					};
-					options.MetadataAddress = cognitoIdpUrl + "/.well-known/openid-configuration";
-				});
+						var clientCredentials = clientCreds.ToList();
+						return new
+						{
+							regionUserPoolId.UserPoolId,
+							regionUserPoolId.Region,
+							ClientIds = clientCredentials.Select(x => x.ClientId).ToArray(),
+							ClientSecrets = clientCredentials.Select(x => x.ClientSecret).ToArray()
+						};
+					}).ToList();
+
+				foreach (var regionUserPoolClients in clientsGroupedByUserPoolId)
+				{
+					builder.AddJwtBearer(options =>
+					{
+						var cognitoIdpUrl = $"https://cognito-idp.{regionUserPoolClients.Region}.amazonaws.com/{regionUserPoolClients.UserPoolId}";
+						options.TokenValidationParameters = new TokenValidationParameters
+						{
+							ValidIssuer = cognitoIdpUrl,
+							ValidAudiences = regionUserPoolClients.ClientIds,
+							IssuerSigningKeys = regionUserPoolClients.ClientSecrets.Select(clientSecret => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(clientSecret))).ToArray(),
+							ValidateIssuerSigningKey = true,
+							ValidateIssuer = true,
+							ValidateLifetime = true,
+							ValidateAudience = false,
+						};
+						options.MetadataAddress = cognitoIdpUrl + "/.well-known/openid-configuration";
+					});
+				}
 			});
 	}
 }
