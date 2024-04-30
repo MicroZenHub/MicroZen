@@ -1,13 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MicroZen.Data.Security.Encryption.Attributes;
+using MicroZen.Grpc.Entities;
 
 namespace MicroZen.Data.Entities;
 
 /// <summary>
 /// The OAuth2 Client Configuration entity.
 /// </summary>
-public class OAuth2ClientConfig
+public class OAuth2ClientCredentials
 {
 	/// <summary>
 	///	The OAuth2 Client Configuration unique identifier.
@@ -45,53 +46,12 @@ public class OAuth2ClientConfig
 }
 
 /// <summary>
-/// The OAuth2 Grant Types.
-/// </summary>
-public enum GrantType
-{
-  /// <summary>
-  /// Authorization Code Grant
-  /// </summary>
-  AuthorizationCode = 0,
-
-  /// <summary>
-  /// Authorization Code Grant with PKCE
-  /// </summary>
-  AuthorizationCodeWithPkce = 1,
-
-  /// <summary>
-  /// Client Credentials Grant
-  /// </summary>
-  ClientCredentials = 2,
-
-  /// <summary>
-  /// Device Authorization Grant
-  /// </summary>
-  DeviceAuthorization = 3,
-
-  /// <summary>
-  /// Implicit Grant
-  /// </summary>
-  Implicit = 4,
-
-  /// <summary>
-  /// Hybrid Grant
-  /// </summary>
-  Hybrid = 5,
-
-  /// <summary>
-  /// Resource Owner Password Grant
-  /// </summary>
-  ResourceOwnerPassword = 6
-}
-
-/// <summary>
 /// The OAuth2 Client Configuration entity configuration.
 /// </summary>
-public class OAuth2ClientConfigConfig : IEntityTypeConfiguration<OAuth2ClientConfig>
+public class OAuth2ClientConfigConfig : IEntityTypeConfiguration<OAuth2ClientCredentials>
 {
 	/// <inheritdoc />
-	public void Configure(EntityTypeBuilder<OAuth2ClientConfig> builder)
+	public void Configure(EntityTypeBuilder<OAuth2ClientCredentials> builder)
   {
 	builder.ToTable("OAuth2ClientConfigs");
 	builder.HasKey(c => c.Id);

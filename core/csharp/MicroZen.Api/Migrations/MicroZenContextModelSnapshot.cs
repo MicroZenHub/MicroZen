@@ -140,7 +140,7 @@ namespace MicroZen.Api.Migrations
                     b.ToTable("ClientAPIKeys", (string)null);
                 });
 
-            modelBuilder.Entity("MicroZen.Data.Entities.OAuth2ClientConfig", b =>
+            modelBuilder.Entity("MicroZen.Data.Entities.OAuth2ClientCredentials", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("integer");
@@ -307,11 +307,11 @@ namespace MicroZen.Api.Migrations
                     b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("MicroZen.Data.Entities.OAuth2ClientConfig", b =>
+            modelBuilder.Entity("MicroZen.Data.Entities.OAuth2ClientCredentials", b =>
                 {
                     b.HasOne("MicroZen.Data.Entities.Client", null)
-                        .WithOne("OAuth2Config")
-                        .HasForeignKey("MicroZen.Data.Entities.OAuth2ClientConfig", "Id")
+                        .WithOne("OAuth2Credentials")
+                        .HasForeignKey("MicroZen.Data.Entities.OAuth2ClientCredentials", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -331,7 +331,7 @@ namespace MicroZen.Api.Migrations
                 {
                     b.Navigation("APIKeys");
 
-                    b.Navigation("OAuth2Config");
+                    b.Navigation("OAuth2Credentials");
                 });
 
             modelBuilder.Entity("MicroZen.Data.Entities.Organization", b =>

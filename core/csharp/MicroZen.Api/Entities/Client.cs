@@ -34,7 +34,7 @@ public class Client : BaseEntity<ClientMessage>
   /// <summary>
   /// The OAuth2 configuration for the client (optional).
   /// </summary>
-  public virtual OAuth2ClientConfig? OAuth2Config { get; set; }
+  public virtual OAuth2ClientCredentials? OAuth2Credentials { get; set; }
 
   /// <summary>
   /// The clients allowed to access this client.
@@ -68,7 +68,7 @@ public class ClientConfig : IEntityTypeConfiguration<Client>
     builder.Property(c => c.Name).HasMaxLength(200).IsRequired();
     builder.Property(c => c.Type).IsRequired();
     builder.Property(c => c.Description).HasMaxLength(500).IsRequired(false);
-    builder.HasOne(c => c.OAuth2Config).WithOne().HasForeignKey<OAuth2ClientConfig>(c => c.Id);
+    builder.HasOne(c => c.OAuth2Credentials).WithOne().HasForeignKey<OAuth2ClientCredentials>(c => c.Id);
     builder.HasMany<Client>(c => c.AllowedClients).WithMany().UsingEntity(j => j.ToTable("ClientAllowedClients"));
   }
 }
