@@ -5,6 +5,8 @@ option csharp_namespace = "MicroZen.Grpc.Entities";
 import "google/protobuf/wrappers.proto";
 import "google/api/annotations.proto";
 
+package MicroZen.Grpc.Entities;
+
 // The OrganizationUsers service definition.
 service OrganizationUsers {
   // Get all users in an organization.

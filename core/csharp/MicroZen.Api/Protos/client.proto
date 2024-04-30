@@ -3,6 +3,10 @@ syntax = "proto3";
 option csharp_namespace = "MicroZen.Grpc.Entities";
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+package MicroZen.Grpc.Entities;
 
 // The service for managing Clients.
 service Clients {
@@ -16,6 +20,23 @@ service Clients {
   rpc GetAllowedOAuthClientCredentials (ClientRequest) returns (MultipleClientCredentials) {
     option (google.api.http) = {
       get: "/api/v1/client/{id}/allowed-clients"
+    };
+  };
+  rpc CreateClient (ClientMessage) returns (ClientMessage) {
+    option (google.api.http) = {
+      post: "/api/v1/clients"
+      body: "*"
+    };
+  };
+  rpc UpdateClient (ClientMessage) returns (ClientMessage) {
+    option (google.api.http) = {
+      put: "/api/v1/clients/{id}"
+      body: "*"
+    };
+  };
+  rpc DeleteClient (DeleteClientRequest) returns (DeleteClientResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/clients/{id}"
     };
   };
 }
@@ -32,16 +53,46 @@ enum ClientType {
   MOBILE = 3;
 }
 
+// The OAuth2 Grant Types.
+enum GrantType {
+  // Authorization Code Grant
+  AuthorizationCode = 0;
+  // Authorization Code Grant with PKCE
+  AuthorizationCodeWithPkce = 1;
+  // Client Credentials Grant
+  ClientCredentials = 2;
+  // Device Authorization Grant
+  DeviceAuthorization = 3;
+  // Implicit Grant
+  Implicit = 4;
+  // Hybrid Grant
+  Hybrid = 5;
+  // Resource Owner Password Grant
+  ResourceOwnerPassword = 6;
+}
+
+
 message ClientRequest {
   // The ID of the client.
   int32 id = 1;
 }
 
 message MultipleClientCredentials {
-  repeated ClientCredentials credentials = 1;
+  repeated OAuth2Credentials credentials = 1;
 }
 
-message ClientCredentials {
+message DeleteClientRequest {
+  // The ID of the client.
+  int32 id = 1;
+}
+
+message DeleteClientResponse {
+  // The ID of the client that was deleted.
+  int32 id = 1;
+  google.protobuf.Timestamp deletedOn = 2;
+}
+
+message OAuth2Credentials {
   // The ID of the client.
   int32 id = 1;
   // The OAuth ClientId.
@@ -62,4 +113,21 @@ message ClientMessage {
   ClientType type = 3;
   // The description of the client.
   string description = 4;
+  // The client OAuth credentials.
+  OAuthClientCredentials oauth2_credentials = 5;
+}
+
+message OAuthClientCredentials {
+  // The ID of the client.
+  google.protobuf.Int32Value id = 1;
+  // The OAuth ClientId.
+  GrantType grant_type = 2;
+  // The client id.
+  string client_id = 3;
+  // The client secret.
+  google.protobuf.StringValue client_secret = 4;
+  // The client scopes
+  google.protobuf.StringValue allowed_scopes = 5;
+  // Whether to require PKCE for the OAuth2 Client.
+  google.protobuf.BoolValue require_pkce = 6;
 }
