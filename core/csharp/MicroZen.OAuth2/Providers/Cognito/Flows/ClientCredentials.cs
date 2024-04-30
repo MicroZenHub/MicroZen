@@ -1,8 +1,10 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reactive.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using MicroZen.OAuth2.Definitions;
 using MicroZen.OAuth2.State;
 
 namespace MicroZen.OAuth2.Providers.Cognito.Flows;
@@ -28,39 +30,49 @@ public static class ClientCredentials
 			{
 				if (state == null) return;
 
-				var clientsGroupedByUserPoolId = state.Value.ClientCredentials.GroupBy(
-					oAuth2Credentials => new { oAuth2Credentials.UserPoolId, oAuth2Credentials.Region },
-					oAuth2Credentials => new { oAuth2Credentials.ClientId, oAuth2Credentials.ClientSecret },
-					(regionUserPoolId, clientCreds) =>
-					{
-						var clientCredentials = clientCreds.ToList();
-						return new
-						{
-							regionUserPoolId.UserPoolId,
-							regionUserPoolId.Region,
-							ClientIds = clientCredentials.Select(x => x.ClientId).ToArray(),
-							ClientSecrets = clientCredentials.Select(x => x.ClientSecret).ToArray()
-						};
-					}).ToList();
+				var clientsGroupedByUserPoolId = ClientsGroupedByUserPoolId(state);
 
 				foreach (var regionUserPoolClients in clientsGroupedByUserPoolId)
 				{
-					builder.AddJwtBearer(options =>
-					{
-						var cognitoIdpUrl = $"https://cognito-idp.{regionUserPoolClients.Region}.amazonaws.com/{regionUserPoolClients.UserPoolId}";
-						options.TokenValidationParameters = new TokenValidationParameters
-						{
-							ValidIssuer = cognitoIdpUrl,
-							ValidAudiences = regionUserPoolClients.ClientIds,
-							IssuerSigningKeys = regionUserPoolClients.ClientSecrets.Select(clientSecret => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(clientSecret))).ToArray(),
-							ValidateIssuerSigningKey = true,
-							ValidateIssuer = true,
-							ValidateLifetime = true,
-							ValidateAudience = false,
-						};
-						options.MetadataAddress = cognitoIdpUrl + "/.well-known/openid-configuration";
-					});
+					AddJwtBearer(builder, regionUserPoolClients);
 				}
 			});
+	}
+
+	private static void AddJwtBearer(AuthenticationBuilder builder, UserPoolClients regionUserPoolClients)
+	{
+		builder.AddJwtBearer(options =>
+		{
+			var cognitoIdpUrl = $"https://cognito-idp.{regionUserPoolClients.Region}.amazonaws.com/{regionUserPoolClients.UserPoolId}";
+			options.TokenValidationParameters = new TokenValidationParameters
+			{
+				ValidIssuer = cognitoIdpUrl,
+				ValidAudiences = regionUserPoolClients.ClientIds,
+				IssuerSigningKeys = regionUserPoolClients.ClientSecrets.Select(clientSecret => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(clientSecret))).ToArray(),
+				ValidateIssuerSigningKey = true,
+				ValidateIssuer = true,
+				ValidateLifetime = true,
+				ValidateAudience = false,
+			};
+			options.MetadataAddress = cognitoIdpUrl + "/.well-known/openid-configuration";
+		});
+	}
+
+	private static List<UserPoolClients> ClientsGroupedByUserPoolId([DisallowNull] OAuth2State? state)
+	{
+		return state.Value.ClientCredentials.GroupBy(
+			oAuth2Credentials => new { oAuth2Credentials.UserPoolId, oAuth2Credentials.Region },
+			oAuth2Credentials => new { oAuth2Credentials.ClientId, oAuth2Credentials.ClientSecret },
+			(regionUserPoolId, clientCreds) =>
+			{
+				var clientCredentials = clientCreds.ToList();
+				return new UserPoolClients
+				{
+					UserPoolId = regionUserPoolId.UserPoolId,
+					Region = regionUserPoolId.Region,
+					ClientIds = clientCredentials.Select(x => x.ClientId).ToArray(),
+					ClientSecrets = clientCredentials.Select(x => x.ClientSecret).ToArray()
+				};
+			}).ToList();
 	}
 }
