@@ -15,7 +15,7 @@ namespace MicroZen.OAuth2.State;
 public class MicroZenOAuth2State : IDisposable
 {
 	private readonly List<IDisposable> _subscriptions = [];
-	private readonly Subject<OAuth2State?> _oauth2Subject = new();
+	private readonly Subject<OAuth2State?> _oauth2Subject = new Subject<OAuth2State?>();
 	private readonly ILogger<MicroZenOAuth2State> _logger;
 
 	/// <summary>

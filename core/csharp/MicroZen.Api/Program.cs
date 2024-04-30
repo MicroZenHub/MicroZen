@@ -1,11 +1,18 @@
+using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MicroZen.Api.Definitions;
 using MicroZen.Api.Security.APIKeys.Attribute;
 using MicroZen.Core.Api.Services;
 using MicroZen.Data.Context;
+using MicroZen.OAuth2;
 using static MicroZen.Data.Context.Variables;
 using MicroZen.OAuth2.Definitions;
 
@@ -59,7 +66,7 @@ builder.Services.AddSwaggerGen(c =>
     }
   });
 
-  var filePath = Path.Combine(System.AppContext.BaseDirectory, "MicroZen.Core.Api.xml");
+  var filePath = Path.Combine(System.AppContext.BaseDirectory, "MicroZen.Api.xml");
   c.IncludeXmlComments(filePath);
   c.IncludeGrpcXmlComments(filePath, includeControllerXmlComments: true);
 });
