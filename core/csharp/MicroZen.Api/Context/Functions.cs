@@ -14,17 +14,18 @@ public static class Functions
 	/// </summary>
 	/// <param name="app">The <see cref="WebApplication"/></param>
 	/// <returns></returns>
-	public static async Task MigrateAndSeedDevDataOnStart(this WebApplication app)
+	public static void MigrateAndSeedDevDataOnStart(this WebApplication app)
 	{
 		using var scope = app.Services.CreateScope();
 		var services = scope.ServiceProvider;
 
 		var microZenContext = services.GetRequiredService<MicroZenContext>();
-		if ((await microZenContext.Database.GetPendingMigrationsAsync()).Any())
-			await microZenContext.Database.MigrateAsync();
-		if (app.Environment.IsDevelopment() && app.Configuration.GetValue<bool>("SeedDevData"))
-		{
-			microZenContext.Organizations.Update(new Organization()
+		if (microZenContext.Database.GetPendingMigrations().Any())
+			microZenContext.Database.Migrate();
+		if (!app.Environment.IsDevelopment() || !app.Configuration.GetValue<bool>("SeedDevData")) return;
+		if (microZenContext.Organizations.Any()) return;
+		microZenContext.Add(
+			new Organization()
 			{
 				Id = 1,
 				Name = "MicroZen",
@@ -38,10 +39,19 @@ public static class Functions
 						Name = "MicroZen API",
 						Type = ClientType.Server,
 						Description = "The MicroZen API",
+						APIKeys = [
+							new ClientAPIKey()
+							{
+								Id = new Guid("0bbc9369-dc40-4952-baa5-6f1e6dde43cc"),
+								ApiKey = "mcz_82d5fd9daf7a4bdeba989c50a7415e1f_aceff126",
+								ClientId = 1,
+								ExpiresOn = DateTime.UtcNow.AddHours(12)
+							}
+						]
 					}
-				]
-			});
-			await microZenContext.SaveChangesAsync();
-		}
+				],
+			}
+		);
+		microZenContext.SaveChanges();
 	}
 }
