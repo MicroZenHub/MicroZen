@@ -16,6 +16,12 @@ service Clients {
       get: "/api/v1/clients/{id}"
     };
   };
+  // Get a clientId by its MicroZen Client API Key
+  rpc GetClientIdFromApiKey (google.protobuf.StringValue) returns (google.protobuf.Int32Value) {
+    option (google.api.http) = {
+      get: "/api/v1/clients/api-key/{value}"
+    };
+  };
   // Get all the OAuth Client credentials for clients that are allowed to use the OAuth2 server.
   rpc GetAllowedOAuthClientCredentials (ClientRequest) returns (MultipleClientCredentials) {
     option (google.api.http) = {

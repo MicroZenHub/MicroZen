@@ -1,7 +1,7 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MicroZen.Grpc.Entities;
@@ -17,6 +17,7 @@ public class MicroZenOAuth2State : IDisposable
 	private readonly List<IDisposable> _subscriptions = [];
 	private readonly Subject<OAuth2State?> _oauth2Subject = new Subject<OAuth2State?>();
 	private readonly ILogger<MicroZenOAuth2State> _logger;
+	private readonly Clients.ClientsClient _client;
 
 	/// <summary>
 	/// Gets the current OAuth2State as an Observable
@@ -26,8 +27,9 @@ public class MicroZenOAuth2State : IDisposable
 	/// <summary>
 	/// Initializes a new instance of the <see cref="MicroZenOAuth2State"/> class.
 	/// </summary>
-	public MicroZenOAuth2State(IConfiguration configuration, ILogger<MicroZenOAuth2State> logger)
+	public MicroZenOAuth2State(IConfiguration configuration, ILogger<MicroZenOAuth2State> logger, Clients.ClientsClient client)
 	{
+		_client = client;
 		_logger = logger;
 		var microZenConfig = configuration.GetSection("MicroZen").Get<MicroZenAppConfig>();
 		if(microZenConfig is null)
@@ -35,7 +37,7 @@ public class MicroZenOAuth2State : IDisposable
 		try
 		{
 			_subscriptions.Add(
-				PingMicroZenServer(microZenConfig.AuthorityUrl, microZenConfig.Interval).Subscribe()
+				PingMicroZenServer(microZenConfig).Subscribe()
 			);
 		}
 		catch (Exception ex)
@@ -45,21 +47,37 @@ public class MicroZenOAuth2State : IDisposable
 		}
 	}
 
-	private IObservable<OAuth2State?> PingMicroZenServer(string apiUrl, int minutes) =>
-		Observable.Timer(TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(minutes))
-			.Select(_ => Observable.FromAsync(() =>
-				FetchMicroZenClients(apiUrl)))
+	private IObservable<OAuth2State?> PingMicroZenServer(MicroZenAppConfig appConfig) =>
+		Observable.Timer(TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(appConfig.Interval))
+			.Select(_ =>
+				Observable.FromAsync(_ =>
+					FetchMicroZenClientId(appConfig.APIKey)
+				)
+				.Catch<Int32Value?, RpcException>(_ => Observable.Empty<Int32Value?>())
+				.SkipWhile(clientId => clientId is null)
+			)
+			.Switch()
+			.Select(clientId =>
+				Observable.FromAsync(() =>
+					FetchMicroZenClients(clientId!.Value)))
 			.Switch();
 
-	private async Task<OAuth2State?> FetchMicroZenClients(string apiUrl)
+	private async Task<Int32Value?> FetchMicroZenClientId(string apiKey)
+	{
+		_logger.LogInformation("Fetching MicroZen Client ID");
+		return await _client.GetClientIdFromApiKeyAsync(new StringValue() { Value = apiKey });
+	}
+
+	private async Task<OAuth2State?> FetchMicroZenClients(int clientId)
 	{
 		_logger.LogInformation("Fetching MicroZen Clients");
-		var channel = GrpcChannel.ForAddress(apiUrl);
-		var client = new Clients.ClientsClient(channel);
-		var request = new ClientRequest();
+		var request = new ClientRequest()
+		{
+			Id = clientId
+		};
 		try
 		{
-			var response = await client.GetAllowedOAuthClientCredentialsAsync(request);
+			var response = await _client.GetAllowedOAuthClientCredentialsAsync(request);
 			if (response is null)
 				throw new RpcException(new Status(StatusCode.NotFound, "No clients allowed to authenticate"));
 			var currentState = new OAuth2State()
@@ -88,6 +106,7 @@ public class MicroZenOAuth2State : IDisposable
 			return null;
 		}
 	}
+
 	/// <inheritdoc />
 	public void Dispose()
 	{

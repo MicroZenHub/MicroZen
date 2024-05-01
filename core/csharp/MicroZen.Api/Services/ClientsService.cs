@@ -25,7 +25,8 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 	{
 		var client = await db.Clients
 			.Include(c => c.OAuth2Credentials)
-			.Include(c => c.AllowedClients).ThenInclude(client => client.OAuth2Credentials)
+			.Include(c => c.AllowedClients)
+			.ThenInclude(client => client.OAuth2Credentials)
 			.FirstOrDefaultAsync(x => x.Id == request.Id);
 
 		if (client is null)
@@ -42,6 +43,15 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 				Type = allowedClient.Type
 			}).ToArray());
 		return response;
+	}
+
+	/// <inheritdoc />
+	public override async Task<Int32Value> GetClientIdFromApiKey(StringValue request, ServerCallContext context)
+	{
+		var clientId = (await db.ClientAPIKeys
+			.Select(clientApiKey => new { clientApiKey.ClientId, clientApiKey.ApiKey })
+			.FirstOrDefaultAsync(x => x.ApiKey == request.Value))?.ClientId;
+		return new Int32Value() { Value = clientId ?? 0 };
 	}
 
 	/// <inheritdoc />
