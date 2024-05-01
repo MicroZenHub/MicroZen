@@ -37,21 +37,6 @@ namespace MicroZen.Api.Migrations
                     b.ToTable("ClientAllowedClients", (string)null);
                 });
 
-            modelBuilder.Entity("ClientOrganization", b =>
-                {
-                    b.Property<int>("ClientsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("OrganizationId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ClientsId", "OrganizationId");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("OrganizationClients", (string)null);
-                });
-
             modelBuilder.Entity("MicroZen.Data.Entities.Client", b =>
                 {
                     b.Property<int>("Id")
@@ -87,10 +72,15 @@ namespace MicroZen.Api.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Clients", (string)null);
                 });
@@ -281,19 +271,15 @@ namespace MicroZen.Api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ClientOrganization", b =>
+            modelBuilder.Entity("MicroZen.Data.Entities.Client", b =>
                 {
-                    b.HasOne("MicroZen.Data.Entities.Client", null)
-                        .WithMany()
-                        .HasForeignKey("ClientsId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("MicroZen.Data.Entities.Organization", "Organization")
+                        .WithMany("Clients")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
-                    b.HasOne("MicroZen.Data.Entities.Organization", null)
-                        .WithMany()
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("MicroZen.Data.Entities.ClientAPIKey", b =>
@@ -336,6 +322,8 @@ namespace MicroZen.Api.Migrations
 
             modelBuilder.Entity("MicroZen.Data.Entities.Organization", b =>
                 {
+                    b.Navigation("Clients");
+
                     b.Navigation("OrganizationUsers");
                 });
 #pragma warning restore 612, 618

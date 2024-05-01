@@ -32,9 +32,19 @@ public class Client : BaseEntity<ClientMessage>
   public string? Description { get; set; }
 
   /// <summary>
+  /// The ID of the Organization the client belongs to.
+  /// </summary>
+  public int OrganizationId { get; set; }
+
+  /// <summary>
   /// The OAuth2 configuration for the client (optional).
   /// </summary>
   public virtual OAuth2ClientCredentials? OAuth2Credentials { get; set; }
+
+  /// <summary>
+  /// The Organization the client belongs to.
+  /// </summary>
+  public virtual Organization? Organization { get; set; }
 
   /// <summary>
   /// The clients allowed to access this client.
@@ -68,7 +78,12 @@ public class ClientConfig : IEntityTypeConfiguration<Client>
     builder.Property(c => c.Name).HasMaxLength(200).IsRequired();
     builder.Property(c => c.Type).IsRequired();
     builder.Property(c => c.Description).HasMaxLength(500).IsRequired(false);
+    builder.HasOne<Organization>(c => c.Organization).WithMany(o => o.Clients).HasForeignKey(c => c.OrganizationId);
     builder.HasOne(c => c.OAuth2Credentials).WithOne().HasForeignKey<OAuth2ClientCredentials>(c => c.Id);
-    builder.HasMany<Client>(c => c.AllowedClients).WithMany().UsingEntity(j => j.ToTable("ClientAllowedClients"));
+    builder
+	    .HasMany(c => c.AllowedClients)
+	    .WithMany()
+	    .UsingEntity(entityTypeBuilder =>
+		    entityTypeBuilder.ToTable("ClientAllowedClients"));
   }
 }

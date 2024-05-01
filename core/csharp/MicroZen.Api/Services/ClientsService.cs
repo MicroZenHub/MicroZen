@@ -54,6 +54,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 			Description = request.Description,
 			CreatedOn = DateTime.UtcNow,
 			ModifiedOn = DateTime.UtcNow,
+			OrganizationId = request.OrganizationId,
 			OAuth2Credentials = new OAuth2ClientCredentials()
 			{
 				OAuth2GrantType = request.Oauth2Credentials.GrantType,

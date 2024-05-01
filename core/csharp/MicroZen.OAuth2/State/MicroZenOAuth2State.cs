@@ -46,8 +46,7 @@ public class MicroZenOAuth2State : IDisposable
 	}
 
 	private IObservable<OAuth2State?> PingMicroZenServer(string apiUrl, int minutes) =>
-		Observable.Timer(TimeSpan.Zero, TimeSpan.FromMinutes(minutes))
-			.Skip(1)
+		Observable.Timer(TimeSpan.FromSeconds(5), TimeSpan.FromMinutes(minutes))
 			.Select(_ => Observable.FromAsync(() =>
 				FetchMicroZenClients(apiUrl)))
 			.Switch();

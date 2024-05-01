@@ -96,6 +96,6 @@ app.MapGrpcService<ClientApiKeysService>();
 app.MapGrpcReflectionService();
 app.MapGrpcHealthChecksService();
 
-app.MigrateOnStart();
+await app.MigrateAndSeedDevDataOnStart();
 
 app.Run();

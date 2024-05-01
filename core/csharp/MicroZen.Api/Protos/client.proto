@@ -125,8 +125,10 @@ message ClientMessage {
   ClientType type = 3;
   // The description of the client.
   string description = 4;
+  // The organization ID that the client belongs to.
+  int32 organization_id = 5;
   // The client OAuth credentials.
-  OAuthClientCredentials oauth2_credentials = 5;
+  OAuthClientCredentials oauth2_credentials = 6;
 }
 
 message OAuthClientCredentials {

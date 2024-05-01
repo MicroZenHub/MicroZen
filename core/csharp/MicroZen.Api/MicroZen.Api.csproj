@@ -35,4 +35,8 @@
   <ItemGroup>
     <ProjectReference Include="..\MicroZen.OAuth2\MicroZen.OAuth2.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
 </Project>
