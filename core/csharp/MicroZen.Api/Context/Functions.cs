@@ -39,6 +39,13 @@ public static class Functions
 						Name = "MicroZen API",
 						Type = ClientType.Server,
 						Description = "The MicroZen API",
+						OAuth2Credentials = new OAuth2ClientCredentials()
+						{
+							Id = 1,
+							OAuth2GrantType = GrantType.AuthorizationCodeWithPkce,
+							OAuth2ClientId = "1599cy12a19050a19459",
+							RequirePkce = true
+						},
 						APIKeys = [
 							new ClientAPIKey()
 							{

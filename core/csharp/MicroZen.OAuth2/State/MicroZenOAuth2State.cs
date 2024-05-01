@@ -15,7 +15,7 @@ namespace MicroZen.OAuth2.State;
 public class MicroZenOAuth2State : IDisposable
 {
 	private readonly List<IDisposable> _subscriptions = [];
-	private readonly Subject<OAuth2State?> _oauth2Subject = new Subject<OAuth2State?>();
+	private BehaviorSubject<OAuth2State?> _oauth2Subject = new BehaviorSubject<OAuth2State?>(null);
 	private readonly ILogger<MicroZenOAuth2State> _logger;
 	private readonly Clients.ClientsClient _client;
 
@@ -80,15 +80,14 @@ public class MicroZenOAuth2State : IDisposable
 			var response = await _client.GetAllowedOAuthClientCredentialsAsync(request);
 			if (response is null)
 				throw new RpcException(new Status(StatusCode.NotFound, "No clients allowed to authenticate"));
-			var currentState = new OAuth2State()
-			{
-				ClientCredentials = response.Credentials.ToArray()
-			};
+			var currentState = new OAuth2State();
+			currentState.ClientCredentials = response.Credentials.Select(c => c).ToList();
 			_oauth2Subject.OnNext(currentState);
-			_logger.LogInformation("MicroZen Clients successfully fetched");
+			_logger.LogInformation($"{currentState.ClientCredentials.Count()} MicroZen Clients successfully fetched");
 			return currentState;
 		}
-		catch (RpcException rpcException) when (rpcException is { StatusCode: StatusCode.NotFound or StatusCode.Unavailable })
+		catch (RpcException rpcException) when (rpcException is
+			                                        { StatusCode: StatusCode.NotFound or StatusCode.Unavailable })
 		{
 			switch (rpcException.StatusCode)
 			{
@@ -102,6 +101,13 @@ public class MicroZenOAuth2State : IDisposable
 					_logger.LogError("An unknown error occurred while fetching MicroZen Clients");
 					break;
 			}
+
+			_oauth2Subject.OnNext(null);
+			return null;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex.Message, ex.InnerException?.Message, ex.StackTrace);
 			_oauth2Subject.OnNext(null);
 			return null;
 		}
