@@ -43,6 +43,19 @@ public class OAuth2ClientCredentials
 	/// <value>false</value>
 	/// </summary>
 	public bool? RequirePkce { get; set; }
+
+	public MicroZen.Grpc.Entities.OAuthClientCredentials ToMessage()
+	{
+		return new OAuthClientCredentials
+		{
+			Id = Id,
+			GrantType = OAuth2GrantType ?? GrantType.ClientCredentials,
+			ClientId = OAuth2ClientId,
+			ClientSecret = OAuth2ClientSecret,
+			AllowedScopes = AllowedScopes,
+			RequirePkce = RequirePkce ?? false
+		};
+	}
 }
 
 /// <summary>

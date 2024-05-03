@@ -42,26 +42,18 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 			return string.Empty;
 
 		var iv = new byte[16];
-		byte[] array;
 
-		using (var aes = Aes.Create())
-		{
-			aes.Key = Encoding.UTF8.GetBytes(key);
-			aes.IV = iv;
+		using var aes = Aes.Create();
+		aes.Key = Encoding.UTF8.GetBytes(key);
+		aes.IV = iv;
 
-			var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-			using (var memoryStream = new MemoryStream())
-			{
-				using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-				{
-					using (var streamWriter = new StreamWriter(cryptoStream))
-					{
-						streamWriter.Write(dataToEncrypt);
-					}
-					array = memoryStream.ToArray();
-				}
-			}
-		}
+		var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+		using var memoryStream = new MemoryStream();
+		using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
+		using var streamWriter = new StreamWriter(cryptoStream);
+		streamWriter.Write(dataToEncrypt);
+		var array = memoryStream.ToArray();
+
 		var result = Convert.ToBase64String(array);
 		return result;
 	}

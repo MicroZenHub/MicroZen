@@ -16,7 +16,10 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 	/// <inheritdoc />
 	/// <exception cref="RpcException">Status.NotFound - Client not found.</exception>
 	public override async Task<ClientMessage> GetClient(ClientRequest request, ServerCallContext context) =>
-		(await db.Clients.FindAsync(request.Id))?.ToMessage() ??
+		(await db.Clients
+			.Include(c => c.OAuth2Credentials)
+			.FirstOrDefaultAsync(c => c.Id == request.Id)
+		)?.ToMessage() ??
 		throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
 
 	/// <inheritdoc />

@@ -63,7 +63,9 @@ public class Client : BaseEntity<ClientMessage>
 		  Id = Id,
 		  Name = Name,
 		  Description = Description,
-		  Type = Type
+		  Type = Type,
+		  OrganizationId = OrganizationId,
+		  Oauth2Credentials = OAuth2Credentials?.ToMessage()
 	  };
 }
 
