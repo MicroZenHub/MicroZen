@@ -23,7 +23,7 @@ public class OrganizationUser : BaseEntity<OrganizationUserMessage>
 
 	/// <summary>
 	/// The first name of the user.
-	/// </summary>
+	///	 </summary>
 	[EncryptColumn]
 	public string? FirstName { get; set; }
 
@@ -40,16 +40,10 @@ public class OrganizationUser : BaseEntity<OrganizationUserMessage>
 	public required string Email { get; set; }
 
 	/// <summary>
-	/// The unique identifier for the organization this user belongs to.
-	/// <seealso cref="Organization.Id">Organization.Id</seealso>
-	/// </summary>
-	public required int OrganizationId { get; set; }
-
-	/// <summary>
-	/// The organization this user belongs to.
+	/// The organizations this user belongs to.
 	/// <seealso cref="Organization"/>
 	/// </summary>
-	public virtual required Organization Organization { get; set; }
+	public virtual required ICollection<Organization> Organizations { get; set; }
 
 	/// <inheritdoc />
 	public override OrganizationUserMessage ToMessage() =>
@@ -60,7 +54,6 @@ public class OrganizationUser : BaseEntity<OrganizationUserMessage>
 			FirstName = FirstName,
 			LastName = LastName,
 			Email = Email,
-			OrganizationId = OrganizationId
 		};
 }
 
@@ -76,6 +69,13 @@ public class OrganizationUserConfig : IEntityTypeConfiguration<OrganizationUser>
 		builder.Property(ou => ou.FirstName).IsRequired(false);
 		builder.Property(ou => ou.LastName).IsRequired(false);
 		builder.Property(ou => ou.Email).IsRequired();
-		builder.HasOne<Organization>(ou => ou.Organization).WithMany(o => o.OrganizationUsers).HasForeignKey(ou => ou.OrganizationId);
+		builder.HasMany(ou => ou.Organizations)
+			.WithMany(o => o.OrganizationUsers)
+			.UsingEntity(
+				"OrganizationUserOrganization",
+				ou => ou.HasOne(typeof(Organization)).WithMany().HasForeignKey("OrganizationId").HasPrincipalKey(nameof(Organization.Id)),
+				o => o.HasOne(typeof(OrganizationUser)).WithMany().HasForeignKey("OrganizationUserId").HasPrincipalKey(nameof(OrganizationUser.Id)),
+				ouo => ouo.HasKey("OrganizationId", "OrganizationUserId")
+			);
 	}
 }

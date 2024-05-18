@@ -68,7 +68,14 @@ public class OrganizationConfig : IEntityTypeConfiguration<Organization>
 		builder.Property(o => o.Description).HasMaxLength(300).IsRequired(false);
 		builder.Property(o => o.AvatarUrl).HasMaxLength(250).IsRequired(false);
 		builder.Property(o => o.WebsiteUrl).HasMaxLength(250).IsRequired(false);
-		builder.HasMany<OrganizationUser>(o => o.OrganizationUsers).WithOne(ou => ou.Organization).HasForeignKey(ou => ou.OrganizationId).OnDelete(DeleteBehavior.SetNull);
 		builder.HasMany<Client>(o => o.Clients).WithOne(c => c.Organization).HasForeignKey(c => c.OrganizationId).OnDelete(DeleteBehavior.SetNull);
+		builder.HasMany(ou => ou.OrganizationUsers)
+			.WithMany(o => o.Organizations)
+			.UsingEntity(
+				"OrganizationUserOrganization",
+				o => o.HasOne(typeof(OrganizationUser)).WithMany().HasForeignKey("OrganizationUserId").HasPrincipalKey(nameof(OrganizationUser.Id)),
+				ou => ou.HasOne(typeof(Organization)).WithMany().HasForeignKey("OrganizationId").HasPrincipalKey(nameof(Organization.Id)),
+				ouo => ouo.HasKey("OrganizationId", "OrganizationUserId")
+			);
 	}
 }

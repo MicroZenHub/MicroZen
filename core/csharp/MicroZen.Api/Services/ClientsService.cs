@@ -15,6 +15,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 {
 	/// <inheritdoc />
 	/// <exception cref="RpcException">Status.NotFound - Client not found.</exception>
+	// TODO - Add [Policy(typeof(Client), Permission.Read)] attribute to block access if user is not in the organization for this client
 	public override async Task<ClientMessage> GetClient(ClientRequest request, ServerCallContext context) =>
 		(await db.Clients
 			.Include(c => c.OAuth2Credentials)
@@ -24,6 +25,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 
 	/// <inheritdoc />
 	/// <exception cref="RpcException">StatusCode.NotFound - Client not found or has no allowed clients.</exception>
+	// TODO - Add [Policy(typeof(Client), Permission.Read)] attribute to block access if user is not in the organization for this client
 	public override async Task<MultipleClientCredentials> GetAllowedOAuthClientCredentials(ClientRequest request, ServerCallContext context)
 	{
 		var client = await db.Clients
@@ -35,7 +37,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 		if (client is null)
 			throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
 		if (client.AllowedClients is null || client.AllowedClients.Count == 0)
-			throw new RpcException(new Status(StatusCode.NotFound, "Client has no allowed clients."));
+			 throw new RpcException(new Status(StatusCode.NotFound, "Client has no allowed clients."));
 
 		var response = new MultipleClientCredentials();
 		response.Credentials.AddRange(client.AllowedClients.Select(allowedClient =>
@@ -49,6 +51,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 	}
 
 	/// <inheritdoc />
+	// TODO - Add [Policy(typeof(Client), Permission.Read)] attribute to block access if user is not in the organization for this client
 	public override async Task<Int32Value> GetClientIdFromApiKey(StringValue request, ServerCallContext context)
 	{
 		var clientId = (await db.ClientAPIKeys
@@ -58,6 +61,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 	}
 
 	/// <inheritdoc />
+	// TODO - Add [Policy(typeof(Client), Permission.Create)] attribute to block access if user is not in the organization for this client
 	public override async Task<ClientMessage> CreateClient(ClientMessage request, ServerCallContext context)
 	{
 		var client = new Client()
@@ -84,6 +88,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 
 	/// <inheritdoc />
 	/// <exception cref="RpcException"><see cref="StatusCode.NotFound"/> - Client not found.</exception>
+	// TODO - Add [Policy(typeof(Client), Permission.Update)] attribute to block access if user is not in the organization for this client
 	public override async Task<ClientMessage> UpdateClient(ClientMessage request, ServerCallContext context)
 	{
 		var client = await db.Clients.Include(c => c.OAuth2Credentials).FirstOrDefaultAsync(c => c.Id == request.Id);
@@ -108,8 +113,44 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 		return client.ToMessage();
 	}
 
+
+	/// <inheritdoc />
+	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
+	public override async Task<ClientAllowResponse> AllowClient(ClientAllowRequest request, ServerCallContext context)
+	{
+		var allowedClient = await db.Clients.FindAsync(request.AllowedClientId);
+		var client = await db.Clients.FindAsync(request.Id);
+		if (allowedClient is null || client is null)
+			throw new RpcException(new Status(StatusCode.NotFound, "Client or Allowed Client not found."));
+		client.AllowedClients.Add(allowedClient);
+		await db.SaveChangesAsync();
+		return new ClientAllowResponse()
+		{
+			Id = client.Id,
+			AllowedClientId = allowedClient.Id
+		};
+	}
+
+	/// <inheritdoc />
+	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
+	public override async Task<ClientAllowResponse> DisallowClient(ClientAllowRequest request, ServerCallContext context)
+	{
+		var allowedClient = await db.Clients.FindAsync(request.AllowedClientId);
+		var client = await db.Clients.FindAsync(request.Id);
+		if (allowedClient is null || client is null)
+			throw new RpcException(new Status(StatusCode.NotFound, "Client or Allowed Client not found."));
+		client.AllowedClients.Remove(allowedClient);
+		await db.SaveChangesAsync();
+		return new ClientAllowResponse()
+		{
+			Id = client.Id,
+			AllowedClientId = allowedClient.Id
+		};
+	}
+
 	/// <inheritdoc />
 	/// <exception cref="RpcException"><see cref="StatusCode.NotFound"/> - Client not found.</exception>
+	// TODO - Add [Policy(typeof(Client), Permission.Delete)] attribute to block access if user is not in the organization for this client
 	public override async Task<DeleteClientResponse> DeleteClient(DeleteClientRequest request, ServerCallContext context)
 	{
 		var client = await db.Clients.FindAsync(request.Id);

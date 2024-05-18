@@ -44,6 +44,10 @@ public class OAuth2ClientCredentials
 	/// </summary>
 	public bool? RequirePkce { get; set; }
 
+	/// <summary>
+	/// Converts the entity to a gRPC message.
+	/// </summary>
+	/// <returns></returns>
 	public MicroZen.Grpc.Entities.OAuthClientCredentials ToMessage()
 	{
 		return new OAuthClientCredentials

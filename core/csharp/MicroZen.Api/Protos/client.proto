@@ -42,6 +42,18 @@ service Clients {
       body: "*"
     };
   };
+  // Adds a client to the list of allowed clients.
+  rpc AllowClient(ClientAllowRequest) returns (ClientAllowResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/clients/{id}/allow"
+    };
+  };
+  // Removes a client from the list of allowed clients.
+  rpc DisallowClient(ClientAllowRequest) returns (ClientAllowResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/clients/{id}/disallow"
+    };
+  };
   // Delete an OAuth2 client.
   rpc DeleteClient (DeleteClientRequest) returns (DeleteClientResponse) {
     option (google.api.http) = {
@@ -85,6 +97,23 @@ message ClientRequest {
   // The ID of the client.
   int32 id = 1;
 }
+
+// The ClientAllow request message containing the client ID and the allowed client ID and whether it is allowed.
+message ClientAllowRequest {
+  // The ID of the client.
+  int32 id = 1;
+  // The ID of the allowed client.
+  int32 allowed_client_id = 2;
+}
+
+// The ClientAllow request message containing the client ID and the allowed client ID and whether it is allowed.
+message ClientAllowResponse {
+  // The ID of the client.
+  int32 id = 1;
+  // The ID of the allowed client.
+  int32 allowed_client_id = 2;
+}
+
 
 // The response message containing the client credentials for allowed clients.
 message MultipleClientCredentials {
