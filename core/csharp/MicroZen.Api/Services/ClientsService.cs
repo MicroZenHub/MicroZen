@@ -50,8 +50,8 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 		return response;
 	}
 
-	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Client), Permission.Read)] attribute to block access if user is not in the organization for this client
+	/// <inheritdoc />
 	public override async Task<Int32Value> GetClientIdFromApiKey(StringValue request, ServerCallContext context)
 	{
 		var clientId = (await db.ClientAPIKeys
@@ -166,8 +166,8 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 		{
 			Id = request.Id,
 			DeletedOn = client.DeletedOn.HasValue ?
-				Timestamp.FromDateTime(client.DeletedOn.Value) :
-				new Timestamp() { Seconds = 0, Nanos = 0 }
+				client.DeletedOn.Value.ToTimestamp() :
+				new Google.Protobuf.WellKnownTypes.Timestamp() { Seconds = 0, Nanos = 0 }
 		};
 	}
 }

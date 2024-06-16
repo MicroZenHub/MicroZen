@@ -51,7 +51,8 @@ public class ClientApiKeysService(MicroZenContext db) : ClientApiKeys.ClientApiK
 		return new UpdateClientApiKeyResponse()
 		{
 			ApiKey = existingClientAPIKey.ApiKey,
-			ExpiresOn = existingClientAPIKey.ExpiresOn != null ? Timestamp.FromDateTime(existingClientAPIKey.ExpiresOn.Value) : new Timestamp() { Seconds = 1, Nanos = 1 },
+			ExpiresOn = existingClientAPIKey.ExpiresOn != null ? existingClientAPIKey.ExpiresOn.Value.ToTimestamp() :
+				new Google.Protobuf.WellKnownTypes.Timestamp() { Seconds = 1, Nanos = 1 },
 		};
 	}
 
@@ -70,7 +71,7 @@ public class ClientApiKeysService(MicroZenContext db) : ClientApiKeys.ClientApiK
 		return new DisableClientApiKeyResponse()
 		{
 			ApiKey = existingClientAPIKey.ApiKey,
-			DisabledOn = Timestamp.FromDateTime(existingClientAPIKey.DeletedOn.Value),
+			DisabledOn = existingClientAPIKey.DeletedOn.Value.ToTimestamp()
 		};
 	}
 }

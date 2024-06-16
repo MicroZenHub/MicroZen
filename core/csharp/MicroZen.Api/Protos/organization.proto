@@ -3,42 +3,106 @@ syntax = "proto3";
 option csharp_namespace = "MicroZen.Grpc.Entities";
 
 import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "Protos/client.proto";
 import "Protos/organization-user.proto";
 
 package MicroZen.Grpc.Entities;
 
-// The service for managing organizations.
+// The service for managing Organizations.
 service Organizations {
-  // Gets an organization by ID.
+  // Gets an Organization by ID.
   rpc GetOrganization(GetOrganizationRequest) returns (OrganizationMessage) {
     option (google.api.http) = {
-      get: "/api/v1/organizations/{id}"
+      get: "/api/v1/organization/{id}"
+    };
+  }
+  // Gets all Organizations scoped to the requesting user
+  rpc GetOrganizations(MultipleOrganizationsRequest) returns (MultipleOrganizationsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/organizations"
+    };
+  }
+  // Upsert an Organization
+  rpc UpsertOrganization(OrganizationMessage) returns (OrganizationMessage) {
+    option (google.api.http) = {
+      put: "/api/v1/organization"
+    };
+  }
+  // Disable an Organization
+  rpc DisableOrganization(DisableOrganizationRequest) returns (DisableOrganizationResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/organization/{id}/disable"
+    };
+  }
+  // Enables an Organization
+  rpc EnableOrganization(EnableOrganizationRequest) returns (OrganizationMessage) {
+    option (google.api.http) = {
+      put: "/api/v1/organization/{id}/enable"
     };
   }
 }
 
-// Request for getting an organization.
+// Request for getting an Organization.
 message GetOrganizationRequest {
-  // The ID of the organization to get.
+  // The ID of the Organization to get.
   string id = 1;
 }
 
-// An organization.
-message OrganizationMessage {
-  // The ID of the organization.
+// Request for getting all Organizations scoped to the requesting user
+message MultipleOrganizationsRequest {
+  // (optional) The search term to apply when filtering Organizations
+  google.protobuf.StringValue searchTerm = 2;
+}
+
+// The request to disable an Organization
+message DisableOrganizationRequest {
+  // The ID of the Organization to be disabled
   int32 id = 1;
-  // The name of the organization.
+}
+
+// The request to enable an Organization
+message EnableOrganizationRequest {
+  // The ID of the Organization to be enabled
+  int32 id = 1;
+}
+
+// The response for the request to disable an Organization
+message DisableOrganizationResponse {
+  // The ID of the Organization to be disabled
+  int32 id = 1;
+  // The Timestamp for when the Organization was disabled
+  google.protobuf.Timestamp disabledOn = 3;
+}
+
+// The response for the request to enable an Organization
+message EnableOrganizationResponse {
+  // The ID of the Organization to be enabled
+  int32 id = 1;
+  // The Timestamp for when the Organization was enabled
+  google.protobuf.Timestamp enabledOn = 3;
+}
+
+// Response from request for all Organizations scoped to the requesting user
+message MultipleOrganizationsResponse {
+  repeated OrganizationMessage organizations = 1;
+}
+
+// An Organization.
+message OrganizationMessage {
+  // The ID of the Organization.
+  int32 id = 1;
+  // The name of the Organization.
   string name = 2;
-  // The description of the organization (optional).
+  // The description of the Organization (optional).
   google.protobuf.StringValue description = 3;
-  // The URL of the organization's avatar (optional).
+  // The URL of the Organization's avatar (optional).
   google.protobuf.StringValue avatarUrl = 4;
-  // The URL of the organization's website (optional).
+  // The URL of the Organization's website (optional).
   google.protobuf.StringValue websiteUrl = 5;
-  // The users that are part of the organization.
+  // The users that are part of the Organization.
   repeated OrganizationUserMessage organizationUsers = 6;
-  // The clients that are part of the organization.
+  // The clients that are part of the Organization.
   repeated ClientMessage clients = 7;
 }

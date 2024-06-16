@@ -19,7 +19,12 @@ using MicroZen.OAuth2.Definitions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+	options.AddDefaultPolicy((corsPolicyBuilder) =>
+		corsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().Build()
+	);
+});
 var policies = new Dictionary<string, AuthorizationPolicy>()
 {
 	{

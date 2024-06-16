@@ -16,6 +16,7 @@
     <PackageReference Include="Google.Protobuf" />
     <PackageReference Include="Grpc.Net.ClientFactory" />
     <PackageReference Include="Grpc.Tools" />
+    <PackageReference Include="LinqKit" />
     <PackageReference Include="Microsoft.AspNetCore.Grpc.JsonTranscoding" />
     <PackageReference Include="Microsoft.AspNetCore.Grpc.Swagger" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />

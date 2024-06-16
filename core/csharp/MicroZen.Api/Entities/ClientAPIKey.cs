@@ -45,7 +45,7 @@ public class ClientAPIKey : BaseEntity<ClientApiKeyMessage>
 		{
 			Id = Id.ToString(),
 			ApiKey = ApiKey,
-			ExpiresOn = ExpiresOn.HasValue ? Timestamp.FromDateTime(ExpiresOn.Value) : new Timestamp() { Seconds = 1, Nanos = 1 } ,
+			ExpiresOn = ExpiresOn.HasValue ? ExpiresOn.Value.ToTimestamp() : new Google.Protobuf.WellKnownTypes.Timestamp() { Seconds = 1, Nanos = 1 } ,
 			ClientId = ClientId
 		};
 	}

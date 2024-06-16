@@ -9,6 +9,19 @@ namespace MicroZen.Data.Entities;
 /// </summary>
 public class Organization : BaseEntity<OrganizationMessage>
 {
+	/// <inheritdoc />
+	public Organization() { }
+
+	/// <summary>
+	/// Constructor for converting an OrganizationMessage to an Organization entity.
+	/// </summary>
+	public Organization(OrganizationMessage message)
+	{
+		Name = message.Name;
+		Description = message.Description.Length > 0 ? message.Description : null;
+		AvatarUrl = message.AvatarUrl.Length > 0 ? message.AvatarUrl : null;
+		WebsiteUrl = message.WebsiteUrl.Length > 0 ? message.WebsiteUrl : null;
+	}
 	/// <summary>
 	/// The Organization unique identifier.
 	/// </summary>
