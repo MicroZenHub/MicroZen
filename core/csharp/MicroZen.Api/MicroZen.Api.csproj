@@ -40,4 +40,12 @@
   <ItemGroup>
     <Folder Include="Migrations\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="obj\Debug\net8.0\MicroZen.Api.sourcelink.json" />
+    <_ContentIncludedByDefault Remove="obj\Debug\net8.0\staticwebassets.build.json" />
+    <_ContentIncludedByDefault Remove="obj\MicroZen.Api.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="obj\project.packagespec.json" />
+  </ItemGroup>
 </Project>

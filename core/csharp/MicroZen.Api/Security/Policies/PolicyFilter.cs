@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace MicroZen.Api.Security.Policies;
 
+/// <inheritdoc />
 public class PolicyFilter<TPolicy>(Type resourceType, Permission permission, IServiceProvider services) : IAsyncAuthorizationFilter
 {
 	/// <inheritdoc />
@@ -15,8 +16,8 @@ public class PolicyFilter<TPolicy>(Type resourceType, Permission permission, ISe
 		var constructedHandlerType = handlerType.MakeGenericType(handlerTypeArgs);
 		var handler = services.GetService(constructedHandlerType);
 		var authorizeMethod = handler?.GetType().GetMethod("IsAllowed");
-		var result = authorizeMethod?.Invoke(handler, [permission] );
+		var result = await Task.Run(() => authorizeMethod?.Invoke(handler, [permission] ));
 
-		if ((bool)result == false) filterContext.Result = new ForbidResult();
+		if ((bool)(result ?? false) == false) filterContext.Result = new ForbidResult();
 	}
 }
