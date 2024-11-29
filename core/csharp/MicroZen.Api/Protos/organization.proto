@@ -47,7 +47,7 @@ service Organizations {
 // Request for getting an Organization.
 message GetOrganizationRequest {
   // The ID of the Organization to get.
-  string id = 1;
+  int32 id = 1;
 }
 
 // Request for getting all Organizations scoped to the requesting user
