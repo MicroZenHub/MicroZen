@@ -10,62 +10,79 @@ package MicroZen.Grpc.Entities;
 
 // The service for managing Clients.
 service Clients {
+  // Get many clients, optionally filtered by type
+  rpc GetManyClients (ManyClientsRequest) returns (ManyClientsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/clients"
+    };
+  }
+
   // Get a client by its ID.
   rpc GetClient (ClientRequest) returns (ClientMessage) {
     option (google.api.http) = {
-      get: "/api/v1/clients/{id}"
+      get: "/api/v1/client/{id}"
     };
   };
+
   // Get a clientId by its MicroZen Client API Key
   rpc GetClientIdFromApiKey (google.protobuf.StringValue) returns (google.protobuf.Int32Value) {
     option (google.api.http) = {
       get: "/api/v1/clients/api-key/{value}"
     };
   };
+
   // Get all the OAuth Client credentials for clients that are allowed to use the OAuth2 server.
   rpc GetAllowedOAuthClientCredentials (ClientRequest) returns (MultipleClientCredentials) {
     option (google.api.http) = {
       get: "/api/v1/client/{id}/allowed-clients"
     };
   };
+
   // Create a new OAuth2 client.
   rpc CreateClient (ClientMessage) returns (ClientMessage) {
     option (google.api.http) = {
-      post: "/api/v1/clients"
+      post: "/api/v1/client"
       body: "*"
     };
   };
+
   // Update an existing OAuth2 client.
   rpc UpdateClient (ClientMessage) returns (ClientMessage) {
     option (google.api.http) = {
-      put: "/api/v1/clients/{id}"
+      put: "/api/v1/client/{id}"
       body: "*"
     };
   };
+
   // Adds a client to the list of allowed clients.
   rpc AllowClient(ClientAllowRequest) returns (ClientAllowResponse) {
     option (google.api.http) = {
-      post: "/api/v1/clients/{id}/allow"
+      post: "/api/v1/client/{id}/allow"
+      body: "*"
     };
   };
+
   // Removes a client from the list of allowed clients.
   rpc DisallowClient(ClientAllowRequest) returns (ClientAllowResponse) {
     option (google.api.http) = {
-      post: "/api/v1/clients/{id}/disallow"
+      post: "/api/v1/client/{id}/disallow"
+      body: "*"
     };
   };
+
   // Delete an OAuth2 client.
   rpc DeleteClient (DeleteClientRequest) returns (DeleteClientResponse) {
     option (google.api.http) = {
-      delete: "/api/v1/clients/{id}"
+      delete: "/api/v1/client/{id}"
+      body: "*"
     };
   };
 }
 
 // The type of the client.
 enum ClientType {
-  // The client type is a server based api.
-  SERVER = 0;
+  // The client type is an API.
+  API = 0;
   // The client is a web app.
   WEB = 1;
   // The client is a desktop app.
@@ -92,6 +109,27 @@ enum GrantType {
   ResourceOwnerPassword = 6;
 }
 
+// The request for getting many Clients by type and, optionally a searchTerm
+message ManyClientsRequest {
+  // The type of Client to filter clients by. Valid options: SERVER = 0, WEB = 1, DESKTOP = 2, MOBILE = 3. Defaults to SERVER.
+  ClientType type = 1;
+  // The search term to filter for Clients by
+  google.protobuf.StringValue searchTerm = 2;
+  // How many clients to return. Defaults to 10 if none specified.
+  int32 page = 3;
+  // How many clients to skip. Defaults to 0 if none specified.
+  int32 skip = 4;
+}
+
+// The response to the request to get many Clients by type and, optionally a searchTerm
+message ManyClientsResponse {
+  // The returned MicroZen clients
+  repeated ClientMessage clients = 1;
+  // The next url to call to get the next set of paginated results. Will be null if there are no more clients to page
+  google.protobuf.StringValue nextUrl = 2;
+  int32 totalPages = 3;
+}
+
 // The Client request message containing the client ID.
 message ClientRequest {
   // The ID of the client.
@@ -113,7 +151,6 @@ message ClientAllowResponse {
   // The ID of the allowed client.
   int32 allowed_client_id = 2;
 }
-
 
 // The response message containing the client credentials for allowed clients.
 message MultipleClientCredentials {
