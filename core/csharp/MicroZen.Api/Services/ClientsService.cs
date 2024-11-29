@@ -1,5 +1,6 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using LinqKit;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Data.Context;
 using MicroZen.Data.Entities;
@@ -13,6 +14,38 @@ namespace MicroZen.Core.Api.Services;
 /// <param name="db"><see cref="MicroZenContext"/></param>
 public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 {
+	/// <inheritdoc />
+	public override async Task<ManyClientsResponse> GetManyClients(ManyClientsRequest request, ServerCallContext context)
+	{
+		var predicate = PredicateBuilder.New<Client>(true);
+		predicate.And(c => c.Type == request.Type);
+		if (request.SearchTerm is not null)
+		{
+			predicate.And(c =>
+				EF.Functions.ILike(c.Name, $"%{request}%"));
+		}
+
+		var response = new ManyClientsResponse();
+		var page = request.Page > 0 ? request.Page : 10;
+		var skip = request.Skip > 0 ? request.Skip : 0;
+		var totalCount = await db.Clients.CountAsync();
+		var clients = await db.Clients
+			.Where(predicate)
+			.Take(page)
+			.Skip(skip)
+			.OrderBy(c => c.Name)
+			.Select(c => c.ToMessage())
+			.ToListAsync();
+		var anyMoreClients = await db.Clients.Where(predicate).Take(page + 1).Skip(skip).CountAsync() > 0;
+		if (anyMoreClients)
+		{
+			response.NextUrl = $"/api/v1/clients?page={request.Page + 1}&skip={request.Skip}&searchTerm={request.SearchTerm}&type={request.Type}";
+			response.TotalPages = (int)Math.Ceiling((double)totalCount / request.Page);
+		}
+		response.Clients.AddRange(clients);
+		return response;
+	}
+
 	/// <inheritdoc />
 	/// <exception cref="RpcException">Status.NotFound - Client not found.</exception>
 	// TODO - Add [Policy(typeof(Client), Permission.Read)] attribute to block access if user is not in the organization for this client
