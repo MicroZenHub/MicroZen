@@ -37,7 +37,7 @@ public static class Functions
 					{
 						Id = 1,
 						Name = "MicroZen API",
-						Type = ClientType.Server,
+						Type = ClientType.Api,
 						Description = "The MicroZen API",
 						OAuth2Credentials = new OAuth2ClientCredentials()
 						{
