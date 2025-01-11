@@ -28,7 +28,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 		var response = new ManyClientsResponse();
 		var page = request.Page > 0 ? request.Page : 10;
 		var skip = request.Skip > 0 ? request.Skip : 0;
-		var totalCount = await db.Clients.CountAsync();
+		var total = await db.Clients.Where(predicate).CountAsync();
 		var clients = await db.Clients
 			.Where(predicate)
 			.Take(page)
@@ -36,11 +36,11 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 			.OrderBy(c => c.Name)
 			.Select(c => c.ToMessage())
 			.ToListAsync();
-		var anyMoreClients = await db.Clients.Where(predicate).Take(page + 1).Skip(skip).CountAsync() > 0;
+		var anyMoreClients = await db.Clients.Where(predicate).Take(page + 1).Skip(skip).AnyAsync();
 		if (anyMoreClients)
 		{
-			response.NextUrl = $"/api/v1/clients?page={request.Page + 1}&skip={request.Skip}&searchTerm={request.SearchTerm}&type={request.Type}";
-			response.TotalPages = (int)Math.Ceiling((double)totalCount / request.Page);
+			response.NextUrl = $"clients?page={request.Page + 1}&skip={request.Skip}&searchTerm={request.SearchTerm}&type={request.Type.ToString().ToUpper()}";
+			response.Total = total;
 		}
 		response.Clients.AddRange(clients);
 		return response;

@@ -127,7 +127,7 @@ message ManyClientsResponse {
   repeated ClientMessage clients = 1;
   // The next url to call to get the next set of paginated results. Will be null if there are no more clients to page
   google.protobuf.StringValue nextUrl = 2;
-  int32 totalPages = 3;
+  int32 total = 3;
 }
 
 // The Client request message containing the client ID.
