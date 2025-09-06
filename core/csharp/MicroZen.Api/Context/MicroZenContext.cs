@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Data.Security.Encryption.Utils;
-using MicroZen.Data.Entities;
+using MicroZen.Api.Entities;
+using MicroZen.Api.Entities.AuthCredentials;
 using MicroZen.Data.Security.Encryption.Extensions;
 using static MicroZen.Data.Context.Variables;
 
-namespace MicroZen.Data.Context;
+namespace MicroZen.Api.Context;
 
 /// <inheritdoc />
 public class MicroZenContext : DbContext
@@ -25,6 +26,11 @@ public class MicroZenContext : DbContext
     /// The ClientAPIKeys DbSet.
     /// </summary>
     public DbSet<ClientAPIKey> ClientAPIKeys => Set<ClientAPIKey>();
+
+    /// <summary>
+    /// Represents the database set for OAuth2 client credentials.
+    /// </summary>
+    public DbSet<OAuth2ClientCredentials> OAuth2ClientCredentials => Set<OAuth2ClientCredentials>();
 
     /// <summary>
     /// The Organizations DbSet.

@@ -35,6 +35,28 @@ namespace MicroZen.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OrganizationUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
+                    DeletedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrganizationUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Clients",
                 columns: table => new
                 {
@@ -63,54 +85,25 @@ namespace MicroZen.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrganizationUsers",
+                name: "OrganizationUserOrganization",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: false),
                     OrganizationId = table.Column<int>(type: "integer", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    ModifiedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ModifiedBy = table.Column<Guid>(type: "uuid", nullable: true),
-                    DeletedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    DeletedBy = table.Column<Guid>(type: "uuid", nullable: true)
+                    OrganizationUserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrganizationUsers", x => x.Id);
+                    table.PrimaryKey("PK_OrganizationUserOrganization", x => new { x.OrganizationId, x.OrganizationUserId });
                     table.ForeignKey(
-                        name: "FK_OrganizationUsers_Organizations_OrganizationId",
-                        column: x => x.OrganizationId,
-                        principalTable: "Organizations",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ClientAllowedClients",
-                columns: table => new
-                {
-                    AllowedClientsId = table.Column<int>(type: "integer", nullable: false),
-                    ClientId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ClientAllowedClients", x => new { x.AllowedClientsId, x.ClientId });
-                    table.ForeignKey(
-                        name: "FK_ClientAllowedClients_Clients_AllowedClientsId",
-                        column: x => x.AllowedClientsId,
-                        principalTable: "Clients",
+                        name: "FK_OrganizationUserOrganization_OrganizationUsers_Organization~",
+                        column: x => x.OrganizationUserId,
+                        principalTable: "OrganizationUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ClientAllowedClients_Clients_ClientId",
-                        column: x => x.ClientId,
-                        principalTable: "Clients",
+                        name: "FK_OrganizationUserOrganization_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -145,28 +138,55 @@ namespace MicroZen.Api.Migrations
                 name: "OAuth2ClientConfigs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     OAuth2GrantType = table.Column<int>(type: "integer", nullable: false),
                     OAuth2ClientId = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
                     OAuth2ClientSecret = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
                     AllowedScopes = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
-                    RequirePkce = table.Column<bool>(type: "boolean", nullable: true)
+                    Environment = table.Column<string>(type: "text", nullable: false),
+                    RequirePkce = table.Column<bool>(type: "boolean", nullable: true),
+                    ClientId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_OAuth2ClientConfigs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_OAuth2ClientConfigs_Clients_Id",
-                        column: x => x.Id,
+                        name: "FK_OAuth2ClientConfigs_Clients_ClientId",
+                        column: x => x.ClientId,
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ClientAllowedClients",
+                columns: table => new
+                {
+                    AllowedClientOAuth2CredentialsId = table.Column<int>(type: "integer", nullable: false),
+                    Client1Id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClientAllowedClients", x => new { x.AllowedClientOAuth2CredentialsId, x.Client1Id });
+                    table.ForeignKey(
+                        name: "FK_ClientAllowedClients_Clients_Client1Id",
+                        column: x => x.Client1Id,
+                        principalTable: "Clients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClientAllowedClients_OAuth2ClientConfigs_AllowedClientOAuth~",
+                        column: x => x.AllowedClientOAuth2CredentialsId,
+                        principalTable: "OAuth2ClientConfigs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_ClientAllowedClients_ClientId",
+                name: "IX_ClientAllowedClients_Client1Id",
                 table: "ClientAllowedClients",
-                column: "ClientId");
+                column: "Client1Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientAPIKeys_ApiKey",
@@ -185,9 +205,14 @@ namespace MicroZen.Api.Migrations
                 column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrganizationUsers_OrganizationId",
-                table: "OrganizationUsers",
-                column: "OrganizationId");
+                name: "IX_OAuth2ClientConfigs_ClientId",
+                table: "OAuth2ClientConfigs",
+                column: "ClientId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrganizationUserOrganization_OrganizationUserId",
+                table: "OrganizationUserOrganization",
+                column: "OrganizationUserId");
         }
 
         /// <inheritdoc />
@@ -198,6 +223,9 @@ namespace MicroZen.Api.Migrations
 
             migrationBuilder.DropTable(
                 name: "ClientAPIKeys");
+
+            migrationBuilder.DropTable(
+                name: "OrganizationUserOrganization");
 
             migrationBuilder.DropTable(
                 name: "OAuth2ClientConfigs");

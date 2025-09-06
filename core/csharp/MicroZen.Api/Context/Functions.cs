@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using MicroZen.Data.Entities;
+using MicroZen.Api.Entities.AuthCredentials;
+using MicroZen.Api.Entities;
 using MicroZen.Grpc.Entities;
 
-namespace MicroZen.Data.Context;
+namespace MicroZen.Api.Context;
 
 /// <summary>
 /// Various helper and extension functions for the MicroZen Context.
@@ -39,13 +40,18 @@ public static class Functions
 						Name = "MicroZen API",
 						Type = ClientType.Api,
 						Description = "The MicroZen API",
-						OAuth2Credentials = new OAuth2ClientCredentials()
-						{
-							Id = 1,
-							OAuth2GrantType = GrantType.AuthorizationCodeWithPkce,
-							OAuth2ClientId = "1599cy12a19050a19459",
-							RequirePkce = true
-						},
+						OAuth2Credentials = [
+							new OAuth2ClientCredentials()
+							{
+								Id = 1,
+								OAuth2GrantType = GrantType.ClientCredentials,
+								OAuth2ClientId = "1599cy12a19050a19459",
+								OAuth2ClientSecret = "mcz_82d5fd9daf7a4bdeba989c50a7415e1f_aceff126",
+								AllowedScopes = "scope1,scope2",
+								RequirePkce = true,
+								ClientId = 1
+							}
+						],
 						APIKeys = [
 							new ClientAPIKey()
 							{

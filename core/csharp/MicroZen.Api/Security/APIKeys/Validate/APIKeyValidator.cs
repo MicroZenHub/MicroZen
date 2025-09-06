@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using MicroZen.Data.Context;
+using MicroZen.Api.Context;
 using static MicroZen.Api.Security.APIKeys.APIKeyGenerator;
 
 namespace MicroZen.Api.Security.APIKeys;

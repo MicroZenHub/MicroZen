@@ -1,6 +1,6 @@
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
-using MicroZen.Data.Context;
+using MicroZen.Api.Context;
 using MicroZen.Grpc.Entities;
 
 namespace MicroZen.Core.Api.Services;

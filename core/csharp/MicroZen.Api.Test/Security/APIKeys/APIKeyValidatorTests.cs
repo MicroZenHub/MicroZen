@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Security.APIKeys;
-using MicroZen.Data.Context;
-using MicroZen.Data.Entities;
+using MicroZen.Api.Context;
+using MicroZen.Api.Entities;
 using static Xunit.Assert;
 using static MicroZen.Api.Security.APIKeys.APIKeyGenerator;
 

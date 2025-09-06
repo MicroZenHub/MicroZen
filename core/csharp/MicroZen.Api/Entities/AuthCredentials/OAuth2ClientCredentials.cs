@@ -1,9 +1,10 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MicroZen.Data.Security.Encryption.Attributes;
 using MicroZen.Grpc.Entities;
 
-namespace MicroZen.Data.Entities;
+namespace MicroZen.Api.Entities.AuthCredentials;
 
 /// <summary>
 /// The OAuth2 Client Configuration entity.
@@ -39,25 +40,38 @@ public class OAuth2ClientCredentials
 	public string? AllowedScopes { get; set; }
 
 	/// <summary>
+	/// The App Environment
+	/// </summary>
+	public string Environment { get; set; } = string.Empty;
+
+	/// <summary>
 	/// Whether to require PKCE for the OAuth2 Client.
 	/// <value>false</value>
 	/// </summary>
 	public bool? RequirePkce { get; set; }
 
 	/// <summary>
+	/// Represents the unique identifier for the Client entity associated with the OAuth2 client configuration.
+	/// </summary>
+	public int ClientId { get; set; }
+
+	/// <summary>
+	/// Represents the application client associated with the OAuth2 Client Configuration.
+	/// </summary>
+	[ForeignKey("ClientId")]
+	public virtual Client? Client { get; set; }
+
+	/// <summary>
 	/// Converts the entity to a gRPC message.
 	/// </summary>
 	/// <returns></returns>
-	public MicroZen.Grpc.Entities.OAuthClientCredentials ToMessage()
+	public OAuth2Credentials ToMessage()
 	{
-		return new OAuthClientCredentials
+		return new OAuth2Credentials()
 		{
 			Id = Id,
-			GrantType = OAuth2GrantType ?? GrantType.ClientCredentials,
 			ClientId = OAuth2ClientId,
 			ClientSecret = OAuth2ClientSecret,
-			AllowedScopes = AllowedScopes,
-			RequirePkce = RequirePkce ?? false
 		};
 	}
 }
@@ -65,17 +79,19 @@ public class OAuth2ClientCredentials
 /// <summary>
 /// The OAuth2 Client Configuration entity configuration.
 /// </summary>
-public class OAuth2ClientConfigConfig : IEntityTypeConfiguration<OAuth2ClientCredentials>
+[EntityTypeConfiguration(typeof(OAuth2ClientCredentials))]
+public class OAuth2ClientCredentialsConfig : IEntityTypeConfiguration<OAuth2ClientCredentials>
 {
 	/// <inheritdoc />
 	public void Configure(EntityTypeBuilder<OAuth2ClientCredentials> builder)
-  {
-	builder.ToTable("OAuth2ClientConfigs");
-	builder.HasKey(c => c.Id);
-	builder.Property(c => c.OAuth2GrantType).IsRequired();
-	builder.Property(c => c.OAuth2ClientId).HasMaxLength(300).IsRequired();
-	builder.Property(c => c.OAuth2ClientSecret).HasMaxLength(1000).IsRequired(false);
-	builder.Property(c => c.AllowedScopes).HasMaxLength(300).IsRequired(false);
-	builder.Property(c => c.RequirePkce).IsRequired(false);
-  }
+	{
+		builder.ToTable("OAuth2ClientConfigs");
+		builder.HasKey(c => c.Id);
+		builder.HasOne<Client>(o => o.Client).WithMany(c => c.OAuth2Credentials).HasForeignKey(c => c.ClientId);
+		builder.Property(c => c.OAuth2GrantType).IsRequired();
+		builder.Property(c => c.OAuth2ClientId).HasMaxLength(300).IsRequired();
+		builder.Property(c => c.OAuth2ClientSecret).HasMaxLength(1000).IsRequired(false);
+		builder.Property(c => c.AllowedScopes).HasMaxLength(300).IsRequired(false);
+		builder.Property(c => c.RequirePkce).IsRequired(false);
+	}
 }

@@ -1,12 +1,12 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
-using MicroZen.Data.Context;
+using MicroZen.Api.Context;
 using MicroZen.Grpc.Entities;
 using LinqKit;
-using MicroZen.Data.Entities;
+using MicroZen.Api.Entities;
 
-namespace MicroZen.Core.Api.Services;
+namespace MicroZen.Api.Services;
 
 /// <summary>
 /// The Organizations gRPC/REST service.

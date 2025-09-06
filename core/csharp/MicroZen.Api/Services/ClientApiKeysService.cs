@@ -2,11 +2,11 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using MicroZen.Data.Context;
-using MicroZen.Data.Entities;
+using MicroZen.Api.Context;
+using MicroZen.Api.Entities;
 using MicroZen.Grpc.Entities;
 
-namespace MicroZen.Core.Api.Services;
+namespace MicroZen.Api.Services;
 
 /// <summary>
 /// The ClientApiKeys gRPC/REST service.

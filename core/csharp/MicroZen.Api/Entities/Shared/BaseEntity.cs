@@ -1,4 +1,4 @@
-namespace MicroZen.Data.Entities;
+namespace MicroZen.Api.Entities.Shared;
 
 /// <summary>
 /// The base class for reusable properties for entities.

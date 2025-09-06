@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using MicroZen.Data.Context;
+using MicroZen.Api.Context;
 using static Xunit.Assert;
 using static MicroZen.Api.Security.APIKeys.APIKeyGenerator;
 using static MicroZen.Api.Security.APIKeys.APIKeyValidator;

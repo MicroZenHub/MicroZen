@@ -1,13 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MicroZen.Api.Entities.Shared;
 using MicroZen.Data.Security.Encryption.Attributes;
 using MicroZen.Grpc.Entities;
 
-namespace MicroZen.Data.Entities;
+namespace MicroZen.Api.Entities;
 
 /// <summary>
 /// Represents a user that belongs to an organization.
 /// </summary>
+[EntityTypeConfiguration(typeof(OrganizationUserConfig))]
 public class OrganizationUser : BaseEntity<OrganizationUserMessage>
 {
 	/// <summary>

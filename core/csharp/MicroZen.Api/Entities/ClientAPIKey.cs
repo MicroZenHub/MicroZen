@@ -2,14 +2,16 @@ using System.ComponentModel.DataAnnotations;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MicroZen.Api.Entities.Shared;
 using MicroZen.Grpc.Entities;
 using static MicroZen.Api.Security.APIKeys.APIKeyGenerator;
 
-namespace MicroZen.Data.Entities;
+namespace MicroZen.Api.Entities;
 
 /// <summary>
 /// The ClientAPIKey entity
 /// </summary>
+[EntityTypeConfiguration(typeof(ClientAPIKeyConfig))]
 public class ClientAPIKey : BaseEntity<ClientApiKeyMessage>
 {
 	/// <summary>

@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MicroZen.Api.Entities.AuthCredentials;
+using MicroZen.Api.Entities.Shared;
 using MicroZen.Grpc.Entities;
 
-namespace MicroZen.Data.Entities;
+namespace MicroZen.Api.Entities;
 
 /// <summary>
 /// The Application Client entity.
@@ -39,7 +41,7 @@ public class Client : BaseEntity<ClientMessage>
   /// <summary>
   /// The OAuth2 configuration for the client (optional).
   /// </summary>
-  public virtual OAuth2ClientCredentials? OAuth2Credentials { get; set; }
+  public virtual ICollection<OAuth2ClientCredentials>? OAuth2Credentials { get; set; }
 
   /// <summary>
   /// The Organization the client belongs to.
@@ -47,9 +49,9 @@ public class Client : BaseEntity<ClientMessage>
   public virtual Organization? Organization { get; set; }
 
   /// <summary>
-  /// The clients allowed to access this client.
+  /// The client OAuth2 Credentials allowed to access this client.
   /// </summary>
-  public virtual ICollection<Client> AllowedClients { get; set; } = new List<Client>();
+  public virtual ICollection<OAuth2ClientCredentials> AllowedClientOAuth2Credentials { get; set; } = new List<OAuth2ClientCredentials>();
 
   /// <summary>
   /// The API Keys associated with the client.
@@ -57,19 +59,22 @@ public class Client : BaseEntity<ClientMessage>
   public virtual ICollection<ClientAPIKey> APIKeys { get; set; } = new List<ClientAPIKey>();
 
   /// <inheritdoc />
-  public override ClientMessage ToMessage() =>
-	  new ClientMessage
+  public override ClientMessage ToMessage()
+  {
+	  var message = new ClientMessage
 	  {
 		  Id = Id,
 		  Name = Name,
 		  Description = Description,
 		  Type = Type,
 		  OrganizationId = OrganizationId,
-		  Oauth2Credentials = OAuth2Credentials?.ToMessage()
 	  };
+	  return message;
+  }
 }
 
 /// <inheritdoc />
+[EntityTypeConfiguration(typeof(ClientConfig))]
 public class ClientConfig : IEntityTypeConfiguration<Client>
 {
 	/// <inheritdoc />
@@ -81,9 +86,9 @@ public class ClientConfig : IEntityTypeConfiguration<Client>
     builder.Property(c => c.Type).IsRequired();
     builder.Property(c => c.Description).HasMaxLength(500).IsRequired(false);
     builder.HasOne<Organization>(c => c.Organization).WithMany(o => o.Clients).HasForeignKey(c => c.OrganizationId);
-    builder.HasOne(c => c.OAuth2Credentials).WithOne().HasForeignKey<OAuth2ClientCredentials>(c => c.Id);
+    builder.HasMany<OAuth2ClientCredentials>(c => c.OAuth2Credentials).WithOne(o => o.Client).HasForeignKey(c => c.ClientId);
     builder
-	    .HasMany(c => c.AllowedClients)
+	    .HasMany(c => c.AllowedClientOAuth2Credentials)
 	    .WithMany()
 	    .UsingEntity(entityTypeBuilder =>
 		    entityTypeBuilder.ToTable("ClientAllowedClients"));

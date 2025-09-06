@@ -55,7 +55,7 @@ service Clients {
   };
 
   // Adds a client to the list of allowed clients.
-  rpc AllowClient(ClientAllowRequest) returns (ClientAllowResponse) {
+  rpc AllowAuthCredentials(AuthCredentialsAllowRequest) returns (AuthCredentialsAllowResponse) {
     option (google.api.http) = {
       post: "/api/v1/client/{id}/allow"
       body: "*"
@@ -63,7 +63,7 @@ service Clients {
   };
 
   // Removes a client from the list of allowed clients.
-  rpc DisallowClient(ClientAllowRequest) returns (ClientAllowResponse) {
+  rpc DisallowAuthCredentials(AuthCredentialsAllowRequest) returns (AuthCredentialsAllowResponse) {
     option (google.api.http) = {
       post: "/api/v1/client/{id}/disallow"
       body: "*"
@@ -109,6 +109,10 @@ enum GrantType {
   ResourceOwnerPassword = 6;
 }
 
+enum CredentialsType {
+  OAuth2 = 0;
+}
+
 // The request for getting many Clients by type and, optionally a searchTerm
 message ManyClientsRequest {
   // The type of Client to filter clients by. Valid options: SERVER = 0, WEB = 1, DESKTOP = 2, MOBILE = 3. Defaults to SERVER.
@@ -136,20 +140,24 @@ message ClientRequest {
   int32 id = 1;
 }
 
-// The ClientAllow request message containing the client ID and the allowed client ID and whether it is allowed.
-message ClientAllowRequest {
-  // The ID of the client.
+// The Auth Credentials request message containing the client ID and the allowed client ID and whether it is allowed.
+message AuthCredentialsAllowRequest {
+  // The ID of the auth credentials.
   int32 id = 1;
-  // The ID of the allowed client.
-  int32 allowed_client_id = 2;
+  // The ID of the client.
+  int32 client_id = 2;
+  // The type of auth credentials (i.e. OAuth2, etc.)
+  CredentialsType type = 3;
 }
 
-// The ClientAllow request message containing the client ID and the allowed client ID and whether it is allowed.
-message ClientAllowResponse {
-  // The ID of the client.
+// The Auth Credentials request message containing the client ID and the allowed client ID and whether it is allowed.
+message AuthCredentialsAllowResponse {
+  // The ID of the auth credentials.
   int32 id = 1;
-  // The ID of the allowed client.
-  int32 allowed_client_id = 2;
+  // The ID of the client.
+  int32 client_id = 2;
+  // The type of auth credentials (i.e. OAuth2, etc.)
+  CredentialsType type = 3;
 }
 
 // The response message containing the client credentials for allowed clients.
@@ -162,6 +170,8 @@ message MultipleClientCredentials {
 message DeleteClientRequest {
   // The ID of the client.
   int32 id = 1;
+  // The type of auth credentials (i.e. OAuth2, etc.)
+  CredentialsType type = 2;
 }
 
 // The DeleteClient response message.
@@ -169,6 +179,8 @@ message DeleteClientResponse {
   // The ID of the client that was deleted.
   int32 id = 1;
   google.protobuf.Timestamp deletedOn = 2;
+  // The type of auth credentials (i.e. OAuth2, etc.)
+  CredentialsType type = 3;
 }
 
 // The OAuth2 client credentials for a client.
@@ -200,7 +212,7 @@ message ClientMessage {
   // The organization ID that the client belongs to.
   int32 organization_id = 5;
   // The client OAuth credentials.
-  OAuthClientCredentials oauth2_credentials = 6;
+  repeated OAuthClientCredentials oauth_credentials = 6;
 }
 
 message OAuthClientCredentials {
@@ -216,4 +228,6 @@ message OAuthClientCredentials {
   google.protobuf.StringValue allowed_scopes = 5;
   // Whether to require PKCE for the OAuth2 Client.
   google.protobuf.BoolValue require_pkce = 6;
+  // The App Environment
+  google.protobuf.StringValue environment = 7;
 }

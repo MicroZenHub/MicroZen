@@ -2,11 +2,12 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using LinqKit;
 using Microsoft.EntityFrameworkCore;
-using MicroZen.Data.Context;
-using MicroZen.Data.Entities;
+using MicroZen.Api.Context;
+using MicroZen.Api.Entities;
+using MicroZen.Api.Entities.AuthCredentials;
 using MicroZen.Grpc.Entities;
 
-namespace MicroZen.Core.Api.Services;
+namespace MicroZen.Api.Services;
 
 /// <summary>
 /// The Clients gRPC/REST service.
@@ -30,10 +31,12 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 		var skip = request.Skip > 0 ? request.Skip : 0;
 		var total = await db.Clients.Where(predicate).CountAsync();
 		var clients = await db.Clients
+			.Include(c => c.OAuth2Credentials)
+			.Include(c => c.AllowedClientOAuth2Credentials)
 			.Where(predicate)
-			.Take(page)
-			.Skip(skip)
 			.OrderBy(c => c.Name)
+			.Skip(skip)
+			.Take(page)
 			.Select(c => c.ToMessage())
 			.ToListAsync();
 		var anyMoreClients = await db.Clients.Where(predicate).Take(page + 1).Skip(skip).AnyAsync();
@@ -52,6 +55,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 	public override async Task<ClientMessage> GetClient(ClientRequest request, ServerCallContext context) =>
 		(await db.Clients
 			.Include(c => c.OAuth2Credentials)
+			.Include(c => c.AllowedClientOAuth2Credentials)
 			.FirstOrDefaultAsync(c => c.Id == request.Id)
 		)?.ToMessage() ??
 		throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
@@ -61,25 +65,17 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 	// TODO - Add [Policy(typeof(Client), Permission.Read)] attribute to block access if user is not in the organization for this client
 	public override async Task<MultipleClientCredentials> GetAllowedOAuthClientCredentials(ClientRequest request, ServerCallContext context)
 	{
-		var client = await db.Clients
+		var allowedCredentials = await db.Clients
 			.Include(c => c.OAuth2Credentials)
-			.Include(c => c.AllowedClients)
-			.ThenInclude(client => client.OAuth2Credentials)
-			.FirstOrDefaultAsync(x => x.Id == request.Id);
+			.Include(c => c.AllowedClientOAuth2Credentials)
+			.SelectMany(c => c.AllowedClientOAuth2Credentials)
+			.ToListAsync();
 
-		if (client is null)
-			throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
-		if (client.AllowedClients is null || client.AllowedClients.Count == 0)
-			 throw new RpcException(new Status(StatusCode.NotFound, "Client has no allowed clients."));
+		if (allowedCredentials is null)
+			throw new RpcException(new Status(StatusCode.NotFound, "No Allowed Credentials not found."));
 
 		var response = new MultipleClientCredentials();
-		response.Credentials.AddRange(client.AllowedClients.Select(allowedClient =>
-			new OAuth2Credentials()
-			{
-				ClientId = allowedClient.OAuth2Credentials?.OAuth2ClientId ?? string.Empty,
-				ClientSecret = allowedClient.OAuth2Credentials?.OAuth2ClientSecret ?? string.Empty,
-				Type = allowedClient.Type
-			}).ToArray());
+		response.Credentials.AddRange(allowedCredentials.Select(c => c.ToMessage()).ToList());
 		return response;
 	}
 
@@ -105,14 +101,14 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 			CreatedOn = DateTime.UtcNow,
 			ModifiedOn = DateTime.UtcNow,
 			OrganizationId = request.OrganizationId,
-			OAuth2Credentials = new OAuth2ClientCredentials()
+			OAuth2Credentials = request.OauthCredentials.Select(oAuthClientCredentials => new OAuth2ClientCredentials()
 			{
-				OAuth2GrantType = request.Oauth2Credentials.GrantType,
-				OAuth2ClientId = request.Oauth2Credentials.ClientId,
-				OAuth2ClientSecret = request.Oauth2Credentials.ClientSecret,
-				AllowedScopes = request.Oauth2Credentials.AllowedScopes,
-				RequirePkce = request.Oauth2Credentials.RequirePkce
-			}
+				OAuth2GrantType = oAuthClientCredentials.GrantType,
+				OAuth2ClientId = oAuthClientCredentials.ClientId,
+				OAuth2ClientSecret = oAuthClientCredentials.ClientSecret,
+				AllowedScopes = oAuthClientCredentials.AllowedScopes,
+				RequirePkce = oAuthClientCredentials.RequirePkce
+			}).ToArray()
 		};
 		await db.Clients.AddAsync(client);
 		await db.SaveChangesAsync();
@@ -133,11 +129,44 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 		client.ModifiedOn = DateTime.UtcNow;
 		if (client.OAuth2Credentials is not null)
 		{
-			client.OAuth2Credentials.OAuth2ClientId = request.Oauth2Credentials.ClientId;
-			client.OAuth2Credentials.OAuth2ClientSecret = request.Oauth2Credentials.ClientSecret;
-			client.OAuth2Credentials.OAuth2GrantType = request.Oauth2Credentials.GrantType;
-			client.OAuth2Credentials.AllowedScopes = request.Oauth2Credentials.AllowedScopes;
-			client.OAuth2Credentials.RequirePkce = request.Oauth2Credentials.RequirePkce;
+			var credentialsToUpdate = request.OauthCredentials.Select(oauthCredentials =>
+				new OAuth2ClientCredentials()
+				{
+					OAuth2ClientId = oauthCredentials.ClientId,
+					OAuth2ClientSecret = oauthCredentials.ClientSecret,
+					OAuth2GrantType = oauthCredentials.GrantType,
+					AllowedScopes = oauthCredentials.AllowedScopes,
+					RequirePkce = oauthCredentials.RequirePkce,
+				}).Where(oauth2Credentials =>
+					client.OAuth2Credentials.Any(existingCreds =>
+						existingCreds.ClientId == oauth2Credentials.ClientId
+					)
+				).ToArray();
+			var credentialsToAdd = request.OauthCredentials.Select(oauthCredentials =>
+				new OAuth2ClientCredentials()
+				{
+					OAuth2ClientId = oauthCredentials.ClientId,
+					OAuth2ClientSecret = oauthCredentials.ClientSecret,
+					OAuth2GrantType = oauthCredentials.GrantType,
+					AllowedScopes = oauthCredentials.AllowedScopes,
+					RequirePkce = oauthCredentials.RequirePkce,
+				}).Where(oauthCredentials =>
+				client.OAuth2Credentials.Any(existingCredentials =>
+					existingCredentials.ClientId == oauthCredentials.ClientId
+				)
+			).ToArray();
+			foreach (var credentials in credentialsToUpdate)
+			{
+				var existingCredentials = client.OAuth2Credentials.First(c => c.OAuth2ClientId == credentials.OAuth2ClientId);
+				existingCredentials.OAuth2ClientSecret = credentials.OAuth2ClientSecret;
+				existingCredentials.OAuth2GrantType = credentials.OAuth2GrantType;
+				existingCredentials.AllowedScopes = credentials.AllowedScopes;
+				existingCredentials.RequirePkce = credentials.RequirePkce;
+			}
+			foreach (var credential in credentialsToAdd)
+			{
+				client.OAuth2Credentials.Add(credential);
+			}
 		}
 
 		db.Update(client);
@@ -149,35 +178,47 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
-	public override async Task<ClientAllowResponse> AllowClient(ClientAllowRequest request, ServerCallContext context)
+	public override async Task<AuthCredentialsAllowResponse> AllowAuthCredentials(AuthCredentialsAllowRequest request, ServerCallContext context)
 	{
-		var allowedClient = await db.Clients.FindAsync(request.AllowedClientId);
-		var client = await db.Clients.FindAsync(request.Id);
-		if (allowedClient is null || client is null)
-			throw new RpcException(new Status(StatusCode.NotFound, "Client or Allowed Client not found."));
-		client.AllowedClients.Add(allowedClient);
-		await db.SaveChangesAsync();
-		return new ClientAllowResponse()
+		switch (request.Type)
 		{
-			Id = client.Id,
-			AllowedClientId = allowedClient.Id
-		};
+			case CredentialsType.Oauth2:
+				var client = await db.Clients.FindAsync(request.ClientId);
+				var allowedClientAuthCredentials = await db.OAuth2ClientCredentials.FindAsync(request.Id);
+				if (allowedClientAuthCredentials is null )
+					throw new RpcException(new Status(StatusCode.NotFound, "Auth Credentials not found."));
+				if (client is null)
+					throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
+				client.AllowedClientOAuth2Credentials.Add(allowedClientAuthCredentials);
+				await db.SaveChangesAsync();
+				return new AuthCredentialsAllowResponse()
+				{
+					Id = allowedClientAuthCredentials.Id,
+					ClientId = client.Id,
+					Type = CredentialsType.Oauth2
+				};
+			default:
+				throw new ArgumentOutOfRangeException();
+		}
 	}
 
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
-	public override async Task<ClientAllowResponse> DisallowClient(ClientAllowRequest request, ServerCallContext context)
+	public override async Task<AuthCredentialsAllowResponse> DisallowAuthCredentials(AuthCredentialsAllowRequest request, ServerCallContext context)
 	{
-		var allowedClient = await db.Clients.FindAsync(request.AllowedClientId);
-		var client = await db.Clients.FindAsync(request.Id);
-		if (allowedClient is null || client is null)
-			throw new RpcException(new Status(StatusCode.NotFound, "Client or Allowed Client not found."));
-		client.AllowedClients.Remove(allowedClient);
+		var client = await db.Clients.Include(c => c.AllowedClientOAuth2Credentials).FirstOrDefaultAsync(c => c.Id == request.ClientId);
+		if (client is null)
+			throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
+		var oauthCredentials = client.AllowedClientOAuth2Credentials?.FirstOrDefault(cred => cred.Id == request.Id);
+		if (oauthCredentials is null || client.AllowedClientOAuth2Credentials is null)
+			throw new RpcException(new Status(StatusCode.NotFound, "Auth Credentials not found."));
+		client.AllowedClientOAuth2Credentials.Remove(oauthCredentials);
 		await db.SaveChangesAsync();
-		return new ClientAllowResponse()
+		return new AuthCredentialsAllowResponse()
 		{
 			Id = client.Id,
-			AllowedClientId = allowedClient.Id
+			ClientId = client.Id,
+			Type = CredentialsType.Oauth2
 		};
 	}
 

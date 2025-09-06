@@ -1,12 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using MicroZen.Api.Entities.Shared;
 using MicroZen.Grpc.Entities;
 
-namespace MicroZen.Data.Entities;
+namespace MicroZen.Api.Entities;
 
 /// <summary>
 /// The Organization entity.
 /// </summary>
+[EntityTypeConfiguration(typeof(OrganizationConfig))]
 public class Organization : BaseEntity<OrganizationMessage>
 {
 	/// <inheritdoc />
