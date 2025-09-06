@@ -34,6 +34,16 @@ public class Client : BaseEntity<ClientMessage>
   public string? Description { get; set; }
 
   /// <summary>
+  /// The URL of the associated Git repository for the client.
+  /// </summary>
+  public string? GitRepoUrl { get; set; }
+
+  /// <summary>
+  /// The URL of the icon image associated with the Git repository of the client.
+  /// </summary>
+  public string? GitRepoIconImageUrl { get; set; }
+
+  /// <summary>
   /// The ID of the Organization the client belongs to.
   /// </summary>
   public int OrganizationId { get; set; }

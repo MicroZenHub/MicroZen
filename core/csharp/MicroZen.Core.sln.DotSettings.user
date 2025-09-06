@@ -3,13 +3,10 @@
 	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
   &lt;Assembly Path="/Users/benjaminrinehart/.nuget/packages/google.protobuf/3.26.1/lib/net5.0/Google.Protobuf.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
-	
-	
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=56f0662c_002Df5e6_002D42d7_002Db505_002D8b90a13bb250/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="IsValidAPIKey_ValidAPIKey_ReturnsTrue" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;TestAncestor&gt;
-    &lt;TestId&gt;xUnit::D3591A09-0EA1-4DB8-9000-BD18ADF0187A::net8.0::MicroZen.Core.Api.Test.Security.APIKeys.APIKeyValidatorTests&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::D3591A09-0EA1-4DB8-9000-BD18ADF0187A::net8.0::MicroZen.Core.Api.Test.Security.APIKeys.APIKeyGeneratorTests.GenerateAPIKey_ReturnsValidAPIKey&lt;/TestId&gt;
-    &lt;TestId&gt;xUnit::D3591A09-0EA1-4DB8-9000-BD18ADF0187A::net8.0::MicroZen.Core.Api.Test.Security.APIKeys.APIKeyGeneratorTests&lt;/TestId&gt;
-  &lt;/TestAncestor&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=80a5b804_002D3d25_002D452f_002Db16d_002D4aade255c64e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;MicroZen.Api.Test&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/Users/ben.rinehart/repos/MicroZen/core/csharp/MicroZen.Api.Test" Presentation="&amp;lt;MicroZen.Api.Test&amp;gt;" /&gt;
 &lt;/SessionState&gt;</s:String>
+	
+	
+	
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=PKCE/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
