@@ -109,6 +109,16 @@ enum GrantType {
   ResourceOwnerPassword = 6;
 }
 
+// The provider for a client
+enum Provider {
+  // AWS Cognito
+  AWS = 0;
+  // Azure Entra
+  Azure = 1;
+  // Google Identity Platform
+  Google = 2;
+}
+
 enum CredentialsType {
   OAuth2 = 0;
 }
@@ -197,6 +207,8 @@ message OAuth2Credentials {
   string region = 5;
   // The client type.
   ClientType type = 6;
+  // The Provider for these credentials
+  Provider provider = 7;
 }
 
 // The request message containing the user's name.
@@ -211,8 +223,12 @@ message ClientMessage {
   string description = 4;
   // The organization ID that the client belongs to.
   int32 organization_id = 5;
+  // (optional) The Git repo URl for the client
+  google.protobuf.StringValue git_repo_url = 6;
+  // (optional) 
+  google.protobuf.StringValue git_repo_icon_image_url = 7;
   // The client OAuth credentials.
-  repeated OAuthClientCredentials oauth_credentials = 6;
+  repeated OAuthClientCredentials oauth_credentials = 8;
 }
 
 message OAuthClientCredentials {
