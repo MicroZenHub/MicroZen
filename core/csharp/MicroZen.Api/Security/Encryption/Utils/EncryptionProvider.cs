@@ -49,9 +49,11 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 
 		var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 		using var memoryStream = new MemoryStream();
-		using var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write);
-		using var streamWriter = new StreamWriter(cryptoStream);
-		streamWriter.Write(dataToEncrypt);
+		using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
+		using (var streamWriter = new StreamWriter(cryptoStream))
+		{
+			streamWriter.Write(dataToEncrypt);
+		}
 		var array = memoryStream.ToArray();
 
 		var result = Convert.ToBase64String(array);

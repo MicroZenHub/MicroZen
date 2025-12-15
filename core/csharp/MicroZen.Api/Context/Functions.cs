@@ -40,15 +40,19 @@ public static class Functions
 						Name = "MicroZen API",
 						Type = ClientType.Api,
 						Description = "The MicroZen API",
+						GitRepoUrl = "https://github.com/MicroZenHub/MicroZen",
+						GitRepoIconImageUrl = "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
 						OAuth2Credentials = [
 							new OAuth2ClientCredentials()
 							{
 								Id = 1,
 								OAuth2GrantType = GrantType.ClientCredentials,
+								Environment = "Development",
 								OAuth2ClientId = "1599cy12a19050a19459",
 								OAuth2ClientSecret = "mcz_82d5fd9daf7a4bdeba989c50a7415e1f_aceff126",
 								AllowedScopes = "scope1,scope2",
 								RequirePkce = true,
+								Provider = Provider.Aws,
 								ClientId = 1
 							}
 						],
