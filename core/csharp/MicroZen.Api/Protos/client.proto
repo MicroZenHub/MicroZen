@@ -246,4 +246,6 @@ message OAuthClientCredentials {
   google.protobuf.BoolValue require_pkce = 6;
   // The App Environment
   google.protobuf.StringValue environment = 7;
+  // The Provider
+  Provider provider = 8;
 }

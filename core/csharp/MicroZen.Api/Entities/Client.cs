@@ -78,7 +78,17 @@ public class Client : BaseEntity<ClientMessage>
 		  Description = Description,
 		  Type = Type,
 		  OrganizationId = OrganizationId,
+		  GitRepoIconImageUrl = GitRepoIconImageUrl,
+		  GitRepoUrl = GitRepoUrl
 	  };
+	  message.OauthCredentials.AddRange(OAuth2Credentials?.Select(c => new OAuthClientCredentials
+	  {
+		  ClientId = c.ClientId.ToString(),
+		  ClientSecret = c.OAuth2ClientSecret,
+		  Environment = c.Environment,
+		  AllowedScopes = c.AllowedScopes,
+		  Provider = c.Provider
+	  }));
 	  return message;
   }
 }
