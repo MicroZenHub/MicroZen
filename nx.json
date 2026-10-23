@@ -12,7 +12,7 @@
     ],
     "sharedGlobals": []
   },
-  "nxCloudAccessToken": "MDhlZTgzNWQtNTNkNC00OGY1LWJiMzAtZmNmNTYyNDg3OWZmfHJlYWQtd3JpdGU=",
+  "nxCloudAccessToken": "OGFjNDU0MGEtNDFmYS00ODQxLThkMTctNTZiNzc4MzlmOWY2fHJlYWQtd3JpdGU=",
   "defaultBase": "main",
   "generators": {
     "@nx/angular:application": {
@@ -21,21 +21,14 @@
       "style": "scss",
       "unitTestRunner": "jest"
     },
-    "@nx/angular:library": {
-      "linter": "eslint",
-      "unitTestRunner": "jest"
-    },
-    "@nx/angular:component": {
-      "style": "scss"
-    }
+    "@nx/angular:library": { "linter": "eslint", "unitTestRunner": "jest" },
+    "@nx/angular:component": { "style": "scss" }
   },
   "targetDefaults": {
     "test": {
       "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"]
     },
-    "e2e": {
-      "inputs": ["default", "^production"]
-    },
+    "e2e": { "inputs": ["default", "^production"] },
     "lint": {
       "inputs": [
         "default",
