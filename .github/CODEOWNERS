@@ -1,0 +1,39 @@
+# CODEOWNERS for MicroZen
+#
+# This file maps paths in the repository to the owners responsible for
+# reviewing changes to them. When a pull request touches a path, GitHub
+# automatically requests a review from the matching owner(s).
+#
+# IMPORTANT: The handles below are PLACEHOLDERS. They will NOT take effect
+# until a maintainer replaces them with real GitHub teams or users (and the
+# teams exist in the MicroZenHub organization with write access to this repo).
+# Replace handles such as @MicroZenHub/backend with your actual teams/users.
+#
+# Ordering note: later, more specific patterns override earlier ones, so rules
+# are listed general-to-specific. The last matching pattern for a given file
+# wins.
+
+# ---------------------------------------------------------------------------
+# Default owners for everything in the repo (most general rule).
+# ---------------------------------------------------------------------------
+*                       @MicroZenHub/maintainers
+
+# ---------------------------------------------------------------------------
+# Documentation and project knowledge: docs owners.
+# ---------------------------------------------------------------------------
+/README.md              @MicroZenHub/docs
+/AGENTS.md              @MicroZenHub/docs
+/docs/                  @MicroZenHub/docs
+/.kiro/                 @MicroZenHub/docs
+
+# ---------------------------------------------------------------------------
+# CI, automation, and repo configuration: maintainers / devops.
+# ---------------------------------------------------------------------------
+/.github/               @MicroZenHub/devops
+/scripts/               @MicroZenHub/devops
+/docker-compose.yml     @MicroZenHub/devops
+
+# ---------------------------------------------------------------------------
+# Backend (.NET solution): back-end owners (most specific rule).
+# ---------------------------------------------------------------------------
+/core/csharp/           @MicroZenHub/backend
