@@ -76,6 +76,21 @@ from a clean checkout with no extra setup. The .NET tests use the EF Core
 InMemory provider and set their own `EncryptionKey`, so they are self-contained
 and need no PostgreSQL.
 
+## Kiro hooks
+
+Automation under `.kiro/hooks/` runs the real commands above on editor/workflow
+events so the gates are enforced automatically. The hooks are fast and scoped
+(`nx affected`, not full-repo), and the heavier full gate is opt-in. See
+`.kiro/hooks/README.md` for details.
+
+- `dotnet-save-format.kiro.hook`: on saving a C# file under `core/csharp/**/*.cs`,
+  runs `npx nx format:write && npx nx affected -t lint`.
+- `pre-pr-gate.kiro.hook`: manual (user-triggered) gate that runs
+  `npx nx format:check && npx nx affected -t lint test build && dotnet test core/csharp/MicroZen.Core.sln`.
+
+No hook embeds secrets or dumps the environment; the `NX_CLOUD_ACCESS_TOKEN`
+value is never referenced in a hook.
+
 ## Nx Cloud authentication
 
 The Nx Cloud access token comes from the `NX_CLOUD_ACCESS_TOKEN` environment
