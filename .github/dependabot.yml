@@ -5,50 +5,50 @@
 version: 2
 updates:
   # npm (root package.json / package-lock.json): Angular 17 + Ionic/Capacitor + Nx
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 5
     groups:
       angular-nx:
         patterns:
-          - "@angular*"
-          - "@angular-devkit/*"
-          - "@angular-eslint/*"
-          - "@schematics/angular"
-          - "@nx/*"
-          - "@nx-dotnet/*"
-          - "@nxext/*"
-          - "@nx-plus/*"
-          - "nx"
+          - '@angular*'
+          - '@angular-devkit/*'
+          - '@angular-eslint/*'
+          - '@schematics/angular'
+          - '@nx/*'
+          - '@nx-dotnet/*'
+          - '@nxext/*'
+          - '@nx-plus/*'
+          - 'nx'
       npm-minor-patch:
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
 
   # NuGet (.NET solution under core/csharp, central package management via
   # Directory.Packages.props). Dependabot discovers the .sln/.csproj and
   # Directory.Packages.props under this directory.
-  - package-ecosystem: "nuget"
-    directory: "/core/csharp"
+  - package-ecosystem: 'nuget'
+    directory: '/core/csharp'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 5
     groups:
       nuget-minor-patch:
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
 
   # GitHub Actions used by the workflows in .github/workflows.
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     open-pull-requests-limit: 5
     groups:
       actions-minor-patch:
         update-types:
-          - "minor"
-          - "patch"
+          - 'minor'
+          - 'patch'
