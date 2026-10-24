@@ -51,6 +51,19 @@ example `npx nx run core-dashboard:sync:ios`. See `.kiro/steering/tech.md`.
   - The API needs a PostgreSQL database named `MicroZenDb` (typically run via
     Docker). On startup it applies EF Core migrations and seeds development data.
 
+### Development data seeding
+
+`app.MigrateAndSeedDevDataOnStart()`
+(`core/csharp/MicroZen.Api/Context/Functions.cs`) seeds one placeholder
+Organization (with a Client, an OAuth2ClientCredentials row, and a ClientAPIKey)
+**only** when the environment is `Development`, the `SeedDevData` flag is `true`,
+and the `Organizations` table is empty. Enable it with
+`SeedDevData=true dotnet run --project core/csharp/MicroZen.Api`. Re-seeding
+needs an empty database: `scripts/seed-db.sh --reset` runs
+`docker compose down -v && docker compose up -d` then starts the API with
+seeding enabled. All seeded data is placeholder only. See
+`.kiro/steering/tech.md` for the full field list and reset workflow.
+
 The .NET projects target `net10.0`, so a matching **.NET 10 SDK** is required.
 Do not change the csproj `TargetFramework` values.
 

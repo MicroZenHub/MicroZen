@@ -61,7 +61,38 @@ docker compose up -d
 
 `.env` is gitignored, so your local credentials are never committed. The `.env` file documents every variable the stack needs: the `POSTGRES_*` values consumed by Compose, the `ConnectionStrings__MicroZenDb` connection string the API uses (the connection string name is `MicroZenDb`), and the `MicroZen__*` OAuth2/Cognito settings read by `AddMicroZenOAuth2` in `Program.cs`.
 
-On startup the API applies the Entity Framework migrations and seeds development data automatically, so you only need the database running and reachable through the `MicroZenConnectionString` connection string. Make sure the API process sees the same configuration. `docker compose up -d` only substitutes `.env` into the Compose file's own variable interpolation; it does not export those variables to a later `dotnet run`. Supply them to the API process in one of the following ways: export the variables from your `.env` into the environment (for example `export $(grep -v '^#' .env | xargs)`), store them with `dotnet user-secrets`, or put them in an `appsettings.Development.json`.
+On startup the API applies the Entity Framework migrations and can seed development data (see [Seeding development data](#seeding-development-data) below for the conditions), so you only need the database running and reachable through the `MicroZenConnectionString` connection string. Make sure the API process sees the same configuration. `docker compose up -d` only substitutes `.env` into the Compose file's own variable interpolation; it does not export those variables to a later `dotnet run`. Supply them to the API process in one of the following ways: export the variables from your `.env` into the environment (for example `export $(grep -v '^#' .env | xargs)`), store them with `dotnet user-secrets`, or put them in an `appsettings.Development.json`.
+
+### Seeding development data
+
+On startup the API can seed a usable set of placeholder data (one Organization, a Client, an OAuth2 client-credentials row, and an API key) via `app.MigrateAndSeedDevDataOnStart()` in `core/csharp/MicroZen.Api/Context/Functions.cs`. Seeding runs only when all of the following are true:
+
+- the environment is `Development` (`ASPNETCORE_ENVIRONMENT=Development`),
+- the `SeedDevData` configuration flag is `true`, and
+- the `Organizations` table is empty (so seeding is idempotent and safe to leave on).
+
+The `launchSettings.json` `http`/`https` profiles already set `ASPNETCORE_ENVIRONMENT=Development`, so you only need to enable the flag. Any of these work:
+
+- Run with the environment variable set: `SeedDevData=true dotnet run --project core/csharp/MicroZen.Api`
+- Add `"SeedDevData": true` to an `appsettings.Development.json`
+- Add `SeedDevData=true` to your `.env` (see `.env.example`) and export it to the API process
+
+Because of the empty-table guard, **re-seeding requires an empty database**. Reset the Compose PostgreSQL by dropping its named volume and starting fresh, then run the API with seeding enabled:
+
+```bash
+docker compose down -v   # drops the microzen-pgdata volume
+docker compose up -d     # recreates an empty MicroZenDb
+SeedDevData=true dotnet run --project core/csharp/MicroZen.Api
+```
+
+The helper script `scripts/seed-db.sh` wraps this. It runs the API with `ASPNETCORE_ENVIRONMENT=Development` and `SeedDevData=true`, and `--reset` first recreates the Compose database so the data is seeded fresh:
+
+```bash
+./scripts/seed-db.sh           # seed against the current database
+./scripts/seed-db.sh --reset   # reset the Compose DB, then seed
+```
+
+All seeded values are placeholders; no real secrets are involved. The placeholder OAuth2 client secret and API key live in `Functions.cs` purely for local development — **never enable `SeedDevData` outside a `Development` environment**, and do not treat those values as reusable credentials. For the full list of seeded fields, see [.kiro/steering/tech.md](.kiro/steering/tech.md).
 
 ## 4. Run the applications
 
