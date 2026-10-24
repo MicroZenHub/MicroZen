@@ -1,26 +1,21 @@
 # Dependabot configuration (chosen over Renovate for native GitHub support).
 # Keeps the three ecosystems in this repo up to date with weekly update PRs.
-# Minor/patch bumps are grouped to reduce PR noise, and the Angular/Nx
-# packages are grouped together because they are version-locked in this repo.
+# Minor/patch bumps are grouped to reduce PR noise, and the Nx packages are
+# grouped together because they are version-locked in this repo.
 version: 2
 updates:
-  # npm (root package.json / package-lock.json): Angular 17 + Ionic/Capacitor + Nx
+  # npm (root package.json / package-lock.json): .NET-only toolchain
+  # (nx + @nx-dotnet/core + prettier).
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
       interval: 'weekly'
     open-pull-requests-limit: 5
     groups:
-      angular-nx:
+      nx:
         patterns:
-          - '@angular*'
-          - '@angular-devkit/*'
-          - '@angular-eslint/*'
-          - '@schematics/angular'
           - '@nx/*'
           - '@nx-dotnet/*'
-          - '@nxext/*'
-          - '@nx-plus/*'
           - 'nx'
       npm-minor-patch:
         update-types:

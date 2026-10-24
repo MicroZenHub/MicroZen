@@ -4,24 +4,21 @@
 
 Root (workspace-level config and tooling):
 
-- `nx.json`, `package.json`, `tsconfig.base.json` - Nx workspace and TS config.
-- `jest.config.ts`, `jest.preset.js` - Jest aggregation and preset.
-- `.eslintrc.json`, `.eslintignore` - ESLint config.
+- `nx.json`, `package.json`, `package-lock.json` - Nx workspace (wrapping the
+  .NET build via `@nx-dotnet/core`) and its pinned dependencies.
 - `.prettierrc`, `.prettierignore` - Prettier config.
 - `.editorconfig` - editor/indentation rules.
-- `.github/workflows/ci.yml` - CI pipeline.
+- `docker-compose.yml`, `.env.example` - local PostgreSQL database and its
+  environment template.
+- `scripts/` - helper scripts (`check.sh` local gate, `seed-db.sh` dev-data
+  seeding).
+- `.github/` - CI workflow, issue/PR templates, CODEOWNERS, Dependabot config.
+- `.kiro/` - steering docs and hooks.
 - `.config/dotnet-tools.json` - local .NET tool manifest.
 - `README.md`, `LICENSE` (Apache-2.0).
 
-Front-end:
-
-- `core/ts/dashboard` - Angular 17 + Ionic/Capacitor app, Nx project
-  `core-dashboard`. Source under `src/app` (app module, routes, home page);
-  theme in `src/theme/variables.scss`. Note: `core/ts/dashboard/project.json`
-  references paths as `core/dashboard/...` (without `/ts`) internally; this is
-  existing state and is intentionally left as-is.
-- `core/ts/dashboard-e2e` - Cypress end-to-end tests (Nx project
-  `core-dashboard-e2e`).
+There are no TypeScript projects in this repo; the Angular/Ionic dashboard was
+removed and moved to a separate private repository.
 
 Backend - `core/csharp` holds `MicroZen.Core.sln` with three projects:
 
@@ -37,15 +34,12 @@ Backend - `core/csharp` holds `MicroZen.Core.sln` with three projects:
   `Providers/`, `State/`, `Definitions/`).
 - `MicroZen.Api.Test` - xUnit tests.
 
-## TypeScript / Angular conventions
+## Workspace conventions
 
 - **Prettier** with `singleQuote: true` (`.prettierrc`).
-- **ESLint** via `@nx` using the `@nx/enforce-module-boundaries` rule
-  (`.eslintrc.json`). Respect project boundaries; do not add cross-project
-  imports that violate it.
-- **Nx generator defaults** (`nx.json` `generators`): Angular applications and
-  components use `scss` styles, Jest is the unit test runner, Cypress is the
-  e2e runner, and the component/app `prefix` is `MicroZen`.
+- **Nx** is used only through the `@nx-dotnet/core` plugin (`nx.json`), which
+  wraps the .NET solution so build, test, lint, and format tasks run through the
+  Nx project graph. There are no TypeScript projects.
 
 ## C# conventions
 

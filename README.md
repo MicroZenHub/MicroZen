@@ -21,7 +21,7 @@ From health checks to comprehensive mapping of application and API interactions,
 
 # QuickStart Guide
 
-MicroZen is an Nx monorepo that contains an Angular/Ionic front-end and a .NET (C#) back-end. Follow the steps below to get a local environment running.
+MicroZen is a .NET (C#) back-end repository. Nx wraps the .NET build via the `@nx-dotnet/core` plugin; there are no TypeScript projects in this repo (the Angular/Ionic dashboard lives in a separate private repository). Follow the steps below to get a local environment running.
 
 ## Prerequisites
 
@@ -94,13 +94,7 @@ The helper script `scripts/seed-db.sh` wraps this. It runs the API with `ASPNETC
 
 All seeded values are placeholders; no real secrets are involved. The placeholder OAuth2 client secret and API key live in `Functions.cs` purely for local development — **never enable `SeedDevData` outside a `Development` environment**, and do not treat those values as reusable credentials. For the full list of seeded fields, see [.kiro/steering/tech.md](.kiro/steering/tech.md).
 
-## 4. Run the applications
-
-Run the front-end (Angular/Ionic dashboard):
-
-```bash
-npx nx serve core-dashboard
-```
+## 4. Run the API
 
 Run the back-end API:
 
@@ -113,20 +107,12 @@ The API listens on http://localhost:5187 and https://localhost:7070 (per `launch
 ## 5. Build
 
 ```bash
-# Front-end
-npx nx build core-dashboard
-
-# Back-end
 dotnet build core/csharp/MicroZen.Core.sln
 ```
 
 ## 6. Test
 
 ```bash
-# Front-end
-npx nx test core-dashboard
-
-# Back-end
 dotnet test core/csharp/MicroZen.Core.sln
 ```
 
