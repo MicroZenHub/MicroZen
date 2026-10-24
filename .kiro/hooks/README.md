@@ -12,13 +12,6 @@ hooks do not reference it.
 
 ## Hooks
 
-- `ts-save-format-lint.kiro.hook`
-
-  - Trigger: a TypeScript/HTML/SCSS file under `core/ts/**` is saved.
-  - Action: `npx nx format:write && npx nx affected -t lint`.
-  - Keeps formatting and lint clean for the Angular dashboard stack. Scoped to
-    affected projects; does not run the .NET suite.
-
 - `dotnet-save-format.kiro.hook`
 
   - Trigger: a C# file under `core/csharp/**/*.cs` is saved.

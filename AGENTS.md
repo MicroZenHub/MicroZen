@@ -83,8 +83,6 @@ events so the gates are enforced automatically. The hooks are fast and scoped
 (`nx affected`, not full-repo), and the heavier full gate is opt-in. See
 `.kiro/hooks/README.md` for details.
 
-- `ts-save-format-lint.kiro.hook`: on saving a TS/HTML/SCSS file under
-  `core/ts/**`, runs `npx nx format:write && npx nx affected -t lint`.
 - `dotnet-save-format.kiro.hook`: on saving a C# file under `core/csharp/**/*.cs`,
   runs `npx nx format:write && npx nx affected -t lint`.
 - `pre-pr-gate.kiro.hook`: manual (user-triggered) gate that runs
