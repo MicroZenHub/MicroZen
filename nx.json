@@ -12,7 +12,6 @@
     ],
     "sharedGlobals": []
   },
-  "nxCloudAccessToken": "OGFjNDU0MGEtNDFmYS00ODQxLThkMTctNTZiNzc4MzlmOWY2fHJlYWQtd3JpdGU=",
   "defaultBase": "main",
   "generators": {
     "@nx/angular:application": {
