@@ -7,7 +7,8 @@ developers and architects a graphical catalogue of their services and front-end
 apps, plus visibility and control over how those pieces interact. Core
 capabilities (grounded in `README.md` and the source):
 
-- Graphical UI for cataloguing microservices and micro-frontend apps.
+- A graphical catalogue of microservices and micro-frontend apps (served by
+  the dashboard client described below).
 - Application and API mapping to visualize interactions between apps and APIs.
 - Health checks tracking for services (gRPC health checks on the API).
 - OAuth2 / OpenID Connect support for authentication, managing client IDs and
@@ -15,18 +16,23 @@ capabilities (grounded in `README.md` and the source):
 - API-key based authorization alongside JWT bearer authentication.
 - AES encryption of sensitive data stored in the database.
 
+For a runtime view of how the API, auth, and data layers fit together (with a
+request-flow diagram), see [`docs/architecture.md`](../../docs/architecture.md).
+
 ## Monorepo shape
 
-This is an Nx 18.2.3 monorepo that holds two stacks tied into a single Nx
-project graph. The `@nx-dotnet/core` plugin (configured in `nx.json`) brings the
-.NET solution into the same graph as the TypeScript app.
+This repository holds the .NET backend under `core/csharp`. It is still an Nx
+18.2.3 workspace: the `@nx-dotnet/core` plugin (configured in `nx.json`) wraps
+the .NET solution so the build, test, and format tasks run through the Nx
+project graph. There is no in-repo front-end.
 
-### Front-end: `core/ts/dashboard`
+### Dashboard client (separate repository)
 
-- Angular 17 with Ionic and Capacitor.
-- Nx project name is `core-dashboard` (see `core/ts/dashboard/project.json`).
-- End-to-end tests live in `core/ts/dashboard-e2e` (Cypress), Nx project
-  `core-dashboard-e2e`.
+The graphical dashboard UI is **not** part of this repository. It lives in a
+separate private repo and consumes the MicroZen API as an external client.
+Earlier revisions of this workspace carried an Angular 17 + Ionic/Capacitor app
+under `core/ts/dashboard` (with `core/ts/dashboard-e2e` for Cypress e2e); that
+code has been removed from this repo and moved to the private dashboard repo.
 
 ### Backend: `core/csharp`
 
