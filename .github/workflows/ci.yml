@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-      - run: npm ci
+      - run: npm install
       - uses: nrwl/nx-set-shas@v4
 
       # Nx Cloud uses a read-only access token, so the format step runs plain
