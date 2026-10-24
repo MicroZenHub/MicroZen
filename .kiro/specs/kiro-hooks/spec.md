@@ -16,15 +16,20 @@ real, verified commands on the right events, and document them.
 
 ## Requirements
 
-1. **On file save** (scoped to changed project): run `npx nx format:write` and the
-   affected lint (`npx nx affected -t lint`) so formatting/lint stay clean.
-2. **Pre-commit / pre-PR**: run the affected test gate
-   (`npx nx affected -t lint test build`) and, where relevant,
-   `dotnet test core/csharp/MicroZen.Core.sln`.
-3. Keep hooks **fast and scoped** — prefer `nx affected` over full-repo runs; do
-   not run the .NET suite on every TS save or vice versa.
+1. **On C# file save** (`fileEdited` scoped to `core/csharp/**/*.cs`): run
+   `npx nx format:write` and the affected lint (`npx nx affected -t lint`) so
+   formatting/lint stay clean after .NET edits.
+2. **Manual pre-PR gate** (`userTriggered`): run the affected lint/test/build
+   pipeline (`npx nx format:check && npx nx affected -t lint test build`) plus the
+   self-contained .NET test suite (`dotnet test core/csharp/MicroZen.Core.sln`).
+3. Keep hooks **fast and scoped**: prefer `nx affected` over full-repo runs, keep
+   the save hook limited to C# edits, and make the heavier .NET gate opt-in rather
+   than running it on every save.
 4. Document the hooks (what triggers them, what they run) in `.kiro/steering/` or
    `AGENTS.md`, consistent with the commands already documented there.
+
+   TS/frontend coverage is out of scope: the `core/ts` frontend has moved to a
+   separate private repo, so these hooks are .NET-oriented only.
 
 ## Design notes
 
@@ -47,4 +52,8 @@ real, verified commands on the right events, and document them.
 
 ## Verification
 
-- Saving a TS file triggers format+affected-lint for that project only; the pre-PR hook runs the gate and blocks on failure.
+- Saving a C# file under `core/csharp/**/*.cs` triggers `npx nx format:write` and
+  `npx nx affected -t lint`, scoped to affected projects only.
+- The manual pre-PR gate hook (`userTriggered`) runs
+  `npx nx format:check && npx nx affected -t lint test build && dotnet test core/csharp/MicroZen.Core.sln`
+  and blocks (exits non-zero) on the first failing step.
