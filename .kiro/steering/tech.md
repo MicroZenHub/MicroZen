@@ -60,20 +60,50 @@ string (the connection string name is `MicroZenDb`, matching
 
 ## CI gate
 
-CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests:
-checkout, setup-node (Node 20), `npm ci`, `nrwl/nx-set-shas`, then
-`npx nx-cloud record -- nx format:check` and `npx nx affected -t lint test
-build`. Before opening a pull request, mirror this locally: `npx nx
-format:check`, `npx nx affected -t lint test build`, and `dotnet test
-core/csharp/MicroZen.Core.sln`.
+CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
+and is the authoritative full-gate verification. It has two jobs:
+
+- `main` (Node 20): checkout (fetch-depth 0), `setup-node`, `npm ci`,
+  `nrwl/nx-set-shas`, then `npx nx format:check` and
+  `npx nx affected -t lint test build`.
+- `dotnet` (.NET 10 via `actions/setup-dotnet`): `dotnet restore`,
+  `dotnet build`, and `dotnet test core/csharp/MicroZen.Core.sln`.
+
+## Local gate (run before opening a pull request)
+
+Mirror the CI gate locally, in order, exiting on the first failure:
+
+1. `npx nx format:check` (fix formatting with `npx nx format:write`)
+2. `npx nx affected -t lint test build` (locally pass a base ref if needed,
+   e.g. `--base=main`)
+3. `dotnet test core/csharp/MicroZen.Core.sln`
+
+`scripts/check.sh` runs all three steps in this order and exits non-zero on the
+first failing step. After `npm ci` and with a .NET 10 SDK on `PATH`, run it from
+a clean checkout with no additional manual setup:
+
+```bash
+./scripts/check.sh
+```
+
+### .NET tests are self-contained
+
+`MicroZen.Api.Test` uses the EF Core **InMemory** provider
+(`Microsoft.EntityFrameworkCore.InMemory`) and sets its own `EncryptionKey`
+environment variable in the test fixtures, so `dotnet test` does **not** require
+a live PostgreSQL database or any other external service. The CI `dotnet` job
+therefore runs no Postgres service container.
 
 ## Nx Cloud authentication
 
 The Nx Cloud access token is provided through the `NX_CLOUD_ACCESS_TOKEN`
-environment variable; it is not committed to `nx.json`. In CI it is sourced from
-a GitHub Actions secret of the same name (`NX_CLOUD_ACCESS_TOKEN`). For local
-Nx Cloud usage, export that variable in your shell. Never commit the token value
-to the repository.
+environment variable; it is not committed to `nx.json`. The token is
+**read-only**, so CI runs plain `npx nx format:check` rather than
+`npx nx-cloud record -- nx format:check` (a read-only token cannot record a
+run). The token is still supplied to the `npx nx affected` step so remote cache
+**reads** work. In CI the value is sourced from a GitHub Actions secret of the
+same name (`NX_CLOUD_ACCESS_TOKEN`). For local Nx Cloud usage, export that
+variable in your shell. Never commit the token value to the repository.
 
 ## Toolchain caveat
 
