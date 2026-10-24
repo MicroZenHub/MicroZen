@@ -34,6 +34,7 @@ nothing in this repo builds, serves, or tests it.
   calls and as HTTP/JSON requests, which is how the external front-end and other
   JSON clients call the API.
 - **gRPC services.** Four services are mapped:
+
   - `ClientsService` (`MapGrpcService<ClientsService>()`)
   - `OrganizationsService` (`MapGrpcService<OrganizationsService>()`)
   - `OrganizationUsersService` (`MapGrpcService<OrganizationUsersService>()`)

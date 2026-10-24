@@ -33,10 +33,6 @@ jobs:
       # Nx Cloud uses a read-only access token, so the format step runs plain
       # `nx format:check` (it cannot record a run). The token stays available on
       # the `nx affected` step below so remote cache reads still work.
-      - name: DIAG format-write diff
-        run: |
-          npx nx format:write --files=docs/architecture.md || true
-          git --no-pager diff -- docs/architecture.md || true
       - run: npx nx format:check
       - run: npx nx affected -t lint test build
         env:
