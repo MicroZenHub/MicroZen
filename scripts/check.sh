@@ -34,8 +34,10 @@ run_step npx nx format:check
 #    nx-set-shas behaviour. Override with NX_BASE if you need a different ref.
 run_step npx nx affected -t lint test build --base="${NX_BASE:-main}"
 
-# 3. .NET unit tests (xUnit) for the whole solution.
-run_step dotnet test core/csharp/MicroZen.Core.sln
+# 3. .NET unit tests (xUnit) for the whole solution, in Release to match CI's
+#    `dotnet test ... --configuration Release`. Run standalone (no preceding
+#    build), so this restores and builds in Release as needed.
+run_step dotnet test core/csharp/MicroZen.Core.sln --configuration Release
 
 echo ""
 echo "All gate checks passed."

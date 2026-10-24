@@ -79,9 +79,13 @@ and need no PostgreSQL.
 ## Nx Cloud authentication
 
 The Nx Cloud access token comes from the `NX_CLOUD_ACCESS_TOKEN` environment
-variable; it is not committed to `nx.json`. In CI it is sourced from a GitHub
-Actions secret of the same name. For local Nx Cloud usage, export that variable
-in your shell. Never commit the token value to the repository.
+variable; it is not committed to `nx.json`. The token is **read-only**, so CI
+runs plain `npx nx format:check` rather than
+`npx nx-cloud record -- nx format:check` (a read-only token cannot record a
+run). The token is still supplied to the `npx nx affected` step so remote cache
+**reads** work. In CI it is sourced from a GitHub Actions secret of the same
+name. For local Nx Cloud usage, export that variable in your shell. Never commit
+the token value to the repository.
 
 ## Key conventions
 
