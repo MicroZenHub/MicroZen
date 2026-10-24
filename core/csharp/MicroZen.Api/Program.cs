@@ -43,38 +43,39 @@ builder.Services.AddGrpcReflection();
 builder.Services.AddGrpcSwagger();
 builder.Services.AddSwaggerGen(c =>
 {
-  c.SwaggerDoc("v1",
-    new OpenApiInfo { Title = "MicroZen API", Version = "v1", Description = "The MicroZen API",  });
+	c.SwaggerDoc("v1",
+	  new OpenApiInfo { Title = "MicroZen API", Version = "v1", Description = "The MicroZen API", });
 
-  c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme {
-    In = ParameterLocation.Header,
-    Description = "Please enter into field the word 'Bearer' following by space and JWT access token",
-    Name = "Authorization",
-    Type = SecuritySchemeType.ApiKey,
-    Scheme = "Bearer"
-  });
+	c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+	{
+		In = ParameterLocation.Header,
+		Description = "Please enter into field the word 'Bearer' following by space and JWT access token",
+		Name = "Authorization",
+		Type = SecuritySchemeType.ApiKey,
+		Scheme = "Bearer"
+	});
 
-  c.AddSecurityRequirement(new OpenApiSecurityRequirement
+	c.AddSecurityRequirement(new OpenApiSecurityRequirement
   {
-    {
-      new OpenApiSecurityScheme
-      {
-        Reference = new OpenApiReference
-        {
-          Type = ReferenceType.SecurityScheme,
-          Id = "Bearer"
-        },
-        Scheme = "oauth2",
-        Name = "Bearer",
-        In = ParameterLocation.Header
-      },
-      Array.Empty<string>()
-    }
+	{
+	  new OpenApiSecurityScheme
+	  {
+		Reference = new OpenApiReference
+		{
+		  Type = ReferenceType.SecurityScheme,
+		  Id = "Bearer"
+		},
+		Scheme = "oauth2",
+		Name = "Bearer",
+		In = ParameterLocation.Header
+	  },
+	  Array.Empty<string>()
+	}
   });
 
-  var filePath = Path.Combine(System.AppContext.BaseDirectory, "MicroZen.Api.xml");
-  c.IncludeXmlComments(filePath);
-  c.IncludeGrpcXmlComments(filePath, includeControllerXmlComments: true);
+	var filePath = Path.Combine(System.AppContext.BaseDirectory, "MicroZen.Api.xml");
+	c.IncludeXmlComments(filePath);
+	c.IncludeGrpcXmlComments(filePath, includeControllerXmlComments: true);
 });
 builder.Services.AddDbContext<DbContext, MicroZenContext>(options =>
 {
@@ -91,7 +92,7 @@ app.UseCors();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
-  c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroZen API v1");
+	c.SwaggerEndpoint("/swagger/v1/swagger.json", "MicroZen API v1");
 });
 
 // Configure the HTTP request pipeline.

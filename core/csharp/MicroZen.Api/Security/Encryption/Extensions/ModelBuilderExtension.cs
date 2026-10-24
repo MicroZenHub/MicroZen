@@ -32,7 +32,7 @@ public static class ModelBuilderExtension
 				if (property.ClrType != typeof(string) || IsDiscriminator(property))
 					continue;
 				var attributes = property.PropertyInfo?.GetCustomAttributes(typeof(EncryptColumnAttribute), false);
-				if(attributes?.Length != 0)
+				if (attributes?.Length != 0)
 					property.SetValueConverter(encryptionConverter);
 			}
 		}

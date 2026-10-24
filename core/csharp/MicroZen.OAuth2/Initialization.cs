@@ -25,13 +25,13 @@ public static class Initialization
 	/// <param name="grantTypes"><see cref="OAuth2GrantType" /> params</param>
 	/// <exception cref="ArgumentNullException"></exception>
 	/// <exception cref="NotSupportedException">Thrown when MicroZenAppConfig is null</exception>
-	public static void AddMicroZenOAuth2(this IServiceCollection services, MicroZenProvider serviceProvider, Dictionary<string,AuthorizationPolicy>? policies = null, params OAuth2GrantType[] grantTypes)
+	public static void AddMicroZenOAuth2(this IServiceCollection services, MicroZenProvider serviceProvider, Dictionary<string, AuthorizationPolicy>? policies = null, params OAuth2GrantType[] grantTypes)
 	{
 		var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 		var microZenConfig = configuration.GetSection("MicroZen").Get<MicroZenAppConfig>();
 		services.AddGrpcClient<Clients.ClientsClient>(o =>
 		{
-			if(microZenConfig is null)
+			if (microZenConfig is null)
 				throw new ArgumentNullException(
 					nameof(microZenConfig),
 					"MicroZenAppConfig is null. Please confirm that you have properly entered the required configuration settings in appsettings.json or as an Environment Variable.");
@@ -49,7 +49,7 @@ public static class Initialization
 		services.AddSingleton<MicroZenOAuth2State>();
 		if (serviceProvider == Cognito)
 		{
-				services.AddAWSCognitoMicroZenOAuth2(policies, grantTypes);
+			services.AddAWSCognitoMicroZenOAuth2(policies, grantTypes);
 		}
 		else
 		{
