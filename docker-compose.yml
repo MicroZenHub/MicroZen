@@ -1,0 +1,43 @@
+# Local development environment for MicroZen.
+#
+# Runs the PostgreSQL database that MicroZen.Api expects (database name
+# "MicroZenDb"). On startup the API applies EF Core migrations and seeds
+# development data (app.MigrateAndSeedDevDataOnStart() in
+# core/csharp/MicroZen.Api/Program.cs), so you only need the database running
+# and reachable through the MicroZenConnectionString connection string.
+#
+# Usage:
+#   cp .env.example .env     # then edit placeholder values as needed
+#   docker compose up -d     # start PostgreSQL in the background
+#   dotnet run --project core/csharp/MicroZen.Api
+#
+# The API is intentionally NOT run inside Compose: it targets net10.0 and is
+# normally run via `dotnet run` (profiles http://localhost:5187 /
+# https://localhost:7070). Point it at this database through configuration,
+# for example by exporting the connection string as an environment variable:
+#   ConnectionStrings__MicroZenDb="Host=localhost;Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+# (the connection string name is "MicroZenDb"; see
+# static MicroZen.Data.Context.Variables.MicroZenConnectionString).
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: microzen-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - microzen-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  microzen-pgdata:
