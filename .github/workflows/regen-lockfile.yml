@@ -1,0 +1,41 @@
+name: Regenerate lockfile
+
+# TEMPORARY one-shot workflow: regenerates package-lock.json from the pruned
+# package.json on a runner that has npm registry access, then commits it back
+# to this branch. Delete this workflow once the lockfile is committed.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - chore/regen-lockfile
+
+permissions:
+  contents: write
+
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chore/regen-lockfile
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Regenerate package-lock.json
+        run: npm install --package-lock-only
+
+      - name: Commit updated lockfile
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "package-lock.json already up to date; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "chore: regenerate package-lock.json for pruned dependencies"
+          git push origin HEAD:chore/regen-lockfile
