@@ -8,7 +8,7 @@
   "private": true,
   "devDependencies": {
     "@nx-dotnet/core": "^3.0.0",
-    "nx": "21.2.2",
+    "nx": "23.3.0",
     "prettier": "^3.2.5"
   },
   "nx": {
