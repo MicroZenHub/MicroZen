@@ -35,7 +35,7 @@
     "@angular/cli": "^17.3.3",
     "@angular/compiler-cli": "^17.3.3",
     "@angular/language-service": "^17.3.3",
-    "@capacitor/android": "^5.7.4",
+    "@capacitor/android": "^8.5.3",
     "@capacitor/cli": "^5.7.4",
     "@capacitor/ios": "^5.7.4",
     "@nx-dotnet/core": "^2.2.0",
