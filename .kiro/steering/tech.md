@@ -39,6 +39,25 @@ Capacitor is exposed as Nx targets on `core-dashboard` (see
     Docker. On startup it applies EF Core migrations and seeds development data
     (`app.MigrateAndSeedDevDataOnStart()` in `Program.cs`).
 
+### Local database (Docker Compose)
+
+A `docker-compose.yml` at the repo root runs PostgreSQL (pinned
+`postgres:16`, named volume, healthcheck) for the `MicroZenDb` database. Copy
+the example environment file and start the database before running the API:
+
+- `cp .env.example .env` (then adjust the placeholder values; `.env` is
+  gitignored and must never contain committed secrets)
+- `docker compose up -d`
+- `dotnet run --project core/csharp/MicroZen.Api`
+
+`.env.example` lists every variable needed to start the API: the `POSTGRES_*`
+values consumed by Compose, the `ConnectionStrings__MicroZenDb` connection
+string (the connection string name is `MicroZenDb`, matching
+`static MicroZen.Data.Context.Variables.MicroZenConnectionString`), and the
+`MicroZen__*` OAuth2/Cognito settings read by
+`AddMicroZenOAuth2(MicroZenProvider.Cognito, ...)` in `Program.cs`
+(`AuthorityUrl`, `APIKey`, and optional `Interval`).
+
 ## CI gate
 
 CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests:
