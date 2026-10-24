@@ -5,9 +5,9 @@ option csharp_namespace = "MicroZen.Grpc.Entities";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
-package MicroZen.Grpc.Entities;
+package MicroZen.Grpc.V1;
 
-service ClientApiKeys {
+service ClientApiKeysGrpcService {
     rpc RequestClientApiKey (RequestClientApiKeyRequest) returns (RequestClientApiKeyResponse) {
         option (google.api.http) = {
             post: "/api/v1/client-api-key"

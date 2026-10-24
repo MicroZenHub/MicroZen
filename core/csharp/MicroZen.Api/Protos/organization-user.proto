@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-option csharp_namespace = "MicroZen.Grpc.Entities";
+option csharp_namespace = "MicroZen.Grpc.V1";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "google/api/annotations.proto";
 
-package MicroZen.Grpc.Entities;
+package MicroZen.Grpc.V1;
 
 // The OrganizationUsers service definition.
-service OrganizationUsers {
+service OrganizationUsersGrpcService {
   // Get all users in an organization.
   rpc GetOrganizationUsers(GetOrganizationUsersRequest) returns (GetOrganizationUsersResponse) {
     option (google.api.http) = {

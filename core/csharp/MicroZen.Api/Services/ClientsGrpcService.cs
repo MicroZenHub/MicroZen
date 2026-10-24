@@ -13,7 +13,7 @@ namespace MicroZen.Api.Services;
 /// The Clients gRPC/REST service.
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
-public class ClientsService(MicroZenContext db) : Clients.ClientsBase
+public class ClientsGrpcService(MicroZenContext db) : Clients.ClientsBase
 {
 	/// <inheritdoc />
 	public override async Task<ManyClientsResponse> GetManyClients(ManyClientsRequest request, ServerCallContext context)
@@ -178,7 +178,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
-	public override async Task<AuthCredentialsAllowResponse> AllowAuthCredentials(AuthCredentialsAllowRequest request, ServerCallContext context)
+	public override async Task<AuthorizedClientsResponse> AuthorizeClients(AuthorizeClientsRequest request, ServerCallContext context)
 	{
 		switch (request.Type)
 		{
@@ -204,7 +204,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
-	public override async Task<AuthCredentialsAllowResponse> DisallowAuthCredentials(AuthCredentialsAllowRequest request, ServerCallContext context)
+	public override async Task<EmptyResponse> DisallowClients(DisallowClientsRequest request, ServerCallContext context)
 	{
 		var client = await db.Clients.Include(c => c.AllowedClientOAuth2Credentials).FirstOrDefaultAsync(c => c.Id == request.ClientId);
 		if (client is null)
@@ -214,12 +214,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 			throw new RpcException(new Status(StatusCode.NotFound, "Auth Credentials not found."));
 		client.AllowedClientOAuth2Credentials.Remove(oauthCredentials);
 		await db.SaveChangesAsync();
-		return new AuthCredentialsAllowResponse()
-		{
-			Id = client.Id,
-			ClientId = client.Id,
-			Type = CredentialsType.Oauth2
-		};
+		return new EmptyResponse();
 	}
 
 	/// <inheritdoc />

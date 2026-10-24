@@ -96,7 +96,7 @@ app.UseSwaggerUI(c =>
 });
 
 // Configure the HTTP request pipeline.
-app.MapGrpcService<ClientsService>();
+app.MapGrpcService<ClientsGrpcService>();
 app.MapGrpcService<OrganizationsService>();
 app.MapGrpcService<OrganizationUsersService>();
 app.MapGrpcService<ClientApiKeysService>();

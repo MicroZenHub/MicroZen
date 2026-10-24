@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "MicroZen.Grpc.Entities";
+option csharp_namespace = "MicroZen.Grpc.V1";
 
 import "google/protobuf/wrappers.proto";
 import "google/protobuf/timestamp.proto";
@@ -8,10 +8,10 @@ import "google/api/annotations.proto";
 import "Protos/client.proto";
 import "Protos/organization-user.proto";
 
-package MicroZen.Grpc.Entities;
+package MicroZen.Grpc.V1;
 
 // The service for managing Organizations.
-service Organizations {
+service OrganizationsGrpcService {
   // Gets an Organization by ID.
   rpc GetOrganization(GetOrganizationRequest) returns (OrganizationMessage) {
     option (google.api.http) = {

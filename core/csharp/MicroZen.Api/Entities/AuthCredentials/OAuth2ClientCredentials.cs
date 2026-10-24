@@ -75,6 +75,7 @@ public class OAuth2ClientCredentials
 		return new OAuth2Credentials()
 		{
 			Id = Id,
+			Name = Client?.Name ?? "Unknown",
 			ClientId = OAuth2ClientId,
 			ClientSecret = OAuth2ClientSecret,
 		};

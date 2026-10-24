@@ -1,8 +1,6 @@
-using Grpc.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MicroZen.Grpc.Entities;
 using MicroZen.OAuth2.Config;
 using MicroZen.OAuth2.Definitions;
 using MicroZen.OAuth2.Providers.Cognito;

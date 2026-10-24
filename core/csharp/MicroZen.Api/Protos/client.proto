@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-option csharp_namespace = "MicroZen.Grpc.Entities";
+option csharp_namespace = "MicroZen.Grpc.V1";
 
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
-package MicroZen.Grpc.Entities;
+package MicroZen.Grpc.V1;
 
 // The service for managing Clients.
-service Clients {
+service ClientsGrpcService {
   // Get many clients, optionally filtered by type
   rpc GetManyClients (ManyClientsRequest) returns (ManyClientsResponse) {
     option (google.api.http) = {
@@ -55,7 +55,7 @@ service Clients {
   };
 
   // Adds a client to the list of allowed clients.
-  rpc AllowAuthCredentials(AuthCredentialsAllowRequest) returns (AuthCredentialsAllowResponse) {
+  rpc AuthorizeClients(AuthorizeClientsRequest) returns (AuthorizedClientsResponse) {
     option (google.api.http) = {
       post: "/api/v1/client/{id}/allow"
       body: "*"
@@ -63,7 +63,7 @@ service Clients {
   };
 
   // Removes a client from the list of allowed clients.
-  rpc DisallowAuthCredentials(AuthCredentialsAllowRequest) returns (AuthCredentialsAllowResponse) {
+  rpc DisallowClients(DisallowClientsRequest) returns (EmptyResponse) {
     option (google.api.http) = {
       post: "/api/v1/client/{id}/disallow"
       body: "*"
@@ -151,7 +151,7 @@ message ClientRequest {
 }
 
 // The Auth Credentials request message containing the client ID and the allowed client ID and whether it is allowed.
-message AuthCredentialsAllowRequest {
+message AuthorizedClient {
   // The ID of the auth credentials.
   int32 id = 1;
   // The ID of the client.
@@ -160,14 +160,28 @@ message AuthCredentialsAllowRequest {
   CredentialsType type = 3;
 }
 
-// The Auth Credentials request message containing the client ID and the allowed client ID and whether it is allowed.
-message AuthCredentialsAllowResponse {
-  // The ID of the auth credentials.
+// The request message for authorizing clients to access a client's resources.
+message AuthorizeClientsRequest {
+  // The ID of the client that is authorizing other clients.
   int32 id = 1;
-  // The ID of the client.
-  int32 client_id = 2;
-  // The type of auth credentials (i.e. OAuth2, etc.)
-  CredentialsType type = 3;
+  // The list of clients to authorize.
+  repeated AuthorizedClient authorized_clients = 2;
+}
+
+// The request message for disallowing clients from accessing a client's resources.
+message DisallowClientsRequest {
+  // The ID of the client that is disallowing other clients.
+  int32 id = 1;
+  // The list of clients to disallow.
+  repeated AuthorizedClient disallowed_clients = 2;
+}
+
+// The Auth Credentials request message containing the client ID and the allowed client ID and whether it is allowed.
+message AuthorizedClientsResponse {
+  repeated AuthorizedClient authorized_clients = 1;
+}
+
+message EmptyResponse {
 }
 
 // The response message containing the client credentials for allowed clients.
@@ -197,18 +211,20 @@ message DeleteClientResponse {
 message OAuth2Credentials {
   // The ID of the client.
   int32 id = 1;
+  // The name of the client (optional)
+  google.protobuf.StringValue name = 2;
   // The OAuth ClientId.
-  string client_id = 2;
+  string client_id = 3;
   // The client secret.
-  string client_secret = 3;
+  string client_secret = 4;
   // The client UserPoolId
-  string user_pool_id = 4;
+  string user_pool_id = 5;
   // The client region
-  string region = 5;
+  string region = 6;
   // The client type.
-  ClientType type = 6;
+  ClientType type = 7;
   // The Provider for these credentials
-  Provider provider = 7;
+  Provider provider = 8;
 }
 
 // The request message containing the user's name.
