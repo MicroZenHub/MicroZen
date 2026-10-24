@@ -1,5 +1,5 @@
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { IonicModule } from '@ionic/angular';
 
 import { HomePage } from './home.page';
 
@@ -12,8 +12,12 @@ import { HomePage } from './home.page';
  *
  * Key conventions demonstrated here:
  * - `TestBed` configures a throwaway Angular module around the unit under test.
- * - `CUSTOM_ELEMENTS_SCHEMA` lets Ionic's `ion-*` web components render without
- *   importing the whole Ionic module (the template uses `ion-header`, etc.).
+ * - `IonicModule` is imported so Ionic's `ion-*` components and their property
+ *   bindings (e.g. `[translucent]`, `[fullscreen]`) are known to the template.
+ *   The test-setup enables `errorOnUnknownElements` AND
+ *   `errorOnUnknownProperties`, so `CUSTOM_ELEMENTS_SCHEMA` alone is not enough
+ *   here: it would suppress unknown-element errors but still throw on the
+ *   unknown property bindings during change detection.
  * - Each test follows an Arrange / Act / Assert structure for readability.
  */
 describe('HomePage', () => {
@@ -25,7 +29,7 @@ describe('HomePage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [HomePage],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [IonicModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HomePage);
