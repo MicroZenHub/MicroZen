@@ -71,7 +71,7 @@ public class OrganizationsService(MicroZenContext db) : Organizations.Organizati
 	public override async Task<DisableOrganizationResponse> DisableOrganization(DisableOrganizationRequest request, ServerCallContext context)
 	{
 		var organization = await db.Organizations.FindAsync(request.Id);
-		if(organization is null)
+		if (organization is null)
 			throw new RpcException(new Status(StatusCode.NotFound,
 				$"No Organization found for Id {request.Id}"));
 		organization.DeletedOn = DateTime.UtcNow;
@@ -88,7 +88,7 @@ public class OrganizationsService(MicroZenContext db) : Organizations.Organizati
 	public override async Task<OrganizationMessage> EnableOrganization(EnableOrganizationRequest request, ServerCallContext context)
 	{
 		var organization = await db.Organizations.FindAsync(request.Id);
-		if(organization is null)
+		if (organization is null)
 			throw new RpcException(new Status(StatusCode.NotFound,
 				$"No Organization found for Id {request.Id}"));
 		organization.DeletedOn = null;

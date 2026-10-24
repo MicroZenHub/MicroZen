@@ -54,7 +54,7 @@ public class OAuth2ClientCredentials
 	/// Represents the unique identifier for the Client entity associated with the OAuth2 client configuration.
 	/// </summary>
 	public int ClientId { get; set; }
-	
+
 	/// <summary>
 	/// The OAuth2 Provider for the Client Configuration.
 	/// </summary>

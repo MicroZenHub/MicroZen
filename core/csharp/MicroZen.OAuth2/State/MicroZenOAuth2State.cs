@@ -32,7 +32,7 @@ public class MicroZenOAuth2State : IDisposable
 		_client = client;
 		_logger = logger;
 		var microZenConfig = configuration.GetSection("MicroZen").Get<MicroZenAppConfig>();
-		if(microZenConfig is null)
+		if (microZenConfig is null)
 			throw new ArgumentNullException(nameof(microZenConfig), "MicroZenAppConfig is null. Please confirm that you have properly entered the required configuration settings in appsettings.json or as an Environment Variable.");
 		try
 		{
@@ -87,7 +87,7 @@ public class MicroZenOAuth2State : IDisposable
 			return currentState;
 		}
 		catch (RpcException rpcException) when (rpcException is
-			                                        { StatusCode: StatusCode.NotFound or StatusCode.Unavailable })
+		{ StatusCode: StatusCode.NotFound or StatusCode.Unavailable })
 		{
 			switch (rpcException.StatusCode)
 			{

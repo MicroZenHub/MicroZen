@@ -8,6 +8,6 @@ public class PolicyAttribute : TypeFilterAttribute
 	/// <inheritdoc />
 	public PolicyAttribute(Type type, Permission permission) : base(typeof(PolicyFilter<>))
 	{
-		Arguments = [ type, permission ];
+		Arguments = [type, permission];
 	}
 }

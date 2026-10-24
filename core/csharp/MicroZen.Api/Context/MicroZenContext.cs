@@ -14,59 +14,59 @@ public class MicroZenContext : DbContext
 	/// <inheritdoc />
 	public MicroZenContext() { }
 
-    /// <inheritdoc />
-    public MicroZenContext(DbContextOptions<MicroZenContext> options) : base(options) { }
+	/// <inheritdoc />
+	public MicroZenContext(DbContextOptions<MicroZenContext> options) : base(options) { }
 
-    /// <summary>
-    /// The Clients DbSet.
-    /// </summary>
-    public DbSet<Client> Clients => Set<Client>();
+	/// <summary>
+	/// The Clients DbSet.
+	/// </summary>
+	public DbSet<Client> Clients => Set<Client>();
 
-    /// <summary>
-    /// The ClientAPIKeys DbSet.
-    /// </summary>
-    public DbSet<ClientAPIKey> ClientAPIKeys => Set<ClientAPIKey>();
+	/// <summary>
+	/// The ClientAPIKeys DbSet.
+	/// </summary>
+	public DbSet<ClientAPIKey> ClientAPIKeys => Set<ClientAPIKey>();
 
-    /// <summary>
-    /// Represents the database set for OAuth2 client credentials.
-    /// </summary>
-    public DbSet<OAuth2ClientCredentials> OAuth2ClientCredentials => Set<OAuth2ClientCredentials>();
+	/// <summary>
+	/// Represents the database set for OAuth2 client credentials.
+	/// </summary>
+	public DbSet<OAuth2ClientCredentials> OAuth2ClientCredentials => Set<OAuth2ClientCredentials>();
 
-    /// <summary>
-    /// The Organizations DbSet.
-    /// </summary>
-    public DbSet<Organization> Organizations => Set<Organization>();
+	/// <summary>
+	/// The Organizations DbSet.
+	/// </summary>
+	public DbSet<Organization> Organizations => Set<Organization>();
 
-    /// <summary>
-    /// The OrganizationUsers DbSet.
-    /// </summary>
-    public DbSet<OrganizationUser> OrganizationUsers => Set<OrganizationUser>();
+	/// <summary>
+	/// The OrganizationUsers DbSet.
+	/// </summary>
+	public DbSet<OrganizationUser> OrganizationUsers => Set<OrganizationUser>();
 
-    /// <inheritdoc />
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-      if (optionsBuilder.IsConfigured)
-        return;
+	/// <inheritdoc />
+	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+	{
+		if (optionsBuilder.IsConfigured)
+			return;
 
-      var config = Config();
-      var connectionString = config.GetConnectionString(MicroZenContextName);
-      optionsBuilder.UseNpgsql(connectionString);
-    }
+		var config = Config();
+		var connectionString = config.GetConnectionString(MicroZenContextName);
+		optionsBuilder.UseNpgsql(connectionString);
+	}
 
-    /// <inheritdoc />
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-	    modelBuilder.UseEncryption(new EncryptionProvider(
-		    Config()[EncryptionProvider.EncryptionKeyVarName] ??
-		    throw new ArgumentNullException(EncryptionProvider.EncryptionKeyVarName, "Please initialize your encryption key.")));
-	    modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-    }
+	/// <inheritdoc />
+	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.UseEncryption(new EncryptionProvider(
+			Config()[EncryptionProvider.EncryptionKeyVarName] ??
+			throw new ArgumentNullException(EncryptionProvider.EncryptionKeyVarName, "Please initialize your encryption key.")));
+		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+	}
 
-    private static IConfigurationRoot Config() =>
-	    new ConfigurationBuilder()
-		    .SetBasePath(Directory.GetCurrentDirectory())
-		    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-		    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"}.json", optional: true)
-		    .AddEnvironmentVariables()
-		    .Build();
+	private static IConfigurationRoot Config() =>
+		new ConfigurationBuilder()
+			.SetBasePath(Directory.GetCurrentDirectory())
+			.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+			.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development"}.json", optional: true)
+			.AddEnvironmentVariables()
+			.Build();
 }

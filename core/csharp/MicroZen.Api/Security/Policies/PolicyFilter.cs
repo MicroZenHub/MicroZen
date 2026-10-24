@@ -16,7 +16,7 @@ public class PolicyFilter<TPolicy>(Type resourceType, Permission permission, ISe
 		var constructedHandlerType = handlerType.MakeGenericType(handlerTypeArgs);
 		var handler = services.GetService(constructedHandlerType);
 		var authorizeMethod = handler?.GetType().GetMethod("IsAllowed");
-		var result = await Task.Run(() => authorizeMethod?.Invoke(handler, [permission] ));
+		var result = await Task.Run(() => authorizeMethod?.Invoke(handler, [permission]));
 
 		if ((bool)(result ?? false) == false) filterContext.Result = new ForbidResult();
 	}

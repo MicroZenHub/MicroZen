@@ -185,7 +185,7 @@ public class ClientsService(MicroZenContext db) : Clients.ClientsBase
 			case CredentialsType.Oauth2:
 				var client = await db.Clients.FindAsync(request.ClientId);
 				var allowedClientAuthCredentials = await db.OAuth2ClientCredentials.FindAsync(request.Id);
-				if (allowedClientAuthCredentials is null )
+				if (allowedClientAuthCredentials is null)
 					throw new RpcException(new Status(StatusCode.NotFound, "Auth Credentials not found."));
 				if (client is null)
 					throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));

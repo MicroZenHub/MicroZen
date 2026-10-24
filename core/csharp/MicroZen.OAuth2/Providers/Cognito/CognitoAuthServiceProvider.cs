@@ -21,7 +21,7 @@ public static class CognitoAuthServiceProvider
 	///		<see cref="Dictionary{TKey,TValue}"/> - TKey = <see cref="string"/>, TValue = <see cref="AuthorizationPolicy"/>
 	/// </param>
 	/// <param name="grantTypes"><see cref="OAuth2GrantType" /> params</param>
-	public static void AddAWSCognitoMicroZenOAuth2(this IServiceCollection services, Dictionary<string,AuthorizationPolicy>? policies = null, params OAuth2GrantType[] grantTypes)
+	public static void AddAWSCognitoMicroZenOAuth2(this IServiceCollection services, Dictionary<string, AuthorizationPolicy>? policies = null, params OAuth2GrantType[] grantTypes)
 	{
 		AddOAuth2JwtAuthentication(services, grantTypes);
 		AddOAuth2Authorization(services, policies);
@@ -50,11 +50,11 @@ public static class CognitoAuthServiceProvider
 
 		var builder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
-		if(grantTypes.Contains(OAuth2GrantType.AuthorizationCode) || grantTypes.Contains(OAuth2GrantType.AuthorizationCodeWithPKCE))
+		if (grantTypes.Contains(OAuth2GrantType.AuthorizationCode) || grantTypes.Contains(OAuth2GrantType.AuthorizationCodeWithPKCE))
 		{
 			builder.AddAuthorizationCodeJwtBearer(services);
 		}
-		else if(grantTypes.Contains(OAuth2GrantType.ClientCredentials))
+		else if (grantTypes.Contains(OAuth2GrantType.ClientCredentials))
 		{
 			builder.AddClientCredentialsJwtBearer(services);
 		}
@@ -64,7 +64,7 @@ public static class CognitoAuthServiceProvider
 		}
 	}
 
-	private static void AddOAuth2Authorization(this IServiceCollection services, Dictionary<string,AuthorizationPolicy>? policies = null)
+	private static void AddOAuth2Authorization(this IServiceCollection services, Dictionary<string, AuthorizationPolicy>? policies = null)
 	{
 		var defaultAuthPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 
@@ -72,7 +72,7 @@ public static class CognitoAuthServiceProvider
 		{
 			if (policies is null) return;
 
-			foreach(var policy in policies)
+			foreach (var policy in policies)
 				options.AddPolicy(policy.Key, policy.Value);
 
 			options.DefaultPolicy = defaultAuthPolicy;
