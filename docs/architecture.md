@@ -139,12 +139,10 @@ Flow summary:
 
 ## Source map
 
-| Concern                 | Where to look                                                      |
-| ----------------------- | ------------------------------------------------------------------ |
-| Host wiring             | `core/csharp/MicroZen.Api/Program.cs`                              |
-| gRPC services           | `core/csharp/MicroZen.Api/Services/`                               |
-| gRPC contracts          | `core/csharp/MicroZen.Api/Protos/`                                 |
-| OAuth2 / OpenID Connect | `core/csharp/MicroZen.OAuth2/` (`Initialization.cs`, `Providers/`) |
-| API-key auth            | `core/csharp/MicroZen.Api/Security/APIKeys/`                       |
-| Data context            | `core/csharp/MicroZen.Api/Context/MicroZenContext.cs`              |
-| Migrations / seeding    | `core/csharp/MicroZen.Api/Migrations/`, `Context/Functions.cs`     |
+- **Host wiring** — `core/csharp/MicroZen.Api/Program.cs`
+- **gRPC services** — `core/csharp/MicroZen.Api/Services/`
+- **gRPC contracts** — `core/csharp/MicroZen.Api/Protos/`
+- **OAuth2 / OpenID Connect** — `core/csharp/MicroZen.OAuth2/` (`Initialization.cs`, `Providers/`)
+- **API-key auth** — `core/csharp/MicroZen.Api/Security/APIKeys/`
+- **Data context** — `core/csharp/MicroZen.Api/Context/MicroZenContext.cs`
+- **Migrations / seeding** — `core/csharp/MicroZen.Api/Migrations/`, `Context/Functions.cs`
