@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Data.Security.Encryption.Utils;
 using MicroZen.Api.Entities;
