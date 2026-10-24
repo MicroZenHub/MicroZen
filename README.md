@@ -59,7 +59,7 @@ docker compose up -d
 
 `.env` is gitignored, so your local credentials are never committed. The `.env` file documents every variable the stack needs: the `POSTGRES_*` values consumed by Compose, the `ConnectionStrings__MicroZenDb` connection string the API uses (the connection string name is `MicroZenDb`), and the `MicroZen__*` OAuth2/Cognito settings read by `AddMicroZenOAuth2` in `Program.cs`.
 
-On startup the API applies the Entity Framework migrations and seeds development data automatically, so you only need the database running and reachable through the `MicroZenConnectionString` connection string. Make sure the API process sees the same configuration (for example by exporting the variables from your `.env`, or by running `docker compose up -d` in the same shell).
+On startup the API applies the Entity Framework migrations and seeds development data automatically, so you only need the database running and reachable through the `MicroZenConnectionString` connection string. Make sure the API process sees the same configuration. `docker compose up -d` only substitutes `.env` into the Compose file's own variable interpolation; it does not export those variables to a later `dotnet run`. Supply them to the API process in one of the following ways: export the variables from your `.env` into the environment (for example `export $(grep -v '^#' .env | xargs)`), store them with `dotnet user-secrets`, or put them in an `appsettings.Development.json`.
 
 ## 4. Run the applications
 
