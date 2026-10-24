@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
 using MicroZen.Api.Entities;
 using MicroZen.Api.Entities.AuthCredentials;
-using MicroZen.Grpc.Entities;
+using MicroZen.Grpc.V1;
 
 namespace MicroZen.Api.Services;
 
@@ -13,7 +13,7 @@ namespace MicroZen.Api.Services;
 /// The Clients gRPC/REST service.
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
-public class ClientsGrpcService(MicroZenContext db) : Clients.ClientsBase
+public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceBase
 {
 	/// <inheritdoc />
 	public override async Task<ManyClientsResponse> GetManyClients(ManyClientsRequest request, ServerCallContext context)
@@ -180,39 +180,59 @@ public class ClientsGrpcService(MicroZenContext db) : Clients.ClientsBase
 	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
 	public override async Task<AuthorizedClientsResponse> AuthorizeClients(AuthorizeClientsRequest request, ServerCallContext context)
 	{
-		switch (request.Type)
+		var client = await db.Clients
+			.Include(c => c.AllowedClientOAuth2Credentials)
+			.FirstOrDefaultAsync(c => c.Id == request.Id);
+		if (client is null)
+			throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
+
+		var authorizedCredentials = new List<OAuth2ClientCredentials>();
+		foreach (var authorizedClient in request.AuthorizedClients)
 		{
-			case CredentialsType.Oauth2:
-				var client = await db.Clients.FindAsync(request.ClientId);
-				var allowedClientAuthCredentials = await db.OAuth2ClientCredentials.FindAsync(request.Id);
-				if (allowedClientAuthCredentials is null)
-					throw new RpcException(new Status(StatusCode.NotFound, "Auth Credentials not found."));
-				if (client is null)
-					throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
-				client.AllowedClientOAuth2Credentials.Add(allowedClientAuthCredentials);
-				await db.SaveChangesAsync();
-				return new AuthCredentialsAllowResponse()
-				{
-					Id = allowedClientAuthCredentials.Id,
-					ClientId = client.Id,
-					Type = CredentialsType.Oauth2
-				};
-			default:
-				throw new ArgumentOutOfRangeException();
+			switch (authorizedClient.Type)
+			{
+				case CredentialsType.Oauth2:
+					var allowedClientAuthCredentials = await db.OAuth2ClientCredentials.FindAsync(authorizedClient.Id);
+					if (allowedClientAuthCredentials is null)
+						throw new RpcException(new Status(StatusCode.NotFound, "Auth Credentials not found."));
+					client.AllowedClientOAuth2Credentials.Add(allowedClientAuthCredentials);
+					authorizedCredentials.Add(allowedClientAuthCredentials);
+					break;
+				default:
+					throw new RpcException(new Status(StatusCode.Unimplemented, "Unsupported credentials type."));
+			}
 		}
+
+		await db.SaveChangesAsync();
+
+		var response = new AuthorizedClientsResponse();
+		response.AuthorizedClients.AddRange(authorizedCredentials.Select(credential => new AuthorizedClient
+		{
+			Id = credential.Id,
+			ClientId = request.Id,
+			Type = CredentialsType.Oauth2
+		}));
+		return response;
 	}
 
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Client), Permission.Manage)] attribute to block access if user is not in the organization for this client
 	public override async Task<EmptyResponse> DisallowClients(DisallowClientsRequest request, ServerCallContext context)
 	{
-		var client = await db.Clients.Include(c => c.AllowedClientOAuth2Credentials).FirstOrDefaultAsync(c => c.Id == request.ClientId);
+		var client = await db.Clients
+			.Include(c => c.AllowedClientOAuth2Credentials)
+			.FirstOrDefaultAsync(c => c.Id == request.Id);
 		if (client is null)
 			throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
-		var oauthCredentials = client.AllowedClientOAuth2Credentials?.FirstOrDefault(cred => cred.Id == request.Id);
-		if (oauthCredentials is null || client.AllowedClientOAuth2Credentials is null)
-			throw new RpcException(new Status(StatusCode.NotFound, "Auth Credentials not found."));
-		client.AllowedClientOAuth2Credentials.Remove(oauthCredentials);
+
+		foreach (var disallowedClient in request.DisallowedClients)
+		{
+			var oauthCredentials = client.AllowedClientOAuth2Credentials
+				.FirstOrDefault(cred => cred.Id == disallowedClient.Id);
+			if (oauthCredentials is not null)
+				client.AllowedClientOAuth2Credentials.Remove(oauthCredentials);
+		}
+
 		await db.SaveChangesAsync();
 		return new EmptyResponse();
 	}

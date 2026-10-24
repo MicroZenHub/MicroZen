@@ -1,7 +1,7 @@
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
-using MicroZen.Grpc.Entities;
+using MicroZen.Grpc.V1;
 
 namespace MicroZen.Core.Api.Services;
 
@@ -9,7 +9,7 @@ namespace MicroZen.Core.Api.Services;
 /// The Organization Users gRPC/REST service.
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
-public class OrganizationUsersService(MicroZenContext db) : OrganizationUsers.OrganizationUsersBase
+public class OrganizationUsersService(MicroZenContext db) : OrganizationUsersGrpcService.OrganizationUsersGrpcServiceBase
 {
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(OrganizationUsers), Permission.Read)] attribute to block access if user is not in the organization for this client

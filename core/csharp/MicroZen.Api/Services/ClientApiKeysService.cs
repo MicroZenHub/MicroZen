@@ -13,7 +13,7 @@ namespace MicroZen.Api.Services;
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
 [Authorize]
-public class ClientApiKeysService(MicroZenContext db) : ClientApiKeys.ClientApiKeysBase
+public class ClientApiKeysService(MicroZenContext db) : ClientApiKeysGrpcService.ClientApiKeysGrpcServiceBase
 {
 	/// <inheritdoc />
 	public override async Task<RequestClientApiKeyResponse> RequestClientApiKey(RequestClientApiKeyRequest request, ServerCallContext context)

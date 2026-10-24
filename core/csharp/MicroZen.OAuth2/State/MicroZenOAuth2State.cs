@@ -4,7 +4,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using MicroZen.Grpc.Entities;
+using MicroZen.Grpc.V1;
 using MicroZen.OAuth2.Config;
 
 namespace MicroZen.OAuth2.State;
@@ -17,7 +17,7 @@ public class MicroZenOAuth2State : IDisposable
 	private readonly List<IDisposable> _subscriptions = [];
 	private BehaviorSubject<OAuth2State?> _oauth2Subject = new BehaviorSubject<OAuth2State?>(null);
 	private readonly ILogger<MicroZenOAuth2State> _logger;
-	private readonly Clients.ClientsClient _client;
+	private readonly ClientsGrpcService.ClientsGrpcServiceClient _client;
 
 	/// <summary>
 	/// Gets the current OAuth2State as an Observable
@@ -27,7 +27,7 @@ public class MicroZenOAuth2State : IDisposable
 	/// <summary>
 	/// Initializes a new instance of the <see cref="MicroZenOAuth2State"/> class.
 	/// </summary>
-	public MicroZenOAuth2State(IConfiguration configuration, ILogger<MicroZenOAuth2State> logger, Clients.ClientsClient client)
+	public MicroZenOAuth2State(IConfiguration configuration, ILogger<MicroZenOAuth2State> logger, ClientsGrpcService.ClientsGrpcServiceClient client)
 	{
 		_client = client;
 		_logger = logger;

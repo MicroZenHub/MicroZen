@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MicroZen.Data.Security.Encryption.Attributes;
-using MicroZen.Grpc.Entities;
+using MicroZen.Grpc.V1;
 
 namespace MicroZen.Api.Entities.AuthCredentials;
 

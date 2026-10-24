@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Entities.AuthCredentials;
 using MicroZen.Api.Entities;
-using MicroZen.Grpc.Entities;
+using MicroZen.Grpc.V1;
 
 namespace MicroZen.Api.Context;
 

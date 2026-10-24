@@ -1,4 +1,4 @@
-using MicroZen.Grpc.Entities;
+using MicroZen.Grpc.V1;
 
 namespace MicroZen.OAuth2.State;
 

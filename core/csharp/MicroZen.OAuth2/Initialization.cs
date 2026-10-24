@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MicroZen.Grpc.V1;
 using MicroZen.OAuth2.Config;
 using MicroZen.OAuth2.Definitions;
 using MicroZen.OAuth2.Providers.Cognito;
@@ -27,7 +28,7 @@ public static class Initialization
 	{
 		var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 		var microZenConfig = configuration.GetSection("MicroZen").Get<MicroZenAppConfig>();
-		services.AddGrpcClient<Clients.ClientsClient>(o =>
+		services.AddGrpcClient<ClientsGrpcService.ClientsGrpcServiceClient>(o =>
 		{
 			if (microZenConfig is null)
 				throw new ArgumentNullException(

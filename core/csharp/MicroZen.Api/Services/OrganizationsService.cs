@@ -2,7 +2,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
-using MicroZen.Grpc.Entities;
+using MicroZen.Grpc.V1;
 using LinqKit;
 using MicroZen.Api.Entities;
 
@@ -12,7 +12,7 @@ namespace MicroZen.Api.Services;
 /// The Organizations gRPC/REST service.
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
-public class OrganizationsService(MicroZenContext db) : Organizations.OrganizationsBase
+public class OrganizationsService(MicroZenContext db) : OrganizationsGrpcService.OrganizationsGrpcServiceBase
 {
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Organization), Permission.Manage)] attribute to block access if user is not in the organization for this client
