@@ -102,7 +102,7 @@ public class APIKeyValidatorTests : IDisposable
 		var apiKey = GenerateAPIKey();
 
 		await using var context = new MicroZenContext(_options);
-		context.ClientAPIKeys.Add(new ClientAPIKey() { ClientId = 1, ApiKey = apiKey, ExpiresOn = new DateTime(1979, 1, 1)});
+		context.ClientAPIKeys.Add(new ClientAPIKey() { ClientId = 1, ApiKey = apiKey, ExpiresOn = new DateTime(1979, 1, 1) });
 		await context.SaveChangesAsync();
 
 		var validator = new APIKeyValidator(context);
@@ -121,7 +121,7 @@ public class APIKeyValidatorTests : IDisposable
 		var apiKey = GenerateAPIKey();
 
 		await using var context = new MicroZenContext(_options);
-		context.ClientAPIKeys.Add(new ClientAPIKey() { ClientId = 1, ApiKey = apiKey, DeletedBy = Guid.NewGuid(), DeletedOn = new DateTime(1970, 1, 1)});
+		context.ClientAPIKeys.Add(new ClientAPIKey() { ClientId = 1, ApiKey = apiKey, DeletedBy = Guid.NewGuid(), DeletedOn = new DateTime(1970, 1, 1) });
 		await context.SaveChangesAsync();
 
 		var validator = new APIKeyValidator(context);
