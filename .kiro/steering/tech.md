@@ -58,6 +58,60 @@ string (the connection string name is `MicroZenDb`, matching
 `AddMicroZenOAuth2(MicroZenProvider.Cognito, ...)` in `Program.cs`
 (`AuthorityUrl`, `APIKey`, and optional `Interval`).
 
+### Development data seeding
+
+`app.MigrateAndSeedDevDataOnStart()`
+(`core/csharp/MicroZen.Api/Context/Functions.cs`, called from `Program.cs`) runs
+on every API startup. It always applies any pending EF Core migrations. It then
+seeds development data **only** when all three conditions hold:
+
+- the hosting environment is `Development` (`ASPNETCORE_ENVIRONMENT=Development`),
+- the `SeedDevData` configuration flag is `true`, and
+- the `Organizations` table is empty (the idempotency guard).
+
+When it seeds, it inserts one placeholder `Organization` and its child rows (all
+values are non-sensitive placeholders). The seeded graph is:
+
+- `Organization` "MicroZen": `Id 1`, description "The Zen of Microservices",
+  avatar and website URLs.
+- `Client` "MicroZen API" (under that Organization): `Id 1`, `Type` `Api`,
+  GitHub repo URLs.
+- `OAuth2ClientCredentials` (under that Client): `ClientCredentials` grant,
+  `Development` environment, placeholder client id/secret, scopes
+  `scope1,scope2`, `RequirePkce` true, `Provider` `Aws`.
+- `ClientAPIKey` (under that Client): fixed `Id`
+  `0bbc9369-dc40-4952-baa5-6f1e6dde43cc`, placeholder `ApiKey`, expires 12 hours
+  after seeding.
+
+Enable it by setting the environment to `Development` and the `SeedDevData` flag
+to `true`. The `launchSettings.json` `http`/`https` profiles already set
+`ASPNETCORE_ENVIRONMENT=Development`, so `dotnet run --project
+core/csharp/MicroZen.Api` only needs `SeedDevData=true`:
+
+- Environment variable: `SeedDevData=true dotnet run --project core/csharp/MicroZen.Api`
+- Or add `"SeedDevData": true` to `appsettings.Development.json`
+- Or add `SeedDevData=true` to your `.env` (and export it to the API process)
+
+Because the empty-table guard makes seeding a one-time, idempotent operation,
+**re-seeding requires an empty database**. Reset the Compose Postgres by
+dropping its named volume (`microzen-pgdata`) and starting fresh:
+
+```bash
+docker compose down -v   # drops the microzen-pgdata volume
+docker compose up -d     # recreates an empty MicroZenDb
+SeedDevData=true dotnet run --project core/csharp/MicroZen.Api
+```
+
+`scripts/seed-db.sh` wraps this: it runs the API with
+`ASPNETCORE_ENVIRONMENT=Development` and `SeedDevData=true`, and with `--reset`
+it first runs `docker compose down -v && docker compose up -d` so the data is
+seeded fresh:
+
+```bash
+./scripts/seed-db.sh           # seed against the current database
+./scripts/seed-db.sh --reset   # reset the Compose DB, then seed
+```
+
 ## CI gate
 
 CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
