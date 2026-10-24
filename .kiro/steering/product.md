@@ -15,6 +15,9 @@ capabilities (grounded in `README.md` and the source):
 - API-key based authorization alongside JWT bearer authentication.
 - AES encryption of sensitive data stored in the database.
 
+For a runtime view of how the API, auth, and data layers fit together (with a
+request-flow diagram), see [`docs/architecture.md`](../../docs/architecture.md).
+
 ## Monorepo shape
 
 This is an Nx 18.2.3 monorepo that holds two stacks tied into a single Nx
