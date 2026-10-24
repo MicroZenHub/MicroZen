@@ -67,7 +67,7 @@ Backend - `core/csharp` holds `MicroZen.Core.sln` with three projects:
   insert a final newline, trim trailing whitespace.
 - `[*.cs]`: **tab** indentation with `indent_size = 4`.
 - `[*.md]`: trailing whitespace is **not** trimmed (`trim_trailing_whitespace =
-  false`), and `max_line_length` is off.
+false`), and `max_line_length` is off.
 
 ## Toolchain caveat
 

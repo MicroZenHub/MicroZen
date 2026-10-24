@@ -56,15 +56,25 @@ Do not change the csproj `TargetFramework` values.
 
 ## PR / CI gate
 
-CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests:
-checkout, setup-node (Node 20), `npm ci`, `nrwl/nx-set-shas`, then
-`npx nx-cloud record -- nx format:check` and `npx nx affected -t lint test build`.
+CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
+and is the authoritative full-gate verification. Two jobs:
 
-Before opening a pull request, mirror the gate locally:
+- `main` (Node 20): checkout, `setup-node`, `npm ci`, `nrwl/nx-set-shas`, then
+  `npx nx format:check` and `npx nx affected -t lint test build`.
+- `dotnet` (.NET 10 via `actions/setup-dotnet`): `dotnet restore`,
+  `dotnet build`, and `dotnet test core/csharp/MicroZen.Core.sln`.
 
-- `npx nx format:check`
+Before opening a pull request, mirror the gate locally, in order:
+
+- `npx nx format:check` (fix with `npx nx format:write`)
 - `npx nx affected -t lint test build`
 - `dotnet test core/csharp/MicroZen.Core.sln`
+
+`scripts/check.sh` runs all three steps in order and exits non-zero on the first
+failure. After `npm ci` and with a .NET 10 SDK on `PATH`, run `./scripts/check.sh`
+from a clean checkout with no extra setup. The .NET tests use the EF Core
+InMemory provider and set their own `EncryptionKey`, so they are self-contained
+and need no PostgreSQL.
 
 ## Nx Cloud authentication
 

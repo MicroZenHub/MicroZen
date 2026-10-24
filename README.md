@@ -1,9 +1,10 @@
 ![microzen_logo.png](assets/microzen_color_logo.png)
 
 # About MicroZen
-Introducing **MicroZen**, a revolutionary Microservice Management tool designed to streamline the complexities of modern software architectures. 
 
-With an intuitive graphical user interface (GUI) and simplicity at its core, MicroZen empowers developers and architects to effortlessly catalogue microservices and micro-frontend applications, offering unparalleled visibility and control over the intricacies of their systems. 
+Introducing **MicroZen**, a revolutionary Microservice Management tool designed to streamline the complexities of modern software architectures.
+
+With an intuitive graphical user interface (GUI) and simplicity at its core, MicroZen empowers developers and architects to effortlessly catalogue microservices and micro-frontend applications, offering unparalleled visibility and control over the intricacies of their systems.
 
 From health checks to comprehensive mapping of application and API interactions, MicroZen provides a centralized platform for orchestrating seamless authentication, service mapping, and uptime observability within distributed architectures.
 
@@ -23,6 +24,7 @@ From health checks to comprehensive mapping of application and API interactions,
 MicroZen is an Nx monorepo that contains an Angular/Ionic front-end and a .NET (C#) back-end. Follow the steps below to get a local environment running.
 
 ## Prerequisites
+
 - [Node.js](https://nodejs.org/en/download/)
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) (the solution targets `net10.0`)
 - [Docker](https://docs.docker.com/get-docker/) (used to run the PostgreSQL database)
