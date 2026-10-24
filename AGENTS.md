@@ -1,20 +1,22 @@
 # AGENTS.md
 
 Portable, thin front door for coding agents working in the MicroZen repo. It
-lists prerequisites, the exact build/test/lint/run commands for both stacks, the
-PR/CI gate, and key conventions.
+lists prerequisites, the exact build/test/lint/run commands for the .NET stack,
+the PR/CI gate, and key conventions.
 
 For deeper detail, read the steering files under `.kiro/steering/`, which are the
 single source of truth and must not be contradicted here:
 
-- `.kiro/steering/product.md` - product and architecture overview of both stacks.
+- `.kiro/steering/product.md` - product and architecture overview.
 - `.kiro/steering/structure.md` - repository layout and conventions.
 - `.kiro/steering/tech.md` - authoritative build/test/lint/run commands.
 
-MicroZen is an Nx monorepo with two stacks in a single Nx project graph: an
-Angular 17 + Ionic/Capacitor front-end (`core/ts/dashboard`, Nx project
-`core-dashboard`) and a .NET 10 C# back-end (`core/csharp/MicroZen.Core.sln`).
-The `@nx-dotnet/core` plugin ties the .NET solution into the same Nx graph.
+MicroZen is a .NET-only repository: the .NET 10 C# back-end under
+`core/csharp/MicroZen.Core.sln`. Nx is used only through the `@nx-dotnet/core`
+plugin (configured in `nx.json`), which wraps the .NET solution so build, test,
+lint, and format tasks run through the Nx project graph. There are no TypeScript
+projects in this repo; the Angular/Ionic dashboard was moved to a separate
+private repository.
 
 ## Prerequisites
 
@@ -23,22 +25,9 @@ The `@nx-dotnet/core` plugin ties the .NET solution into the same Nx graph.
 - [Docker](https://docs.docker.com/get-docker/) (used to run the PostgreSQL database)
 
 Install JS dependencies from the repo root with `npm ci`. The only npm script is
-`prepare` (`nx g @nx-dotnet/core:restore`), which runs on install; TypeScript
-tasks go through `npx nx ...` and .NET tasks through the `dotnet` CLI. There is
-no `npm run build` or `npm run test`.
-
-## TypeScript / Angular stack (Nx, project `core-dashboard`)
-
-- Serve the dev app: `npx nx serve core-dashboard`
-- Build: `npx nx build core-dashboard` (all affected: `npx nx affected -t build`)
-- Unit tests (Jest): `npx nx test core-dashboard` (or `npx nx affected -t test`)
-- Lint (ESLint): `npx nx lint core-dashboard` (or `npx nx affected -t lint`)
-- End-to-end (Cypress): `npx nx e2e core-dashboard-e2e`
-- Format check / write: `npx nx format:check` / `npx nx format:write`
-
-Capacitor is exposed as Nx targets on `core-dashboard` (`add`, `copy`, `open`,
-`run`, `sync`, `update`), each with `ios` and `android` configurations, for
-example `npx nx run core-dashboard:sync:ios`. See `.kiro/steering/tech.md`.
+`prepare` (`nx g @nx-dotnet/core:restore`), which runs on install; .NET tasks go
+through the `dotnet` CLI, and Nx wraps those same tasks via `@nx-dotnet/core`.
+There is no `npm run build` or `npm run test`.
 
 ## .NET / C# stack (dotnet CLI, solution `core/csharp/MicroZen.Core.sln`)
 
@@ -50,6 +39,9 @@ example `npx nx run core-dashboard:sync:ios`. See `.kiro/steering/tech.md`.
   - `https` profile: `https://localhost:7070`
   - The API needs a PostgreSQL database named `MicroZenDb` (typically run via
     Docker). On startup it applies EF Core migrations and seeds development data.
+
+Nx wraps these through `@nx-dotnet/core`, so `npx nx affected -t lint test build`
+resolves to the .NET targets (there are no TypeScript projects to run).
 
 ### Development data seeding
 
@@ -73,7 +65,9 @@ CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
 and is the authoritative full-gate verification. Two jobs:
 
 - `main` (Node 20): checkout, `setup-node`, `npm ci`, `nrwl/nx-set-shas`, then
-  `npx nx format:check` and `npx nx affected -t lint test build`.
+  `npx nx format:check` and `npx nx affected -t lint test build`. Because there
+  are no TypeScript projects, the affected targets resolve to the .NET build via
+  `@nx-dotnet/core`.
 - `dotnet` (.NET 10 via `actions/setup-dotnet`): `dotnet restore`,
   `dotnet build`, and `dotnet test core/csharp/MicroZen.Core.sln`.
 
@@ -118,12 +112,8 @@ the token value to the repository.
 ## Key conventions
 
 - **Prettier** with `singleQuote: true`.
-- **ESLint** via `@nx` using `@nx/enforce-module-boundaries`; respect project
-  boundaries and do not add cross-project imports that violate it.
 - **`.editorconfig`**: 2-space indentation by default; `*.cs` uses **tab**
   indentation with `indent_size = 4`; `*.md` keeps trailing whitespace.
-- **Nx generator defaults**: `scss` styles, Jest for unit tests, Cypress for
-  e2e, component/app `prefix` is `MicroZen`.
 - **C# central package management**: declare versions in
   `core/csharp/Directory.Packages.props` and use version-less
   `PackageReference` entries in csproj; do not pin versions in csproj.

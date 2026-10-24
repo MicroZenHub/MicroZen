@@ -1,30 +1,19 @@
 # Build, Test, Lint & Run Commands
 
-This is the authoritative command reference for both stacks. The TypeScript side
-is driven through Nx; the .NET side is driven through the `dotnet` CLI against
-`core/csharp/MicroZen.Core.sln`. The only npm script is `prepare`
+This is the authoritative command reference for the .NET stack. The .NET side is
+driven through the `dotnet` CLI against `core/csharp/MicroZen.Core.sln`. Nx is
+used only via the `@nx-dotnet/core` plugin to wrap that build; there are no
+TypeScript projects in this repo. The only npm script is `prepare`
 (`nx g @nx-dotnet/core:restore`); there is no `npm run build` or `npm run test`.
 
-## TypeScript / Angular (Nx, project `core-dashboard`)
+## JavaScript / Nx workspace
 
 - Install JS dependencies (repo root): `npm ci`
   - This runs the `prepare` script, which invokes the `@nx-dotnet/core` restore.
-- Serve the dev app: `npx nx serve core-dashboard`
-- Build: `npx nx build core-dashboard` (or all affected: `npx nx affected -t build`)
-- Unit tests (Jest): `npx nx test core-dashboard` (or `npx nx affected -t test`)
-- Lint (ESLint): `npx nx lint core-dashboard` (or `npx nx affected -t lint`)
-- End-to-end (Cypress): `npx nx e2e core-dashboard-e2e`
 - Format check / write: `npx nx format:check` / `npx nx format:write`
-
-### Capacitor targets
-
-Capacitor is exposed as Nx targets on `core-dashboard` (see
-`core/ts/dashboard/project.json`): `add`, `copy`, `open`, `run`, `sync`, and
-`update`, each with `ios` and `android` configurations. For example:
-
-- `npx nx run core-dashboard:sync:ios`
-- `npx nx run core-dashboard:add:android`
-- `npx nx run core-dashboard:open:ios`
+- Affected lint/test/build: `npx nx affected -t lint test build`
+  - Because there are no TypeScript projects, these targets resolve to the .NET
+    build through `@nx-dotnet/core`.
 
 ## .NET (dotnet CLI, solution `core/csharp/MicroZen.Core.sln`)
 
