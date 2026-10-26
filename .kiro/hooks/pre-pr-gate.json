@@ -1,0 +1,15 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Pre-PR gate: affected lint/test/build + .NET tests",
+      "description": "Manual, opt-in gate to run before committing or opening a pull request. Mirrors the CI gate: the Nx affected lint/test/build pipeline plus the self-contained .NET test suite. Heavier than the save hooks, so it is triggered on demand rather than on every save. Blocks (exits non-zero) on the first failing step.",
+      "trigger": "Manual",
+      "action": {
+        "type": "command",
+        "command": "npx nx format:check && npx nx affected -t lint test build && dotnet test core/csharp/MicroZen.Core.sln"
+      },
+      "enabled": true
+    }
+  ]
+}

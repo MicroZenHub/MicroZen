@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "C# save: format + affected lint",
+      "description": "When a C# source file in the .NET solution is saved, write Prettier formatting (Nx format covers non-code files) and run the affected lint target scoped to affected projects only. Keeps the working tree clean after edits to core/csharp without running the full repo gate.",
+      "trigger": "PostFileSave",
+      "matcher": "core/csharp/.*[^/]*\\.cs$",
+      "action": {
+        "type": "command",
+        "command": "npx nx format:write && npx nx affected -t lint"
+      },
+      "enabled": true
+    }
+  ]
+}
