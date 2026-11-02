@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
 using MicroZen.Api.Entities;
 using MicroZen.Api.Entities.AuthCredentials;
+using MicroZen.Api.Security.APIKeys;
 using MicroZen.Grpc.V1;
 
 namespace MicroZen.Api.Services;
@@ -84,6 +85,7 @@ public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGr
 	public override async Task<Int32Value> GetClientIdFromApiKey(StringValue request, ServerCallContext context)
 	{
 		var clientId = (await db.ClientAPIKeys
+			.WhereValid()
 			.Select(clientApiKey => new { clientApiKey.ClientId, clientApiKey.ApiKey })
 			.FirstOrDefaultAsync(x => x.ApiKey == request.Value))?.ClientId;
 		return new Int32Value() { Value = clientId ?? 0 };
