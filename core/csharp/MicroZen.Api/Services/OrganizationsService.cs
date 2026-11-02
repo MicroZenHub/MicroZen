@@ -56,7 +56,6 @@ public class OrganizationsService(MicroZenContext db) : OrganizationsGrpcService
 		{
 			var organization = new Organization(request)
 			{
-				Id = -1,
 				Name = request.Name,
 				CreatedOn = DateTime.UtcNow,
 				ModifiedOn = DateTime.UtcNow
