@@ -141,9 +141,11 @@ public class ClientApiKeysServiceTests : IDisposable
 		// WHEN the key is disabled
 		var response = await service.DisableClientApiKey(request, null!);
 
-		// THEN the key is returned and DeletedOn / ExpiresOn are stamped
+		// THEN the key is returned and DeletedOn / ExpiresOn are stamped. The row is now
+		// soft-deleted, so the global DeletedOn == null query filter (should-fix #55) hides
+		// it from a normal read; IgnoreQueryFilters() opts out to verify it was stamped.
 		Equal(apiKey, response.ApiKey);
-		var stored = await context.ClientAPIKeys.FirstAsync(x => x.ApiKey == apiKey);
+		var stored = await context.ClientAPIKeys.IgnoreQueryFilters().FirstAsync(x => x.ApiKey == apiKey);
 		NotNull(stored.DeletedOn);
 		NotNull(stored.ExpiresOn);
 	}

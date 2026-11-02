@@ -19,7 +19,11 @@ public class OrganizationsService(MicroZenContext db) : OrganizationsGrpcService
 	/// <inheritdoc />
 	// TODO - Add [Policy(typeof(Organization), Permission.Manage)] attribute to block access if user is not in the organization for this client
 	public override async Task<OrganizationMessage> GetOrganization(GetOrganizationRequest request, ServerCallContext context) =>
-		(await db.Organizations.FindAsync(request.Id))?.ToMessage() ??
+		// FirstOrDefaultAsync (not FindAsync): the global DeletedOn == null query filter
+		// is only applied to composable LINQ queries. FindAsync is a key lookup that
+		// short-circuits on the change tracker and bypasses the filter, so a soft-deleted
+		// org would still be returned here. Query instead so #55 is actually fixed.
+		(await db.Organizations.FirstOrDefaultAsync(o => o.Id == request.Id))?.ToMessage() ??
 		throw new RpcException(new Status(StatusCode.NotFound, "Organization not found"));
 
 	/// <inheritdoc />

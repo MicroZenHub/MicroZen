@@ -121,19 +121,26 @@ public class SoftDeleteQueryFilterTests : IDisposable
 			orgId = active.Id;
 		}
 
-		await using var db = new MicroZenContext(_options);
-		var service = new OrganizationsService(db);
+		// WHEN the org is disabled (soft-deleted) through one context.
+		await using (var disableDb = new MicroZenContext(_options))
+		{
+			var disableService = new OrganizationsService(disableDb);
+			await disableService.DisableOrganization(
+				new DisableOrganizationRequest { Id = orgId }, TestServerCallContext.Create());
+		}
 
-		// WHEN the org is disabled (soft-deleted).
-		await service.DisableOrganization(new DisableOrganizationRequest { Id = orgId }, TestServerCallContext.Create());
+		// THEN a subsequent read (fresh context, as each gRPC call gets its own scoped
+		// context) no longer surfaces the org. A fresh context also means the query
+		// filter is not short-circuited by a change-tracker hit from the disable.
+		await using var readDb = new MicroZenContext(_options);
+		var readService = new OrganizationsService(readDb);
 
-		// THEN reading it by id is NotFound.
 		var ex = await ThrowsAsync<RpcException>(() =>
-			service.GetOrganization(new GetOrganizationRequest { Id = orgId }, TestServerCallContext.Create()));
+			readService.GetOrganization(new GetOrganizationRequest { Id = orgId }, TestServerCallContext.Create()));
 		Equal(StatusCode.NotFound, ex.StatusCode);
 
 		// AND the list read no longer includes it.
-		var list = await service.GetOrganizations(new MultipleOrganizationsRequest(), TestServerCallContext.Create());
+		var list = await readService.GetOrganizations(new MultipleOrganizationsRequest(), TestServerCallContext.Create());
 		Empty(list.Organizations);
 	}
 
@@ -150,15 +157,21 @@ public class SoftDeleteQueryFilterTests : IDisposable
 			clientId = active.Id;
 		}
 
-		await using var db = new MicroZenContext(_options);
-		var service = new ClientsService(db);
+		// WHEN the client is deleted (soft-deleted) through one context.
+		await using (var deleteDb = new MicroZenContext(_options))
+		{
+			var deleteService = new ClientsService(deleteDb);
+			await deleteService.DeleteClient(
+				new DeleteClientRequest { Id = clientId }, TestServerCallContext.Create());
+		}
 
-		// WHEN the client is deleted (soft-deleted).
-		await service.DeleteClient(new DeleteClientRequest { Id = clientId }, TestServerCallContext.Create());
+		// THEN a subsequent read (fresh context, as each gRPC call gets its own scoped
+		// context) is NotFound.
+		await using var readDb = new MicroZenContext(_options);
+		var readService = new ClientsService(readDb);
 
-		// THEN reading it by id is NotFound.
 		var ex = await ThrowsAsync<RpcException>(() =>
-			service.GetClient(new ClientRequest { Id = clientId }, TestServerCallContext.Create()));
+			readService.GetClient(new ClientRequest { Id = clientId }, TestServerCallContext.Create()));
 		Equal(StatusCode.NotFound, ex.StatusCode);
 	}
 
