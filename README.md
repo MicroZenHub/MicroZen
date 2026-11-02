@@ -14,7 +14,7 @@ From health checks to comprehensive mapping of application and API interactions,
 - **Application and API Mapping**: Visualize and manage interactions between different apps and APIs.
 - **Health Checks Tracking**: Monitor the health and performance of microservices in real-time.
 - **OAuth2/OpenID Connect Support**: Support for secure authentication processes, managing client IDs and secrets for multiple OAuth2 flows.
-- **Comprehensive Security**: Ensure data integrity and confidentiality with robust authentication mechanisms and secure AES-512 encrypting of sensitive data.
+- **Comprehensive Security**: Ensure data integrity and confidentiality with robust authentication mechanisms and secure AES-256 encrypting of sensitive data.
 - **Scalability**: Accommodate the growth and complexity of microservice architectures with ease.
 - **Centralized Management**: Simplify the management of microservices through a centralized platform.
 - **Efficient Workflow**: Streamline development workflows and enhance productivity with seamless integration.

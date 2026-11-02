@@ -32,6 +32,18 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 	/// </summary>
 	public const string EncryptionKeyVarName = "EncryptionKey";
 
+	/// <summary>
+	/// The size, in bytes, of the AES initialization vector prepended to the ciphertext.
+	/// </summary>
+	private const int IvSize = 16;
+
+	/// <summary>
+	/// Derives a fixed 32-byte (AES-256) key from the configured string via SHA-256.
+	/// This normalizes any non-empty configured value to a legal AES key length.
+	/// </summary>
+	/// <returns>A 32-byte key suitable for AES-256.</returns>
+	private byte[] DeriveKey() => SHA256.HashData(Encoding.UTF8.GetBytes(key));
+
 	/// <inheritdoc />
 	public string Encrypt(string dataToEncrypt)
 	{
@@ -41,14 +53,14 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 		if (string.IsNullOrEmpty(dataToEncrypt))
 			return string.Empty;
 
-		var iv = new byte[16];
-
 		using var aes = Aes.Create();
-		aes.Key = Encoding.UTF8.GetBytes(key);
-		aes.IV = iv;
+		aes.Key = DeriveKey();
+		aes.GenerateIV();
+		var iv = aes.IV;
 
 		var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 		using var memoryStream = new MemoryStream();
+		memoryStream.Write(iv, 0, iv.Length); // prepend IV
 		using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
 		using (var streamWriter = new StreamWriter(cryptoStream))
 		{
@@ -69,15 +81,18 @@ public class EncryptionProvider(string key) : IEncryptionProvider
 		if (string.IsNullOrEmpty(dataToDecrypt))
 			return string.Empty;
 
-		var iv = new byte[16];
+		var buffer = Convert.FromBase64String(dataToDecrypt);
+		if (buffer.Length < IvSize)
+			throw new FormatException("Ciphertext is too short to contain an IV.");
 
 		using var aes = Aes.Create();
-		aes.Key = Encoding.UTF8.GetBytes(key);
+		aes.Key = DeriveKey();
+		var iv = new byte[IvSize];
+		Array.Copy(buffer, 0, iv, 0, IvSize);
 		aes.IV = iv;
 		var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 
-		var buffer = Convert.FromBase64String(dataToDecrypt);
-		using var memoryStream = new MemoryStream(buffer);
+		using var memoryStream = new MemoryStream(buffer, IvSize, buffer.Length - IvSize);
 		using var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
 		using var streamReader = new StreamReader(cryptoStream);
 		return streamReader.ReadToEnd();
