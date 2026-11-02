@@ -5,6 +5,9 @@ using MicroZen.Api.Entities;
 using MicroZen.Api.Services;
 using MicroZen.Grpc.V1;
 using static Xunit.Assert;
+// MicroZen.Api.Services and MicroZen.Grpc.V1 both define a ClientsGrpcService
+// type; alias the service one (matching ClientsGrpcServiceGetManyClientsTests).
+using ClientsService = MicroZen.Api.Services.ClientsGrpcService;
 
 namespace MicroZen.Core.Api.Test.Services;
 
@@ -86,7 +89,7 @@ public class SoftDeleteQueryFilterTests : IDisposable
 		}
 
 		await using var db = new MicroZenContext(_options);
-		var service = new ClientsGrpcService(db);
+		var service = new ClientsService(db);
 
 		// WHEN reading the soft-deleted client by id, THEN it is NotFound.
 		var ex = await ThrowsAsync<RpcException>(() =>
@@ -148,7 +151,7 @@ public class SoftDeleteQueryFilterTests : IDisposable
 		}
 
 		await using var db = new MicroZenContext(_options);
-		var service = new ClientsGrpcService(db);
+		var service = new ClientsService(db);
 
 		// WHEN the client is deleted (soft-deleted).
 		await service.DeleteClient(new DeleteClientRequest { Id = clientId }, TestServerCallContext.Create());
