@@ -28,10 +28,15 @@ public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGr
 	{
 		var predicate = PredicateBuilder.New<Client>(true);
 		predicate.And(c => c.Type == request.Type);
-		if (request.SearchTerm is not null)
+		if (!string.IsNullOrEmpty(request.SearchTerm))
 		{
-			predicate.And(c =>
-				EF.Functions.ILike(c.Name, $"%{request}%"));
+			// Case-insensitive name contains. Provider-agnostic on purpose:
+			// Npgsql translates ToLower()/Contains() to SQL LOWER()/strpos, and
+			// the InMemory provider the test suite uses evaluates it in memory.
+			// (Replaces the Npgsql-only EF.Functions.ILike, which neither the
+			// InMemory nor Sqlite provider can translate — see PR description.)
+			var searchTerm = request.SearchTerm.ToLower();
+			predicate.And(c => c.Name.ToLower().Contains(searchTerm));
 		}
 
 		var response = new ManyClientsResponse();
