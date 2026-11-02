@@ -27,7 +27,10 @@ Backend - `core/csharp` holds `MicroZen.Core.sln` with three projects:
   - `Migrations/` - EF Core migrations.
   - `Protos/` - `.proto` gRPC service and message contracts.
   - `Entities/` - EF Core entity types.
-  - `Services/` - gRPC service implementations.
+  - `Services/` - gRPC service implementations. The service classes are
+    `[Authorize]`-protected (auth middleware wired in `Program.cs`), so every
+    service endpoint requires authentication. Per-organization tenant/ownership
+    isolation is not yet implemented (follow-up issue #79).
   - `Security/APIKeys` - API key generation, validation, and the auth handler.
   - `Security/Encryption` - column encryption for sensitive data.
 - `MicroZen.OAuth2` - reusable OAuth2/OpenID client library (`Config/`,
@@ -51,7 +54,11 @@ Backend - `core/csharp` holds `MicroZen.Core.sln` with three projects:
 - **gRPC contracts** live in `MicroZen.Api/Protos/*.proto`; services are
   implemented under `Services/` and mapped in `MicroZen.Api/Program.cs`.
 - **EF Core migrations** live in `MicroZen.Api/Migrations`.
-- **Sensitive DB columns** are encrypted via the `EncryptColumnAttribute`.
+- **Sensitive DB columns** are encrypted via the `EncryptColumnAttribute`; only
+  columns carrying that attribute are encrypted. Encryption is AES-256 with a
+  per-operation random IV (prepended to the ciphertext) and a key derived from
+  the configured `EncryptionKey` via SHA-256, so the key may be any non-empty
+  string (no fixed 16/24/32-byte length requirement).
 
 ## Formatting / `.editorconfig`
 

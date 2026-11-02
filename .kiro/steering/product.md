@@ -22,8 +22,18 @@ capabilities (grounded in `README.md` and the source):
   implements **AWS Cognito only**, with **Authorization Code (+ PKCE)** and
   **Client Credentials** flows; other providers and flows are roadmap/gaps
   (see [`ecosystem.md`](./ecosystem.md) sections 3-4).
-- API-key based authorization alongside JWT bearer authentication.
-- AES encryption of sensitive data stored in the database.
+- API-key based authorization alongside JWT bearer authentication. All gRPC
+  service endpoints require authentication: the service classes carry
+  `[Authorize]` and `Program.cs` wires in the OAuth2/JWT auth middleware
+  (`UseMicroZenOAuth2`) that enforces it. Per-organization tenant/ownership
+  authorization (cross-tenant isolation) is **not yet implemented** and is
+  tracked as follow-up issue #79.
+- AES-256 encryption of sensitive data stored in the database. Only columns
+  marked with `EncryptColumnAttribute` are encrypted. Each encrypt operation
+  uses a fresh random IV (prepended to the ciphertext), and the AES-256 key is
+  derived from the configured `EncryptionKey` via a SHA-256 KDF, so the
+  configured value can be any non-empty string (no fixed 16/24/32-byte length
+  requirement).
 
 For a runtime view of how the API, auth, and data layers fit together (with a
 request-flow diagram), see [`docs/architecture.md`](../../docs/architecture.md).
@@ -52,8 +62,12 @@ projects:
   `.proto` contracts in `MicroZen.Api/Protos/` and mapped in `Program.cs`. It
   uses EF Core with PostgreSQL via Npgsql, exposes gRPC-JSON transcoding plus a
   Swagger UI, and secures endpoints with API keys (`Security/APIKeys`) and
-  OAuth2 / JWT bearer auth. Sensitive database columns are encrypted
-  (`Security/Encryption`).
+  OAuth2 / JWT bearer auth. All gRPC services are `[Authorize]`-protected and
+  the auth middleware is wired in `Program.cs`, so every service endpoint
+  requires authentication; per-organization tenant isolation is still pending
+  (follow-up issue #79). Sensitive database columns marked with
+  `EncryptColumnAttribute` are encrypted (`Security/Encryption`) using AES-256
+  with a per-operation random IV and a SHA-256-derived key.
 - **MicroZen.OAuth2** - a reusable OAuth2 / OpenID Connect client library,
   packaged as a NuGet package and referenced by the API.
 - **MicroZen.Api.Test** - the xUnit test project (assembly name
