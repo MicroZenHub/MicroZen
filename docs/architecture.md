@@ -6,20 +6,28 @@ re-reading the whole codebase. It is intentionally concise: one request-flow
 diagram plus short prose per layer.
 
 > Scope: this repository is the **MicroZen backend** (API + OAuth2 library +
-> data). The graphical dashboard (Angular 17 + Ionic/Capacitor) lives in a
-> **separate private repository** and is deployed independently. It is an
+> data). The graphical dashboard (Angular 21, `MicroZenHub/MicroZen.Web`) lives
+> in a **separate private repository** and is deployed independently. It is an
 > **external consumer** of this API and is described here only as such. Any
 > other gRPC client (another service, a CLI) consumes the API the same way.
+>
+> Two auth concerns are distinct (see the steering `ecosystem.md`): the
+> dashboard authenticates its **human users** against **Supabase**, which is
+> separate from the **catalogued-client** OAuth2 auth this backend manages via
+> `MicroZen.OAuth2`. This document covers the backend; it does not describe the
+> dashboard's Supabase login.
 
 ## Components
 
 ### External front-end (separate repo)
 
-The MicroZen dashboard is a gRPC client hosted outside this repository. It talks
-to `MicroZen.Api` the same way any other consumer does: either over native gRPC
-or over HTTP/JSON through the API's gRPC-JSON transcoding, and it authenticates
-with OAuth2 (Authorization Code + PKCE) plus an API key. Because it is external,
-nothing in this repo builds, serves, or tests it.
+The MicroZen dashboard is a client hosted outside this repository. It talks to
+`MicroZen.Api` over HTTP/JSON through the API's gRPC-JSON transcoding (native
+gRPC is also available to other consumers). Requests to this API are
+authenticated by a JWT bearer token and authorized by the `X-API-Key` policy
+described under **Auth** below. The dashboard's own **user** login is a separate
+concern handled by Supabase and does not involve this API. Because the dashboard
+is external, nothing in this repo builds, serves, or tests it.
 
 ### API: `MicroZen.Api`
 
@@ -35,14 +43,15 @@ nothing in this repo builds, serves, or tests it.
   JSON clients call the API.
 - **gRPC services.** Four services are mapped:
 
-  - `ClientsService` (`MapGrpcService<ClientsService>()`)
+  - `ClientsGrpcService` (`MapGrpcService<ClientsGrpcService>()`)
   - `OrganizationsService` (`MapGrpcService<OrganizationsService>()`)
   - `OrganizationUsersService` (`MapGrpcService<OrganizationUsersService>()`)
   - `ClientApiKeysService` (`MapGrpcService<ClientApiKeysService>()`)
 
   Each service derives from a generated gRPC base type (for example
-  `ClientsService : Clients.ClientsBase`) and takes a `MicroZenContext` for data
-  access. The `.proto` contracts live in `MicroZen.Api/Protos/`.
+  `ClientsGrpcService : ClientsGrpcService.ClientsGrpcServiceBase`) and takes a
+  `MicroZenContext` for data access. The `.proto` contracts live in
+  `MicroZen.Api/Protos/`.
 
 - **gRPC health checks and reflection.** The host registers and maps gRPC health
   checks (`AddGrpcHealthChecks()` + `MapGrpcHealthChecksService()`) and gRPC
@@ -89,8 +98,10 @@ in the reusable `MicroZen.OAuth2` library.
 
 ## Request flow
 
-The diagram below shows a typical authorized request from the external front-end
-(or any gRPC/JSON client) through the API, auth, and data layers.
+The diagram below shows a typical authorized request from a client (the dashboard
+or any other gRPC/JSON client) through the API, auth, and data layers. The JWT
+here is the **catalogued-client** token validated against AWS Cognito; it is not
+the dashboard's Supabase user-login token, which never reaches this API.
 
 ```mermaid
 flowchart TD
