@@ -99,14 +99,16 @@ enum GrantType {
   AuthorizationCodeWithPkce = 1;
   // Client Credentials Grant
   ClientCredentials = 2;
-  // Device Authorization Grant
+  // Device Authorization Grant (RFC 8628)
   DeviceAuthorization = 3;
-  // Implicit Grant
+  // Implicit Grant (declared, not implemented; discouraged by OAuth 2.1)
   Implicit = 4;
-  // Hybrid Grant
+  // Hybrid Grant (declared, not implemented)
   Hybrid = 5;
-  // Resource Owner Password Grant
+  // Resource Owner Password Grant (declared, not implemented; discouraged)
   ResourceOwnerPassword = 6;
+  // Refresh Token Grant (declared, not implemented)
+  RefreshToken = 7;
 }
 
 // The provider for a client
