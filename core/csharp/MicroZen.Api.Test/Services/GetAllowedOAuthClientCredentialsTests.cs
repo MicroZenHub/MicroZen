@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
 using MicroZen.Api.Entities;
 using MicroZen.Api.Entities.AuthCredentials;
-using MicroZen.Api.Services;
 using MicroZen.Grpc.V1;
 using static Xunit.Assert;
+using ClientsGrpcService = MicroZen.Api.Services.ClientsGrpcService;
 
 namespace MicroZen.Core.Api.Test.Services;
 
@@ -54,7 +54,10 @@ public class GetAllowedOAuthClientCredentialsTests : IDisposable
 	private static OAuth2ClientCredentials NewCredential(string oauthClientId) => new()
 	{
 		OAuth2GrantType = GrantType.ClientCredentials,
-		OAuth2ClientId = oauthClientId
+		OAuth2ClientId = oauthClientId,
+		// Non-null: OAuth2Credentials.ToMessage() maps this into a protobuf
+		// string field (ClientSecret), which rejects null values.
+		OAuth2ClientSecret = $"{oauthClientId}-secret"
 	};
 
 	[Fact]
@@ -111,7 +114,7 @@ public class GetAllowedOAuthClientCredentialsTests : IDisposable
 			new ClientRequest { Id = clientId }, TestServerCallContext.Create());
 
 		// THEN an empty (non-error) result is returned.
-		Equal(0, response.Credentials.Count);
+		Empty(response.Credentials);
 	}
 
 	[Fact]
