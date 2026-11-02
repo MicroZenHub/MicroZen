@@ -117,7 +117,7 @@ There is currently **no** code anywhere that reads claims (grep for `ClaimTypes`
 and use it everywhere.
 
 - Add a small service, e.g. `ICallerIdentity` with `Guid GetCallerId(ServerCallContext
-  context)`, implemented over `context.GetHttpContext().User`. Register it in `Program.cs`
+context)`, implemented over `context.GetHttpContext().User`. Register it in `Program.cs`
   DI (scoped).
 - The Cognito JWT handler clears the default inbound claim map
   (`JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear()` in
@@ -163,7 +163,7 @@ Verified facts about the encryption layer:
   `UserId` column is stored in the clear and the §2.2 equality query works directly, with no
   decryption needed. This is the lookup path to use.
 - `EncryptionProvider` uses AES with a **fixed all-zero IV**, making encryption
-  deterministic: equal plaintext → equal ciphertext. So equality lookups on the *string*
+  deterministic: equal plaintext → equal ciphertext. So equality lookups on the _string_
   encrypted columns (`Email`, names) are technically possible by encrypting the search term,
   but that is weak crypto and not needed here.
 - Therefore: resolve the caller by `UserId` (Guid, unencrypted) — **do not** key tenant
@@ -263,4 +263,7 @@ New tests pass; existing unit and #47 auth tests still pass.
 - The in-code `// TODO - Add [Policy(...)]` comments are resolved (replaced by the real
   enforcement) rather than left dangling.
 - PR opened into `epic/must-have-fixes` with all CI checks green, stacked on / after #47.
+
+```
+
 ```

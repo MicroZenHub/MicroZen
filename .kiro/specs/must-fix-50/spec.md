@@ -102,7 +102,7 @@ pass.
   schema change. Low risk.
 - **Same file has paging issues tracked separately in #51.** Note the existing
   paging bugs in this method (`page` defaults to `10` via `request.Page > 0 ? request.Page : 10`
-  but is used as a page *size* in `Take(page)`; `NextUrl` uses `request.Page + 1`
+  but is used as a page _size_ in `Take(page)`; `NextUrl` uses `request.Page + 1`
   with no page default). **This spec does NOT touch paging.** It changes only
   the `ILike` interpolation argument on the search-term filter line.
 - **Coordinate with #51** so the two fixes do not conflict: both edit
