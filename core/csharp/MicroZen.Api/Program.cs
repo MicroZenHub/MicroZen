@@ -20,11 +20,26 @@ using MicroZen.OAuth2.Definitions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// CORS: allow all origins, methods, and headers — intentional product decision.
+// An unbounded set of third-party websites call this API for MicroZen
+// transactions, so an origin allow-list is not viable. Do NOT "tighten" this to
+// a fixed origin list: that breaks legitimate callers.
+//
+// The real guard on this authenticated API is auth + the DB-backed API-key
+// lookup (see #47/#48), NOT the CORS origin check. CORS does not authenticate.
+//
+// Do NOT add AllowCredentials(): ASP.NET Core forbids AllowAnyOrigin() together
+// with AllowCredentials() and throws at startup. Credentialed cross-origin CORS
+// cannot coexist with allow-all origins and must stay OFF. (The bearer /
+// API-key flow sends Authorization explicitly and is unaffected by this.)
+const string AllowAllCorsPolicy = "AllowAllOrigins";
 builder.Services.AddCors(options =>
 {
-	options.AddDefaultPolicy((corsPolicyBuilder) =>
-		corsPolicyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().Build()
-	);
+	options.AddPolicy(AllowAllCorsPolicy, corsPolicyBuilder =>
+		corsPolicyBuilder
+			.AllowAnyOrigin()
+			.AllowAnyMethod()
+			.AllowAnyHeader());
 });
 var policies = new Dictionary<string, AuthorizationPolicy>()
 {
@@ -88,7 +103,7 @@ if (!app.Environment.IsDevelopment())
 	app.UseHsts();
 
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors(AllowAllCorsPolicy);
 app.UseMicroZenOAuth2(MicroZenProvider.Cognito); // enforces [Authorize]; must run after UseCors()
 app.UseSwagger();
 app.UseSwaggerUI(c =>
