@@ -51,7 +51,7 @@ What is wrong:
 - **`page` is used as a page SIZE, not a page number.** The local `page` defaults to `10` and is fed straight into `.Take(page)`. So "page" controls how many rows come back, not which window.
 - **`skip` is a raw row offset that is never derived from the page.** `.Skip(skip)` uses `request.Skip` directly, so the window offset is decoupled from the page the caller is on.
 - **`NextUrl` increments `request.Page` but not `skip`.** It emits `page={request.Page + 1}` while repeating `skip={request.Skip}` unchanged. The next call therefore takes `Take(page+1-ish)` rows from the **same** `skip` offset, so consecutive pages overlap and `Total` is only meaningful when there is a next page.
-- **`anyMoreClients` is a no-op guard.** `.Take(page + 1).Skip(skip).AnyAsync()` only asks "does any row exist in this window?", not "is there a row *beyond* the current page?" — it does not detect the real end of the list.
+- **`anyMoreClients` is a no-op guard.** `.Take(page + 1).Skip(skip).AnyAsync()` only asks "does any row exist in this window?", not "is there a row _beyond_ the current page?" — it does not detect the real end of the list.
 
 Net effect: callers paging with the documented `page`/`skip` fields get overlapping and incorrect windows, and `NextUrl` points at a window that re-serves rows already returned.
 

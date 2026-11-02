@@ -108,7 +108,7 @@ options, or a minimal `ModelBuilder` with `UseEncryption` applied):
 3. **Non-string columns are untouched.** A key/int column
    (e.g. `Organization.Id`) has no converter.
 
-A regression-style check: assert the *count* of converted properties equals the
+A regression-style check: assert the _count_ of converted properties equals the
 number of `[EncryptColumn]`-marked string properties, so a future inversion fails
 immediately.
 
@@ -137,7 +137,7 @@ Nx, `dotnet` via `dotnet test`) and is the authoritative gate.
     `FirstName/LastName/Email`) will be **written encrypted** going forward.
   - Previously-unmarked columns stop being encrypted.
 - **Data-migration concern (must be called out in the PR).** Any data already in
-  a real Postgres database was written under the *old* (inverted) behavior:
+  a real Postgres database was written under the _old_ (inverted) behavior:
   - Marked columns were stored **plaintext** → after the fix, EF will try to
     `Decrypt` them on read. Decrypting plaintext throws / yields garbage
     (`Convert.FromBase64String` or AES failure).
@@ -159,7 +159,7 @@ Nx, `dotnet` via `dotnet test`) and is the authoritative gate.
   `ModelBuilderExtension.cs` and the new encryption-mapping unit test.
 - CI on the PR is green: both the `main` (Nx `format:check` +
   `affected -t lint test build`) and `dotnet` (`dotnet test
-  core/csharp/MicroZen.Core.sln`) jobs pass.
+core/csharp/MicroZen.Core.sln`) jobs pass.
 - The new unit test proves: marked string columns get the `EncryptionConverter`,
   unmarked columns and non-string columns do not.
 - The PR description calls out the data-migration concern from §4 for any
