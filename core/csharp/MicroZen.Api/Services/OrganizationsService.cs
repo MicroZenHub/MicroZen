@@ -47,7 +47,11 @@ public class OrganizationsService(MicroZenContext db) : OrganizationsGrpcService
 	{
 		if (await db.Organizations.AnyAsync(o => o.Id == request.Id))
 		{
-			var organization = await db.Organizations.FindAsync(request.Id);
+			// FirstOrDefaultAsync (not FindAsync) so the global DeletedOn == null filter
+			// applies consistently with the AnyAsync gate above. FindAsync is a key lookup
+			// that bypasses query filters; keeping both on the same filtered query path
+			// prevents the gate and the load from ever disagreeing about visibility.
+			var organization = await db.Organizations.FirstOrDefaultAsync(o => o.Id == request.Id);
 			if (organization is null)
 				throw new RpcException(new Status(StatusCode.NotFound, $"No Organization found for Id {request.Id}"));
 			organization.Name = request.Name;
