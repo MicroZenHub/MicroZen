@@ -88,7 +88,13 @@ public class OrganizationsService(MicroZenContext db) : OrganizationsGrpcService
 	/// <inheritdoc />
 	public override async Task<OrganizationMessage> EnableOrganization(EnableOrganizationRequest request, ServerCallContext context)
 	{
-		var organization = await db.Organizations.FindAsync(request.Id);
+		// The org being re-enabled is, by definition, soft-deleted, so the global
+		// DeletedOn == null query filter would hide it. Opt out with IgnoreQueryFilters()
+		// so the undelete path can load it. FindAsync does not compose with
+		// IgnoreQueryFilters, so this uses a filtered-out FirstOrDefaultAsync instead.
+		var organization = await db.Organizations
+			.IgnoreQueryFilters()
+			.FirstOrDefaultAsync(o => o.Id == request.Id);
 		if (organization is null)
 			throw new RpcException(new Status(StatusCode.NotFound,
 				$"No Organization found for Id {request.Id}"));
