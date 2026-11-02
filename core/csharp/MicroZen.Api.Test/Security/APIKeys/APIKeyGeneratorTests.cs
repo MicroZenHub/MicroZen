@@ -25,7 +25,7 @@ public class APIKeyGeneratorTests
 		var apiKey = GenerateAPIKey();
 
 		// WHEN
-		var result = HasValidHashAndPrefix(apiKey);
+		var result = HasValidFormatAndPrefix(apiKey);
 
 		// THEN
 		True(result);
