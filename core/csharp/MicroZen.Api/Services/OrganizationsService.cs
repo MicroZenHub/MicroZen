@@ -27,8 +27,16 @@ public class OrganizationsService(MicroZenContext db) : OrganizationsGrpcService
 	public override async Task<MultipleOrganizationsResponse> GetOrganizations(MultipleOrganizationsRequest request, ServerCallContext context)
 	{
 		var predicate = PredicateBuilder.New<Organization>(true);
-		if (request.SearchTerm is not null)
-			predicate.And(o => o.Name.Contains(request.SearchTerm, StringComparison.InvariantCultureIgnoreCase));
+		if (!string.IsNullOrEmpty(request.SearchTerm))
+		{
+			// Case-insensitive name contains. Provider-agnostic on purpose:
+			// Npgsql translates ToLower()/Contains() to SQL LOWER()/strpos, and
+			// the InMemory provider the test suite uses evaluates it in memory.
+			// (Replaces the untranslatable Contains(..., StringComparison) overload;
+			// matches the Clients search fix from #50.)
+			var searchTerm = request.SearchTerm.ToLower();
+			predicate.And(o => o.Name.ToLower().Contains(searchTerm));
+		}
 		var organizations = await db.Organizations
 			.Where(predicate)
 			.Select(o => o.ToMessage())

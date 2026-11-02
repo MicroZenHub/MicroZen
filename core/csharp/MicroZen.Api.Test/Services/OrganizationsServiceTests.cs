@@ -2,6 +2,7 @@ using System.Threading;
 using Grpc.Core;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
+using MicroZen.Api.Entities;
 using MicroZen.Api.Services;
 using MicroZen.Grpc.V1;
 using static Xunit.Assert;
@@ -83,6 +84,91 @@ public class OrganizationsServiceTests : IDisposable
 		Equal("The second organization", secondResult.Description);
 		Equal("https://example.com/second.png", secondResult.AvatarUrl);
 		Equal("https://second.example.com", secondResult.WebsiteUrl);
+	}
+
+	[Fact]
+	public async Task GetOrganizations_SearchTerm_MatchesCaseInsensitively()
+	{
+		// GIVEN two organizations with names of differing case.
+		await using var db = new MicroZenContext(_options);
+		await db.Organizations.AddRangeAsync(
+			new Organization { Name = "Acme Corp" },
+			new Organization { Name = "Globex" });
+		await db.SaveChangesAsync();
+		var service = new OrganizationsService(db);
+
+		// WHEN searching with a different case ("acme" vs "Acme Corp").
+		var response = await service.GetOrganizations(
+			new MultipleOrganizationsRequest { SearchTerm = "acme" },
+			TestServerCallContext.Instance);
+
+		// THEN only the matching organization is returned.
+		var name = Single(response.Organizations).Name;
+		Equal("Acme Corp", name);
+	}
+
+	[Fact]
+	public async Task GetOrganizations_SearchTerm_MatchesSubstring()
+	{
+		// GIVEN an organization whose name contains the substring "orp".
+		await using var db = new MicroZenContext(_options);
+		await db.Organizations.AddRangeAsync(
+			new Organization { Name = "Acme Corp" },
+			new Organization { Name = "Globex" });
+		await db.SaveChangesAsync();
+		var service = new OrganizationsService(db);
+
+		// WHEN searching for the substring "orp".
+		var response = await service.GetOrganizations(
+			new MultipleOrganizationsRequest { SearchTerm = "orp" },
+			TestServerCallContext.Instance);
+
+		// THEN the substring match is returned (Contains, not equality).
+		var name = Single(response.Organizations).Name;
+		Equal("Acme Corp", name);
+	}
+
+	[Fact]
+	public async Task GetOrganizations_SearchTerm_NoMatch_ReturnsEmpty()
+	{
+		// GIVEN seeded organizations.
+		await using var db = new MicroZenContext(_options);
+		await db.Organizations.AddRangeAsync(
+			new Organization { Name = "Acme Corp" },
+			new Organization { Name = "Globex" });
+		await db.SaveChangesAsync();
+		var service = new OrganizationsService(db);
+
+		// WHEN searching for a term that matches no organization name.
+		var response = await service.GetOrganizations(
+			new MultipleOrganizationsRequest { SearchTerm = "nonexistent" },
+			TestServerCallContext.Instance);
+
+		// THEN the response is empty.
+		Empty(response.Organizations);
+	}
+
+	[Theory]
+	[InlineData(null)]
+	[InlineData("")]
+	public async Task GetOrganizations_NullOrEmptySearchTerm_ReturnsAll(string? searchTerm)
+	{
+		// GIVEN two seeded organizations.
+		await using var db = new MicroZenContext(_options);
+		await db.Organizations.AddRangeAsync(
+			new Organization { Name = "Acme Corp" },
+			new Organization { Name = "Globex" });
+		await db.SaveChangesAsync();
+		var service = new OrganizationsService(db);
+
+		// WHEN the search term is null or empty (no filter applied).
+		var request = new MultipleOrganizationsRequest();
+		if (searchTerm is not null)
+			request.SearchTerm = searchTerm;
+		var response = await service.GetOrganizations(request, TestServerCallContext.Instance);
+
+		// THEN every seeded organization is returned.
+		Equal(2, response.Organizations.Count);
 	}
 
 	public void Dispose()
