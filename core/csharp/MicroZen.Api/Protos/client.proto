@@ -129,9 +129,9 @@ message ManyClientsRequest {
   ClientType type = 1;
   // The search term to filter for Clients by
   google.protobuf.StringValue searchTerm = 2;
-  // How many clients to return. Defaults to 10 if none specified.
+  // The 1-based page number to return. Defaults to 1 if none specified.
   int32 page = 3;
-  // How many clients to skip. Defaults to 0 if none specified.
+  // The page size (number of clients per page). Defaults to 10 if none specified.
   int32 skip = 4;
 }
 
