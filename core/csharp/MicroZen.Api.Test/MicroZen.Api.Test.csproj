@@ -27,6 +27,13 @@
 
   <ItemGroup>
     <ProjectReference Include="../MicroZen.Api/MicroZen.Api.csproj" />
+    <!--
+      MicroZen.Api transitively pulls in MicroZen.OAuth2, and both assemblies generate the
+      MicroZen.Grpc.V1 proto types from the same client.proto. Aliasing the OAuth2 reference
+      keeps its copies out of the global namespace so proto message types (e.g.
+      ManyClientsRequest) resolve unambiguously to MicroZen.Api in tests.
+    -->
+    <ProjectReference Include="../MicroZen.OAuth2/MicroZen.OAuth2.csproj" Aliases="oauth2" />
   </ItemGroup>
 
   <ItemGroup>

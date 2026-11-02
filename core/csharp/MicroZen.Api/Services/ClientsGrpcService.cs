@@ -16,6 +16,11 @@ namespace MicroZen.Api.Services;
 /// <param name="db"><see cref="MicroZenContext"/></param>
 public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceBase
 {
+	/// <summary>
+	/// The default number of clients to return per page when the caller does not specify a page size.
+	/// </summary>
+	private const int DefaultPageSize = 10;
+
 	/// <inheritdoc />
 	public override async Task<ManyClientsResponse> GetManyClients(ManyClientsRequest request, ServerCallContext context)
 	{
@@ -28,8 +33,10 @@ public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGr
 		}
 
 		var response = new ManyClientsResponse();
-		var page = request.Page > 0 ? request.Page : 10;
-		var skip = request.Skip > 0 ? request.Skip : 0;
+		var page = request.Page > 0 ? request.Page : 1; // 1-based page number
+		var pageSize = request.Skip > 0 ? request.Skip : DefaultPageSize; // rows per page
+		var skip = (page - 1) * pageSize;
+
 		var total = await db.Clients.Where(predicate).CountAsync();
 		var clients = await db.Clients
 			.Include(c => c.OAuth2Credentials)
@@ -37,14 +44,17 @@ public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGr
 			.Where(predicate)
 			.OrderBy(c => c.Name)
 			.Skip(skip)
-			.Take(page)
+			.Take(pageSize)
 			.Select(c => c.ToMessage())
 			.ToListAsync();
-		var anyMoreClients = await db.Clients.Where(predicate).Take(page + 1).Skip(skip).AnyAsync();
-		if (anyMoreClients)
+
+		// There is a next page only if more rows exist beyond the current window.
+		var hasMore = skip + clients.Count < total;
+		response.Total = total;
+		if (hasMore)
 		{
-			response.NextUrl = $"clients?page={request.Page + 1}&skip={request.Skip}&searchTerm={request.SearchTerm}&type={request.Type.ToString().ToUpper()}";
-			response.Total = total;
+			response.NextUrl =
+				$"clients?page={page + 1}&skip={pageSize}&searchTerm={request.SearchTerm}&type={request.Type.ToString().ToUpper()}";
 		}
 		response.Clients.AddRange(clients);
 		return response;
