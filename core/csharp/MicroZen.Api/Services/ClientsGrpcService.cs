@@ -83,17 +83,16 @@ public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGr
 	// TODO - Add [Policy(typeof(Client), Permission.Read)] attribute to block access if user is not in the organization for this client
 	public override async Task<MultipleClientCredentials> GetAllowedOAuthClientCredentials(ClientRequest request, ServerCallContext context)
 	{
-		var allowedCredentials = await db.Clients
-			.Include(c => c.OAuth2Credentials)
+		var client = await db.Clients
 			.Include(c => c.AllowedClientOAuth2Credentials)
-			.SelectMany(c => c.AllowedClientOAuth2Credentials)
-			.ToListAsync();
+			.FirstOrDefaultAsync(c => c.Id == request.Id);
 
-		if (allowedCredentials is null)
-			throw new RpcException(new Status(StatusCode.NotFound, "No Allowed Credentials not found."));
+		if (client is null)
+			throw new RpcException(new Status(StatusCode.NotFound, "Client not found."));
 
 		var response = new MultipleClientCredentials();
-		response.Credentials.AddRange(allowedCredentials.Select(c => c.ToMessage()).ToList());
+		response.Credentials.AddRange(
+			client.AllowedClientOAuth2Credentials.Select(c => c.ToMessage()));
 		return response;
 	}
 
