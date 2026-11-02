@@ -1,5 +1,11 @@
 # Product & Architecture Overview
 
+> Cross-repo intent, the provider model, and the roadmap live in
+> [`ecosystem.md`](./ecosystem.md) (shared with `MicroZen.Web`). This file
+> covers the backend's product and architecture. Two auth concerns are kept
+> distinct there: **dashboard user auth** (Supabase, in `MicroZen.Web`) vs.
+> **catalogued client auth** (the `MicroZen.OAuth2` package, AWS Cognito today).
+
 ## What MicroZen is
 
 MicroZen is a microservice and micro-frontend management tool. It gives
@@ -12,7 +18,10 @@ capabilities (grounded in `README.md` and the source):
 - Application and API mapping to visualize interactions between apps and APIs.
 - Health checks tracking for services (gRPC health checks on the API).
 - OAuth2 / OpenID Connect support for authentication, managing client IDs and
-  secrets across multiple OAuth2 flows.
+  secrets across multiple OAuth2 flows. Today the `MicroZen.OAuth2` package
+  implements **AWS Cognito only**, with **Authorization Code (+ PKCE)** and
+  **Client Credentials** flows; other providers and flows are roadmap/gaps
+  (see [`ecosystem.md`](./ecosystem.md) sections 3-4).
 - API-key based authorization alongside JWT bearer authentication.
 - AES encryption of sensitive data stored in the database.
 
