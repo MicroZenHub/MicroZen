@@ -19,7 +19,9 @@ public static class APIKeyGenerator
 	}
 
 	/// <summary>
-	/// Create an CRC32 hash of the input string
+	/// Compute the CRC32 checksum of the input, hex-encoded (big-endian).
+	/// This is a typo/corruption guard for the API-key format, NOT a security
+	/// signature — see <see cref="APIKeyValidator.HasValidFormatAndPrefix"/>.
 	/// </summary>
 	/// <param name="input"></param>
 	/// <returns></returns>
