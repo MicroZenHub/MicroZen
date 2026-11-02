@@ -68,6 +68,53 @@ public class Client : BaseEntity<ClientMessage>
 	/// </summary>
 	public virtual ICollection<ClientAPIKey> APIKeys { get; set; } = new List<ClientAPIKey>();
 
+	/// <summary>
+	/// Reconciles an incoming set of OAuth2 credentials against the client's
+	/// current credentials. Incoming credentials whose <c>OAuth2ClientId</c> is
+	/// already present are updated in place; genuinely new ones are added. This
+	/// is domain behaviour of the client (how it absorbs a new credential set),
+	/// so it lives on the entity rather than in an API-layer helper, per the
+	/// Grpc/HTTP API -> BLL -> Repo layering standard.
+	/// </summary>
+	/// <param name="incoming">
+	/// The OAuth2 credentials carried on an update request. Each entry's
+	/// <see cref="OAuthClientCredentials.ClientId"/> (the OAuth2 client identity)
+	/// is matched against the existing <c>OAuth2ClientId</c> values.
+	/// </param>
+	public void ApplyOAuth2Credentials(IEnumerable<OAuthClientCredentials> incoming)
+	{
+		OAuth2Credentials ??= new List<OAuth2ClientCredentials>();
+
+		foreach (var incomingCred in incoming)
+		{
+			// Match on OAuth2ClientId (the OAuth2 client identity that the request
+			// carries in ClientId), NOT the integer ClientId FK to the parent.
+			var existing = OAuth2Credentials
+				.FirstOrDefault(c => c.OAuth2ClientId == incomingCred.ClientId);
+
+			if (existing is not null)
+			{
+				// Already present -> update in place.
+				existing.OAuth2ClientSecret = incomingCred.ClientSecret;
+				existing.OAuth2GrantType = incomingCred.GrantType;
+				existing.AllowedScopes = incomingCred.AllowedScopes;
+				existing.RequirePkce = incomingCred.RequirePkce;
+			}
+			else
+			{
+				// Genuinely new -> add.
+				OAuth2Credentials.Add(new OAuth2ClientCredentials
+				{
+					OAuth2ClientId = incomingCred.ClientId,
+					OAuth2ClientSecret = incomingCred.ClientSecret,
+					OAuth2GrantType = incomingCred.GrantType,
+					AllowedScopes = incomingCred.AllowedScopes,
+					RequirePkce = incomingCred.RequirePkce,
+				});
+			}
+		}
+	}
+
 	/// <inheritdoc />
 	public override ClientMessage ToMessage()
 	{

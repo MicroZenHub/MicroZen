@@ -146,47 +146,11 @@ public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGr
 		client.Type = request.Type;
 		client.Description = request.Description;
 		client.ModifiedOn = DateTime.UtcNow;
-		if (client.OAuth2Credentials is not null)
-		{
-			var credentialsToUpdate = request.OauthCredentials.Select(oauthCredentials =>
-				new OAuth2ClientCredentials()
-				{
-					OAuth2ClientId = oauthCredentials.ClientId,
-					OAuth2ClientSecret = oauthCredentials.ClientSecret,
-					OAuth2GrantType = oauthCredentials.GrantType,
-					AllowedScopes = oauthCredentials.AllowedScopes,
-					RequirePkce = oauthCredentials.RequirePkce,
-				}).Where(oauth2Credentials =>
-					client.OAuth2Credentials.Any(existingCreds =>
-						existingCreds.ClientId == oauth2Credentials.ClientId
-					)
-				).ToArray();
-			var credentialsToAdd = request.OauthCredentials.Select(oauthCredentials =>
-				new OAuth2ClientCredentials()
-				{
-					OAuth2ClientId = oauthCredentials.ClientId,
-					OAuth2ClientSecret = oauthCredentials.ClientSecret,
-					OAuth2GrantType = oauthCredentials.GrantType,
-					AllowedScopes = oauthCredentials.AllowedScopes,
-					RequirePkce = oauthCredentials.RequirePkce,
-				}).Where(oauthCredentials =>
-				client.OAuth2Credentials.Any(existingCredentials =>
-					existingCredentials.ClientId == oauthCredentials.ClientId
-				)
-			).ToArray();
-			foreach (var credentials in credentialsToUpdate)
-			{
-				var existingCredentials = client.OAuth2Credentials.First(c => c.OAuth2ClientId == credentials.OAuth2ClientId);
-				existingCredentials.OAuth2ClientSecret = credentials.OAuth2ClientSecret;
-				existingCredentials.OAuth2GrantType = credentials.OAuth2GrantType;
-				existingCredentials.AllowedScopes = credentials.AllowedScopes;
-				existingCredentials.RequirePkce = credentials.RequirePkce;
-			}
-			foreach (var credential in credentialsToAdd)
-			{
-				client.OAuth2Credentials.Add(credential);
-			}
-		}
+		// Reconcile incoming credentials against the client's current set. The
+		// add-vs-update split and the match key are domain rules of the client,
+		// so they live on the entity (BLL/domain layer), not here in the API
+		// layer. The service only orchestrates persistence.
+		client.ApplyOAuth2Credentials(request.OauthCredentials);
 
 		db.Update(client);
 		await db.SaveChangesAsync();
