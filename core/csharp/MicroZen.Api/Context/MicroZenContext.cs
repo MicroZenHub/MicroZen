@@ -60,6 +60,18 @@ public class MicroZenContext : DbContext
 			Config()[EncryptionProvider.EncryptionKeyVarName] ??
 			throw new ArgumentNullException(EncryptionProvider.EncryptionKeyVarName, "Please initialize your encryption key.")));
 		modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
+		// Global soft-delete query filter: every BaseEntity<>-derived type carries a
+		// nullable DeletedOn timestamp. Applied here, after ApplyConfigurationsFromAssembly,
+		// so every read excludes soft-deleted rows by default and new read sites cannot
+		// forget it. Admin paths that must see deleted rows (e.g. EnableOrganization undelete)
+		// opt out with IgnoreQueryFilters(). Join tables and OAuth2ClientCredentials have no
+		// DeletedOn and are intentionally left unfiltered. This is model configuration only,
+		// not schema, so no migration is required.
+		modelBuilder.Entity<Client>().HasQueryFilter(e => e.DeletedOn == null);
+		modelBuilder.Entity<Organization>().HasQueryFilter(e => e.DeletedOn == null);
+		modelBuilder.Entity<ClientAPIKey>().HasQueryFilter(e => e.DeletedOn == null);
+		modelBuilder.Entity<OrganizationUser>().HasQueryFilter(e => e.DeletedOn == null);
 	}
 
 	private static IConfigurationRoot Config() =>
