@@ -37,6 +37,23 @@
     <ProjectReference Include="../MicroZen.OAuth2/MicroZen.OAuth2.csproj" Aliases="oauth2" />
   </ItemGroup>
 
+  <!--
+    MicroZen.OAuth2 compiles the same client.proto as MicroZen.Api, so both
+    assemblies define the MicroZen.Grpc.V1.* types (e.g. ClientType,
+    ManyClientsRequest). The test project references MicroZen.Api directly and
+    MicroZen.OAuth2 transitively, which makes those gRPC types ambiguous
+    (CS0433). Alias the transitive MicroZen.OAuth2 assembly so its copies leave
+    the global namespace and MicroZen.Grpc.V1.* resolves unambiguously to
+    MicroZen.Api.
+  -->
+  <Target Name="AliasOAuth2GrpcTypes" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'MicroZen.OAuth2'">
+        <Aliases>MicroZenOAuth2</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+
   <ItemGroup>
     <Folder Include="Security\Encryption\Attributes\" />
     <Folder Include="Security\Encryption\Converters\" />
