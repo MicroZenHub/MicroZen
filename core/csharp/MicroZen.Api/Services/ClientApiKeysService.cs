@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
 using MicroZen.Api.Entities;
+using MicroZen.Api.Security.APIKeys;
 using MicroZen.Grpc.Entities;
 
 namespace MicroZen.Api.Services;
@@ -39,7 +40,7 @@ public class ClientApiKeysService(MicroZenContext db) : ClientApiKeysGrpcService
 	/// <exception cref="RpcException"><see cref="StatusCode.NotFound"/> gRPC Exception thrown if API Key is not found</exception>
 	public override async Task<UpdateClientApiKeyResponse> UpdateClientApiKey(UpdateClientApiKeyRequest request, ServerCallContext context)
 	{
-		var existingClientAPIKey = await db.ClientAPIKeys.FirstOrDefaultAsync(x => x.ApiKey == request.ApiKey);
+		var existingClientAPIKey = await db.ClientAPIKeys.WhereValid().FirstOrDefaultAsync(x => x.ApiKey == request.ApiKey);
 		if (existingClientAPIKey is null)
 			throw new RpcException(new Status(StatusCode.NotFound, "API Key not found"));
 		existingClientAPIKey.ExpiresOn = request.ExpiresOn.ToDateTime();
@@ -60,7 +61,7 @@ public class ClientApiKeysService(MicroZenContext db) : ClientApiKeysGrpcService
 	/// <exception cref="RpcException"><see cref="StatusCode.NotFound"/> gRPC Exception thrown if API Key is not found</exception>
 	public override async Task<DisableClientApiKeyResponse> DisableClientApiKey(DisableClientApiKeyRequest request, ServerCallContext context)
 	{
-		var existingClientAPIKey = await db.ClientAPIKeys.FirstOrDefaultAsync(x => x.ApiKey == request.ApiKey);
+		var existingClientAPIKey = await db.ClientAPIKeys.WhereValid().FirstOrDefaultAsync(x => x.ApiKey == request.ApiKey);
 		if (existingClientAPIKey is null)
 			throw new RpcException(new Status(StatusCode.NotFound, "API Key not found"));
 		existingClientAPIKey.ExpiresOn = DateTime.UtcNow;

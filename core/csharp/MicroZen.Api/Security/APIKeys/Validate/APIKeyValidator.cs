@@ -27,12 +27,8 @@ public class APIKeyValidator(MicroZenContext context) : IAPIKeyValidation
 	public async Task<bool> IsValidAPIKey(string apiKey)
 	{
 		if (!HasValidHashAndPrefix(apiKey)) return false;
-		return await context.ClientAPIKeys.FirstOrDefaultAsync(clientAPIKey =>
-			clientAPIKey.ApiKey == apiKey &&
-			(
-				clientAPIKey.ExpiresOn == null ||
-				clientAPIKey.ExpiresOn > DateTime.UtcNow
-			) && clientAPIKey.DeletedOn == null) != null;
+		return await context.ClientAPIKeys.WhereValid().FirstOrDefaultAsync(clientAPIKey =>
+			clientAPIKey.ApiKey == apiKey) != null;
 	}
 
 	/// <summary>
