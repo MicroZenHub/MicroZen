@@ -1,4 +1,5 @@
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
 using MicroZen.Grpc.V1;
@@ -9,6 +10,7 @@ namespace MicroZen.Core.Api.Services;
 /// The Organization Users gRPC/REST service.
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
+[Authorize]
 public class OrganizationUsersService(MicroZenContext db) : OrganizationUsersGrpcService.OrganizationUsersGrpcServiceBase
 {
 	/// <inheritdoc />
