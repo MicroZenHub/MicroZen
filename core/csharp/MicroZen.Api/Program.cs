@@ -89,6 +89,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors();
+app.UseMicroZenOAuth2(MicroZenProvider.Cognito); // enforces [Authorize]; must run after UseCors()
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -106,3 +107,9 @@ app.MapGrpcHealthChecksService();
 app.MigrateAndSeedDevDataOnStart();
 
 app.Run();
+
+/// <summary>
+/// Exposed so the integration test project can host the real pipeline via
+/// <c>WebApplicationFactory&lt;Program&gt;</c>.
+/// </summary>
+public partial class Program { }

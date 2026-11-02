@@ -21,7 +21,9 @@ public static class Functions
 		var services = scope.ServiceProvider;
 
 		var microZenContext = services.GetRequiredService<MicroZenContext>();
-		if (microZenContext.Database.GetPendingMigrations().Any())
+		// Migrations only apply to a relational provider. The integration tests host the
+		// real pipeline on the EF Core InMemory provider, which does not support migrations.
+		if (microZenContext.Database.IsRelational() && microZenContext.Database.GetPendingMigrations().Any())
 			microZenContext.Database.Migrate();
 		if (!app.Environment.IsDevelopment() || !app.Configuration.GetValue<bool>("SeedDevData")) return;
 		if (microZenContext.Organizations.Any()) return;

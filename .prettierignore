@@ -1,3 +1,6 @@
 # Add files here to ignore them from prettier formatting
 /dist
 /coverage
+
+# Nx generated workspace cache (not source)
+.nx/workspace-data

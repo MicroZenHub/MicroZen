@@ -1,6 +1,7 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using LinqKit;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
 using MicroZen.Api.Entities;
@@ -14,6 +15,7 @@ namespace MicroZen.Api.Services;
 /// The Clients gRPC/REST service.
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
+[Authorize]
 public class ClientsGrpcService(MicroZenContext db) : MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceBase
 {
 	/// <summary>

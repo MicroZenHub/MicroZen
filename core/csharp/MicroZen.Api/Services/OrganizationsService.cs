@@ -1,5 +1,6 @@
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using MicroZen.Api.Context;
 using MicroZen.Grpc.V1;
@@ -12,6 +13,7 @@ namespace MicroZen.Api.Services;
 /// The Organizations gRPC/REST service.
 /// </summary>
 /// <param name="db"><see cref="MicroZenContext"/></param>
+[Authorize]
 public class OrganizationsService(MicroZenContext db) : OrganizationsGrpcService.OrganizationsGrpcServiceBase
 {
 	/// <inheritdoc />
