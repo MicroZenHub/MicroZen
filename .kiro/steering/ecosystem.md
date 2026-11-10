@@ -129,10 +129,10 @@ Any other grant type reaches a `NotImplementedException` in
 
 These are **modeled but not implemented**. Each should become a tracked issue:
 
-| Grant type                         | Modeled in        | Implemented? |
-| ---------------------------------- | ----------------- | ------------ |
-| Device Code / Device Authorization | package + proto   | No           |
-| Refresh Token                      | package only      | No           |
+| Grant type                         | Modeled in      | Implemented? |
+| ---------------------------------- | --------------- | ------------ |
+| Device Code / Device Authorization | package + proto | No           |
+| Refresh Token                      | package only    | No           |
 
 Additional known gaps:
 
