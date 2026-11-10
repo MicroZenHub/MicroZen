@@ -157,11 +157,11 @@ public class GrantTypeReconciliationTests : IDisposable
 		// GIVEN a service collection wired with a declared-but-unimplemented grant type.
 		var services = new ServiceCollection();
 
-		// WHEN the Cognito provider is configured with DeviceAuthorization only.
+		// WHEN the Cognito provider is configured with Implicit only.
 		// THEN it still reaches the existing NotImplementedException path —
 		// reconciliation declares the member but adds no runtime support.
 		Throws<NotImplementedException>(() =>
-			services.AddAWSCognitoMicroZenOAuth2(PackageGrantType.DeviceAuthorization));
+			services.AddAWSCognitoMicroZenOAuth2(PackageGrantType.Implicit));
 	}
 
 	[Fact]

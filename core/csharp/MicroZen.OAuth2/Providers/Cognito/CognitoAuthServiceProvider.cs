@@ -60,6 +60,10 @@ public static class CognitoAuthServiceProvider
 		{
 			builder.AddClientCredentialsJwtBearer(services);
 		}
+		else if (grantTypes.Contains(OAuth2GrantType.DeviceAuthorization))
+		{
+			builder.AddDeviceAuthorizationJwtBearer(services);
+		}
 		else
 		{
 			throw new NotImplementedException("The OAuth2 Grant Types '" + string.Join(",", grantTypes.Select(x => x.ToString())) + "' are not supported by the MicroZen Cognito provider.");
