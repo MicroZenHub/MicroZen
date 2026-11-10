@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MicroZen.OAuth2.Providers.Cognito.Flows;
+namespace MicroZen.Auth.Cognito.Flows;
 
 /// <summary>
 /// Handles all code related to the OAuth2 DeviceAuthorization (RFC 8628) grant type

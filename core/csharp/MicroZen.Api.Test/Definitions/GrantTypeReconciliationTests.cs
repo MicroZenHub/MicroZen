@@ -1,4 +1,4 @@
-extern alias MicroZenOAuth2;
+extern alias MicroZenCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,13 +8,13 @@ using MicroZen.Api.Entities;
 using MicroZen.Api.Entities.AuthCredentials;
 using MicroZen.Grpc.V1;
 using static Xunit.Assert;
-// MicroZen.OAuth2 compiles the same client.proto as MicroZen.Api, so the test
-// csproj aliases the transitive OAuth2 assembly to `MicroZenOAuth2` (see the
-// AliasOAuth2GrpcTypes target) to keep its MicroZen.Grpc.V1.* copies out of the
+// MicroZen.Core compiles the same client.proto as MicroZen.Api, so the test
+// csproj aliases the transitive MicroZen.Core assembly to `MicroZenCore` (see the
+// AliasCoreGrpcTypes target) to keep its MicroZen.Grpc.V1.* copies out of the
 // global namespace. Reach the package's string-valued grant-type class through
 // that same extern alias.
-using PackageGrantType = MicroZenOAuth2::MicroZen.OAuth2.Definitions.OAuth2GrantType;
-using MicroZenOAuth2::MicroZen.OAuth2.Providers.Cognito;
+using PackageGrantType = MicroZenCore::MicroZen.Core.Definitions.OAuth2GrantType;
+
 
 namespace MicroZen.Core.Api.Test.Definitions;
 
@@ -161,7 +161,7 @@ public class GrantTypeReconciliationTests : IDisposable
 		// THEN it still reaches the existing NotImplementedException path —
 		// removing the named member does not add runtime support.
 		Throws<NotImplementedException>(() =>
-			services.AddAWSCognitoMicroZenOAuth2(new PackageGrantType("implicit")));
+			CognitoWiring.Wire(services, new PackageGrantType("implicit")));
 	}
 
 	[Fact]
@@ -172,19 +172,19 @@ public class GrantTypeReconciliationTests : IDisposable
 			.AddInMemoryCollection(new Dictionary<string, string?> { ["MicroZen:APIKey"] = "k", ["MicroZen:Interval"] = "1" })
 			.Build();
 		var services = new ServiceCollection();
-		services.AddSingleton(new MicroZenOAuth2::MicroZen.OAuth2.State.MicroZenOAuth2State(
+		services.AddSingleton(new MicroZenCore::MicroZen.Core.State.MicroZenOAuth2State(
 			config,
-			NullLogger<MicroZenOAuth2::MicroZen.OAuth2.State.MicroZenOAuth2State>.Instance,
+			NullLogger<MicroZenCore::MicroZen.Core.State.MicroZenOAuth2State>.Instance,
 			new StubClient()));
 
 		// WHEN the Cognito provider is configured with RefreshToken only.
-		var ex = Record.Exception(() => services.AddAWSCognitoMicroZenOAuth2(PackageGrantType.RefreshToken));
+		var ex = Record.Exception(() => CognitoWiring.Wire(services, PackageGrantType.RefreshToken));
 
 		// THEN it no longer reaches the NotImplementedException path (issue #64).
 		Null(ex);
 	}
 
-	private sealed class StubClient : MicroZenOAuth2::MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceClient;
+	private sealed class StubClient : MicroZenCore::MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceClient;
 
 	public void Dispose()
 	{

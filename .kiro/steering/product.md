@@ -4,7 +4,7 @@
 > [`ecosystem.md`](./ecosystem.md) (shared with `MicroZen.Web`). This file
 > covers the backend's product and architecture. Two auth concerns are kept
 > distinct there: **dashboard user auth** (Supabase, in `MicroZen.Web`) vs.
-> **catalogued client auth** (the `MicroZen.OAuth2` package, AWS Cognito today).
+> **catalogued client auth** (the `MicroZen.Core` + `MicroZen.Auth.<Provider>` packages, AWS Cognito today).
 
 ## What MicroZen is
 
@@ -18,14 +18,14 @@ capabilities (grounded in `README.md` and the source):
 - Application and API mapping to visualize interactions between apps and APIs.
 - Health checks tracking for services (gRPC health checks on the API).
 - OAuth2 / OpenID Connect support for authentication, managing client IDs and
-  secrets across multiple OAuth2 flows. Today the `MicroZen.OAuth2` package
-  implements **AWS Cognito only**, with **Authorization Code (+ PKCE)** and
+  secrets across multiple OAuth2 flows. Today the `MicroZen.Auth.Cognito` package
+  (on top of `MicroZen.Core`) implements **AWS Cognito only**, with **Authorization Code (+ PKCE)** and
   **Client Credentials** flows; other providers and flows are roadmap/gaps
   (see [`ecosystem.md`](./ecosystem.md) sections 3-4).
 - API-key based authorization alongside JWT bearer authentication. All gRPC
   service endpoints require authentication: the service classes carry
   `[Authorize]` and `Program.cs` wires in the OAuth2/JWT auth middleware
-  (`UseMicroZenOAuth2`) that enforces it. Per-organization tenant/ownership
+  (`UseMicroZenCognito`) that enforces it. Per-organization tenant/ownership
   authorization (cross-tenant isolation) is **not yet implemented** and is
   tracked as follow-up issue #79.
 - AES-256 encryption of sensitive data stored in the database. Only columns
@@ -68,8 +68,9 @@ projects:
   (follow-up issue #79). Sensitive database columns marked with
   `EncryptColumnAttribute` are encrypted (`Security/Encryption`) using AES-256
   with a per-operation random IV and a SHA-256-derived key.
-- **MicroZen.OAuth2** - a reusable OAuth2 / OpenID Connect client library,
-  packaged as a NuGet package and referenced by the API.
+- **MicroZen.Core** and **MicroZen.Auth.Cognito** - the reusable OAuth2 /
+  OpenID Connect client library, split into a provider-independent core and one
+  NuGet package per provider; the API references the Cognito package.
 - **MicroZen.Api.Test** - the xUnit test project (assembly name
   `MicroZen.Core.Api.Test`).
 

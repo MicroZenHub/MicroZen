@@ -1,13 +1,13 @@
-extern alias MicroZenOAuth2;
+extern alias MicroZenCore;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using static Xunit.Assert;
-using PackageGrantType = MicroZenOAuth2::MicroZen.OAuth2.Definitions.OAuth2GrantType;
-using MicroZenOAuth2::MicroZen.OAuth2.Providers.Cognito;
-using OAuth2State = MicroZenOAuth2::MicroZen.OAuth2.State.MicroZenOAuth2State;
-using OAuth2Client = MicroZenOAuth2::MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceClient;
+using PackageGrantType = MicroZenCore::MicroZen.Core.Definitions.OAuth2GrantType;
+
+using OAuth2State = MicroZenCore::MicroZen.Core.State.MicroZenOAuth2State;
+using OAuth2Client = MicroZenCore::MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceClient;
 
 namespace MicroZen.Core.Api.Test.Definitions;
 
@@ -34,7 +34,7 @@ public class DeviceAuthorizationFlowTests
 		services.AddSingleton<OAuth2State>();
 
 		// WHEN the Cognito provider is configured with DeviceAuthorization only.
-		var ex = Record.Exception(() => services.AddAWSCognitoMicroZenOAuth2(PackageGrantType.DeviceAuthorization));
+		var ex = Record.Exception(() => CognitoWiring.Wire(services, PackageGrantType.DeviceAuthorization));
 
 		// THEN it no longer reaches the NotImplementedException path.
 		Null(ex);

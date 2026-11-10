@@ -1,4 +1,4 @@
-namespace MicroZen.OAuth2.Config;
+namespace MicroZen.Core.Config;
 
 /// <summary>
 /// The MicroZen App Configuration

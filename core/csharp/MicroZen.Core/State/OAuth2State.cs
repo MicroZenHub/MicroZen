@@ -1,9 +1,9 @@
 using MicroZen.Grpc.V1;
 
-namespace MicroZen.OAuth2.State;
+namespace MicroZen.Core.State;
 
 /// <summary>
-/// Represents the state of the MicroZen OAuth2 library
+/// Represents the state of the MicroZen auth library
 /// </summary>
 public struct OAuth2State()
 {

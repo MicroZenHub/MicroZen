@@ -33,8 +33,10 @@ Backend - `core/csharp` holds `MicroZen.Core.sln` with three projects:
     isolation is not yet implemented (follow-up issue #79).
   - `Security/APIKeys` - API key generation, validation, and the auth handler.
   - `Security/Encryption` - column encryption for sensitive data.
-- `MicroZen.OAuth2` - reusable OAuth2/OpenID client library (`Config/`,
-  `Providers/`, `State/`, `Definitions/`).
+- `MicroZen.Core` - provider-independent auth core (`Config/`, `State/`,
+  `Definitions/`, the `IMicroZenAuthProvider` contract, `AddMicroZenAuth`).
+- `MicroZen.Auth.Cognito` - AWS Cognito provider package (`CognitoAuthProvider`,
+  `Flows/`). One `MicroZen.Auth.<Provider>` project per provider.
 - `MicroZen.Api.Test` - xUnit tests.
 
 ## Workspace conventions

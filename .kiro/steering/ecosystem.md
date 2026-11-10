@@ -24,7 +24,7 @@ when they disagree about a command or a path, the repo-local `tech.md`/
 MicroZen helps teams manage microservice-to-microservice authentication. It has
 two halves that are easy to confuse, so keep them distinct:
 
-1. **Drop-in auth packages** (the backend's `MicroZen.OAuth2` library today).
+1. **Drop-in auth packages** (the backend's `MicroZen.Core` + `MicroZen.Auth.Cognito` packages today).
    A service installs the package, points it at its MicroZen authority, and the
    package dynamically fetches the client IDs/secrets that are allowed to call
    it and wires up token validation. The goal: **add a new allowed client or
@@ -40,10 +40,10 @@ consumer pulls in only the provider they use.
 
 These are different and must not be conflated in code or docs:
 
-| Concern                    | What it authenticates                       | Where it lives today                                      | Provider today                                              |
-| -------------------------- | ------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------- |
-| **Dashboard user auth**    | A human logging into the MicroZen dashboard | `MicroZen.Web` -> `SupabaseAuthService`                   | **Supabase** (email/password + Google, GitHub social login) |
-| **Catalogued client auth** | A microservice calling another microservice | `MicroZen` -> `MicroZen.OAuth2` package + API `X-API-Key` | **AWS Cognito** (the only wired provider in the package)    |
+| Concern                    | What it authenticates                       | Where it lives today                                                                 | Provider today                                              |
+| -------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| **Dashboard user auth**    | A human logging into the MicroZen dashboard | `MicroZen.Web` -> `SupabaseAuthService`                                              | **Supabase** (email/password + Google, GitHub social login) |
+| **Catalogued client auth** | A microservice calling another microservice | `MicroZen` -> `MicroZen.Core` + `MicroZen.Auth.<Provider>` package + API `X-API-Key` | **AWS Cognito** (the only provider package today)           |
 
 So the dashboard's own login runs on Supabase; the auth _flows MicroZen manages
 for its users' services_ run (today) against AWS Cognito. The business has moved
@@ -55,11 +55,13 @@ Supabase as a peer of Cognito, Entra, Auth0, and Google.
 
 ### Current state
 
-- The backend package `MicroZen.OAuth2` supports exactly **one** provider:
-  **AWS Cognito**. `MicroZenProvider` defines only `Cognito`; any other value
-  throws `NotSupportedException`
-  (`core/csharp/MicroZen.OAuth2/Initialization.cs`,
-  `Providers/Cognito/CognitoAuthServiceProvider.cs`).
+- The backend is split into `MicroZen.Core` (provider-independent: state,
+  config, authority gRPC client, grant-type definitions, JWT plumbing, the
+  `IMicroZenAuthProvider` contract and `AddMicroZenAuth`) and one package per
+  provider. Only **AWS Cognito** exists today, as `MicroZen.Auth.Cognito`
+  (`core/csharp/MicroZen.Auth.Cognito/CognitoAuthProvider.cs`). A provider
+  package implements `IMicroZenAuthProvider` and exposes one entry point
+  (`AddMicroZenCognito(...)` / `UseMicroZenCognito()`) that calls into Core.
 - The backend **data model is already ahead of the package**. The gRPC
   `Provider` enum (`MicroZen.Api/Protos/client.proto`) and the dashboard's
   `MicroZenProvider` enum both model **AWS, Azure, Google**. These are stored and
@@ -69,13 +71,12 @@ Supabase as a peer of Cognito, Entra, Auth0, and Google.
 
 ### Target state (roadmap)
 
-Split the single package into a reusable core plus one package per provider so
-consumers import only what they need:
+The core/Cognito split is done (#69). The remaining providers follow the same
+pattern; consumers import only the provider package they need:
 
 - **`MicroZen.Core`** - shared, provider-independent code (state, config, gRPC
   client to the MicroZen authority, grant-type definitions, JWT plumbing).
-- **`MicroZen.Auth.Cognito`** - AWS Cognito provider (extracted from today's
-  `MicroZen.OAuth2/Providers/Cognito`).
+- **`MicroZen.Auth.Cognito`** - AWS Cognito provider (done).
 - **`MicroZen.Auth.Supabase`** - Supabase provider. First-class, given the
   business move to Supabase.
 - **`MicroZen.Auth.Entra`** - Microsoft Azure Entra.
@@ -83,10 +84,8 @@ consumers import only what they need:
 - **`MicroZen.Auth.Google`** - Google Auth.
 - Further providers follow the same `MicroZen.Auth.<Provider>` pattern.
 
-Today's single `MicroZen.OAuth2` package is the **starting point and tracked
-tech debt**; the `MicroZen.Core` + `MicroZen.Auth.<Provider>` split is the
-target. Do not add new providers into the monolithic package - new provider work
-should drive the split.
+Do not add new providers to `MicroZen.Core`: each new provider is its own
+`MicroZen.Auth.<Provider>` project implementing `IMicroZenAuthProvider`.
 
 ### Provider rollout order (intended)
 
@@ -102,7 +101,7 @@ should drive the split.
 Grant types are modeled in three places that currently **disagree**, which is
 itself a gap to close:
 
-- Package enum `OAuth2GrantType` (`MicroZen.OAuth2/Definitions/OAuth2GrantType.cs`):
+- Package enum `OAuth2GrantType` (`MicroZen.Core/Definitions/OAuth2GrantType.cs`):
   AuthorizationCode, AuthorizationCodeWithPKCE, ClientCredentials, DeviceCode,
   RefreshToken.
 - gRPC/data enum `GrantType` (`MicroZen.Api/Protos/client.proto`) and the
@@ -115,8 +114,8 @@ itself a gap to close:
 ### What actually works (AWS Cognito)
 
 Only two handlers are implemented
-(`MicroZen.OAuth2/Providers/Cognito/CognitoAuthServiceProvider.cs`,
-`Providers/Cognito/Flows/`):
+(`MicroZen.Auth.Cognito/CognitoAuthProvider.cs`,
+`MicroZen.Auth.Cognito/Flows/`):
 
 - **Authorization Code** and **Authorization Code with PKCE** (same handler).
 - **Client Credentials**.
@@ -163,7 +162,7 @@ None of this exists in either repo today. Document it as roadmap only.
 ## 6. Multi-language client packages (roadmap)
 
 The product intent is a drop-in package "in multiple languages." Today only the
-**.NET** package exists (`MicroZen.OAuth2`). Planned client packages, so
+**.NET** packages exist (`MicroZen.Core`, `MicroZen.Auth.Cognito`). Planned client packages, so
 non-.NET services get the same drop-in experience:
 
 - **Node** client package.

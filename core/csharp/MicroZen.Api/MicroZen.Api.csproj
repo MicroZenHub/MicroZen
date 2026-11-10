@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MicroZen.OAuth2\MicroZen.OAuth2.csproj" />
+    <ProjectReference Include="..\MicroZen.Auth.Cognito\MicroZen.Auth.Cognito.csproj" />
   </ItemGroup>
 
   <ItemGroup>
