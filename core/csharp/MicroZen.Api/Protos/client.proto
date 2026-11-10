@@ -107,7 +107,7 @@ enum GrantType {
   Hybrid = 5;
   // Resource Owner Password Grant (declared, not implemented; discouraged)
   ResourceOwnerPassword = 6;
-  // Refresh Token Grant (declared, not implemented)
+  // Refresh Token Grant (implemented for AWS Cognito)
   RefreshToken = 7;
 }
 

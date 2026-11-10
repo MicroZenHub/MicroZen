@@ -4,9 +4,9 @@ namespace MicroZen.OAuth2.Definitions;
 /// OAuth2 Grant Types.
 ///
 /// This type declares the full canonical grant-type set (eight members), aligned
-/// by name to the gRPC/proto <c>GrantType</c> enum. Only three members are
+/// by name to the gRPC/proto <c>GrantType</c> enum. Only four members are
 /// <b>implemented</b> at runtime (Authorization Code, Authorization Code with
-/// PKCE, Client Credentials — all via AWS Cognito). The remaining members are
+/// PKCE, Refresh Token, Client Credentials — all via AWS Cognito). The remaining members are
 /// <b>declared</b> so a credential can be modeled, but at wire-up time they still
 /// reach the existing <see cref="System.NotImplementedException"/> path in the
 /// Cognito provider. Reconciling the enums does not change what works.
@@ -53,7 +53,7 @@ public class OAuth2GrantType(string value)
 	public static readonly OAuth2GrantType ResourceOwnerPassword = new OAuth2GrantType("password");
 
 	/// <summary>
-	/// OAuth2 Refresh Token Grant Type. Declared, not implemented.
+	/// OAuth2 Refresh Token Grant Type. Implemented (AWS Cognito).
 	/// </summary>
 	public static readonly OAuth2GrantType RefreshToken = new OAuth2GrantType("refresh_token");
 }
