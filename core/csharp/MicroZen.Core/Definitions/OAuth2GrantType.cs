@@ -1,4 +1,4 @@
-namespace MicroZen.OAuth2.Definitions;
+namespace MicroZen.Core.Definitions;
 
 /// <summary>
 /// OAuth2 Grant Types.

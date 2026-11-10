@@ -1,1 +1,1 @@
-global using MicroZen.OAuth2;
+global using MicroZen.Auth.Cognito;

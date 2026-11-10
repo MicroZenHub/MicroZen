@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Configuration>Release</Configuration>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Title>MicroZen.Auth.Cognito</Title>
+    <Description>AWS Cognito provider for MicroZen: validates Cognito JWTs using the clients managed through the MicroZen API.</Description>
+    <Authors>MicroZen</Authors>
+    <Company>MinkInk, LLC - DBA MicroZen</Company>
+    <Copyright>2024 MinkInk, LLC.</Copyright>
+    <Version>0.0.1.0</Version>
+    <PackageId>MicroZen.Auth.Cognito</PackageId>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Reactive" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MicroZen.Core\MicroZen.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

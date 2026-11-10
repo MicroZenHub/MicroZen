@@ -13,9 +13,9 @@ using MicroZen.Api.Security.APIKeys.Attribute;
 using MicroZen.Api.Services;
 using MicroZen.Core.Api.Services;
 using MicroZen.Api.Context;
-using MicroZen.OAuth2;
+using MicroZen.Auth.Cognito;
 using static MicroZen.Data.Context.Variables;
-using MicroZen.OAuth2.Definitions;
+using MicroZen.Core.Definitions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -51,7 +51,7 @@ var policies = new Dictionary<string, AuthorizationPolicy>()
 			.AddRequirements(new APIKeyRequirement()).Build()
 	},
 };
-builder.Services.AddMicroZenOAuth2(MicroZenProvider.Cognito, policies, grantTypes: OAuth2GrantType.AuthorizationCodeWithPKCE);
+builder.Services.AddMicroZenCognito(policies, OAuth2GrantType.AuthorizationCodeWithPKCE);
 builder.Services.AddGrpc().AddJsonTranscoding();
 builder.Services.AddGrpcHealthChecks();
 builder.Services.AddGrpcReflection();
@@ -104,7 +104,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(AllowAllCorsPolicy);
-app.UseMicroZenOAuth2(MicroZenProvider.Cognito); // enforces [Authorize]; must run after UseCors()
+app.UseMicroZenCognito(); // enforces [Authorize]; must run after UseCors()
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {

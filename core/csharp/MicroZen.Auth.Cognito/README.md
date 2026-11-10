@@ -1,6 +1,6 @@
-![MicroZen Logo](../../../../../assets/microzen_color_logo.png)
+![MicroZen Logo](../../../assets/microzen_color_logo.png)
 
-# ![AWS Cognito Logo](../../../../../assets/providers/cognito.png) AWS Cognito Provider
+# ![AWS Cognito Logo](../../../assets/providers/cognito.png) AWS Cognito Provider
 
 The AWS Cognito provider allows you to authenticate against AWS Cognito User Pools.
 
@@ -10,7 +10,7 @@ The AWS Cognito provider allows you to authenticate against AWS Cognito User Poo
 
 ### JSON format
 
- `appsettings.json` or `appsettings.{ASPNETCORE_ENVIRONMENT}.json` file
+`appsettings.json` or `appsettings.{ASPNETCORE_ENVIRONMENT}.json` file
 
     ```json
     {
@@ -25,12 +25,18 @@ The AWS Cognito provider allows you to authenticate against AWS Cognito User Poo
 
 ### Environment Variable Example
 
- ```bash
+```bash
 AWS__Cogntio__Region=us-east-1
 AWS__Cogntio__UserPoolId=us-east-1_XXXXXXXXX
+```
+
+## Install
+
+```bash
+dotnet add package MicroZen.Auth.Cognito
 ```
 
 ## Usage
 
 1. Add config values as specified above
-2. [Follow instructions to get started with the MicroZen.OAuth2 package](../../README.md)
+2. [Follow instructions to get started with the MicroZen packages](../MicroZen.Core/README.md)

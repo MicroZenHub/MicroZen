@@ -7,13 +7,13 @@
     <IncludeHttpRuleProtos>true</IncludeHttpRuleProtos>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Title>MicroZen.OAuth2</Title>
-    <Description>OAuth2 client library to manage OAuth2 authentication dynamically through the MicroZen API.</Description>
+    <Title>MicroZen.Core</Title>
+    <Description>Provider-independent core of MicroZen auth: authority gRPC client, client state, grant-type definitions and the provider contract.</Description>
     <Authors>MicroZen</Authors>
     <Company>MinkInk, LLC - DBA MicroZen</Company>
     <Copyright>2024 MinkInk, LLC.</Copyright>
     <Version>0.0.1.0</Version>
-    <PackageId>MicroZen.OAuth2</PackageId>
+    <PackageId>MicroZen.Core</PackageId>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>

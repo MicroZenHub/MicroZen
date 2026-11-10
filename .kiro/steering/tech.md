@@ -44,7 +44,7 @@ values consumed by Compose, the `ConnectionStrings__MicroZenDb` connection
 string (the connection string name is `MicroZenDb`, matching
 `static MicroZen.Data.Context.Variables.MicroZenConnectionString`), and the
 `MicroZen__*` OAuth2/Cognito settings read by
-`AddMicroZenOAuth2(MicroZenProvider.Cognito, ...)` in `Program.cs`
+`AddMicroZenCognito(...)` in `Program.cs`
 (`AuthorityUrl`, `APIKey`, and optional `Interval`).
 
 ### Development data seeding

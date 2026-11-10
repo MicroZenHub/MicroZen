@@ -16,7 +16,7 @@ using MicroZen.Api.Context;
 namespace MicroZen.Core.Api.Test.Auth;
 
 /// <summary>
-/// Hosts the real <c>Program</c> pipeline (including the <c>UseMicroZenOAuth2</c>
+/// Hosts the real <c>Program</c> pipeline (including the <c>UseMicroZenCognito</c>
 /// middleware wired for #47) so the auth tests exercise authentication/authorization
 /// end to end. Postgres is swapped for the EF Core InMemory provider and the Cognito
 /// JWT scheme is replaced by a deterministic <see cref="TestAuthHandler"/> that lets a
@@ -34,7 +34,7 @@ public class MicroZenApiFactory : WebApplicationFactory<Program>
 
 	public MicroZenApiFactory()
 	{
-		// AddMicroZenOAuth2 reads IConfiguration while the host is being built — before
+		// AddMicroZenCognito reads IConfiguration while the host is being built — before
 		// ConfigureTestServices runs — so these must be visible as soon as
 		// builder.Configuration exists. Environment variables are read by the default
 		// configuration and are present from process start.

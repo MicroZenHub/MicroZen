@@ -29,27 +29,27 @@
   <ItemGroup>
     <ProjectReference Include="../MicroZen.Api/MicroZen.Api.csproj" />
     <!--
-      MicroZen.Api transitively pulls in MicroZen.OAuth2, and both assemblies generate the
-      MicroZen.Grpc.V1 proto types from the same client.proto. Aliasing the OAuth2 reference
+      MicroZen.Api transitively pulls in MicroZen.Core, and both assemblies generate the
+      MicroZen.Grpc.V1 proto types from the same client.proto. Aliasing the Core reference
       keeps its copies out of the global namespace so proto message types (e.g.
       ManyClientsRequest) resolve unambiguously to MicroZen.Api in tests.
     -->
-    <ProjectReference Include="../MicroZen.OAuth2/MicroZen.OAuth2.csproj" Aliases="oauth2" />
+    <ProjectReference Include="../MicroZen.Core/MicroZen.Core.csproj" Aliases="oauth2" />
   </ItemGroup>
 
   <!--
-    MicroZen.OAuth2 compiles the same client.proto as MicroZen.Api, so both
+    MicroZen.Core compiles the same client.proto as MicroZen.Api, so both
     assemblies define the MicroZen.Grpc.V1.* types (e.g. ClientType,
     ManyClientsRequest). The test project references MicroZen.Api directly and
-    MicroZen.OAuth2 transitively, which makes those gRPC types ambiguous
-    (CS0433). Alias the transitive MicroZen.OAuth2 assembly so its copies leave
+    MicroZen.Core transitively, which makes those gRPC types ambiguous
+    (CS0433). Alias the transitive MicroZen.Core assembly so its copies leave
     the global namespace and MicroZen.Grpc.V1.* resolves unambiguously to
     MicroZen.Api.
   -->
-  <Target Name="AliasOAuth2GrpcTypes" AfterTargets="ResolveReferences">
+  <Target Name="AliasCoreGrpcTypes" AfterTargets="ResolveReferences">
     <ItemGroup>
-      <ReferencePath Condition="'%(FileName)' == 'MicroZen.OAuth2'">
-        <Aliases>MicroZenOAuth2</Aliases>
+      <ReferencePath Condition="'%(FileName)' == 'MicroZen.Core'">
+        <Aliases>MicroZenCore</Aliases>
       </ReferencePath>
     </ItemGroup>
   </Target>

@@ -12,7 +12,7 @@ namespace MicroZen.Core.Api.Test.Auth;
 ///
 /// Calls go through the gRPC-JSON transcoding endpoints (see the google.api.http
 /// annotations in the Protos) against the real <c>Program</c> pipeline, so the
-/// <c>UseMicroZenOAuth2</c> middleware added in #47 is exercised. See
+/// <c>UseMicroZenCognito</c> middleware added in #47 is exercised. See
 /// <see cref="MicroZenApiFactory"/> for how authentication is stubbed per request.
 /// </summary>
 public class ServiceAuthorizationTests(MicroZenApiFactory factory) : IClassFixture<MicroZenApiFactory>

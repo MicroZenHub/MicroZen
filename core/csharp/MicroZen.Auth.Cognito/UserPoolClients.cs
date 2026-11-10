@@ -1,4 +1,4 @@
-namespace MicroZen.OAuth2.Definitions;
+namespace MicroZen.Auth.Cognito;
 
 /// <summary>
 /// Represents the credentials of the OAuth2 clients that are allowed to access the app grouped by UserPoolId and Region

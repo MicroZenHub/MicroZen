@@ -4,10 +4,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using MicroZen.OAuth2.Definitions;
-using MicroZen.OAuth2.State;
+using MicroZen.Core.State;
 
-namespace MicroZen.OAuth2.Providers.Cognito.Flows;
+namespace MicroZen.Auth.Cognito.Flows;
 
 /// <summary>
 /// Handles all code related to the OAuth2 ClientCredentials grant type

@@ -8,20 +8,20 @@ With an intuitive graphical user interface (GUI) and simplicity at its core, Mic
 
 From health checks to comprehensive mapping of application and API interactions, MicroZen provides a centralized platform for orchestrating seamless authentication, service mapping, and uptime observability within distributed architectures.
 
-# MicroZen.OAuth2 Package
+# MicroZen Auth Packages
 
-The `MicroZen.OAuth2` package provides support for secure authentication processes. The MicroZen.OAuth2 package seamlessly manages permissions for your microservices by dynamically retrieving and authenticating allowed client IDs and secrets for multiple OAuth2 flows at runtime.
+MicroZen auth ships as `MicroZen.Core` (shared, provider-independent code) plus one package per identity provider, e.g. `MicroZen.Auth.Cognito`. Install only the provider package you need; it brings `MicroZen.Core` with it. The packages seamlessly manages permissions for your microservices by dynamically retrieving and authenticating allowed client IDs and secrets for multiple OAuth2 flows at runtime.
 
 Our approach will ensure that you will never need to make code changes to add a new client or auth flow again. This results in better uptime and observability of your microservices.
 
 # Getting Started
 
-To get started with MicroZen.OAuth2, follow these steps:
+To get started, follow these steps:
 
 1. Sign up for a MicroZen account at [https://microzen.io](https://microzen.io) (or you can run our API on your own servers as well by following the instructions provided in this repository).
 2. Create your first MicroZen client, specifying the type as an OAuth2 Server Resource.
 3. Click the "Get Client Key" button to generate an API key for your client.
-4. Install the `MicroZen.OAuth2` NuGet package in your project.
+4. Install the provider NuGet package in your project (for AWS Cognito: `MicroZen.Auth.Cognito`).
 5. Add the following configuration variables either to your `appsettings.json` files or to an environment variable:
 
 `appsettings.json` format
@@ -48,35 +48,34 @@ MicroZen__Interval="5"
 
 > NOTE: Interval is optional (defaults to 5) and is measured in minutes
 
-6. In your project's `Program.cs` file add the following code to configure the `MicroZen.OAuth2` service:
+6. In your project's `Program.cs` file add the following code to configure the Cognito provider:
 
 ```csharp
-using MicroZen.OAuth2;
-using MicroZen.OAuth2.Definitions;
+using MicroZen.Auth.Cognito;
+using MicroZen.Core.Definitions;
 
 var builder = WebApplication.CreateBuilder(args);
 [...]
-// Select the provider and the OAuth2 grant type(s) to enable.
-builder.Services.AddMicroZenOAuth2(
-    MicroZenProvider.Cognito,
+// Select the OAuth2 grant type(s) to enable.
+builder.Services.AddMicroZenCognito(
     grantTypes: OAuth2GrantType.AuthorizationCodeWithPKCE);
 
 var app = builder.Build();
 [...]
 app.UseCors();
 // Order matters here - must be called AFTER app.UseCors()
-app.UseMicroZenOAuth2(MicroZenProvider.Cognito);
+app.UseMicroZenCognito();
 [...]
 ```
 
 > _**Note**_: There is no need to call either `app.UseAuthentication()` or
-> `app.UseAuthorization()`. Both are handled by `UseMicroZenOAuth2(...)`.
+> `app.UseAuthorization()`. Both are handled by `UseMicroZenCognito()`.
 
-> _**Note**_: `AddMicroZenOAuth2` also accepts an optional
+> _**Note**_: `AddMicroZenCognito` also accepts an optional
 > `Dictionary<string, AuthorizationPolicy>` of named authorization policies
 > before the `grantTypes` parameter.
 
-> _**Supported today**_: the only provider is `MicroZenProvider.Cognito`, and
+> _**Supported today**_: the only provider package is `MicroZen.Auth.Cognito`, and
 > the only implemented grant types are `AuthorizationCode`,
 > `AuthorizationCodeWithPKCE`, `RefreshToken`, and `ClientCredentials`. Other providers and
 > grant types are on the roadmap - see the MicroZen steering `ecosystem.md`.
@@ -85,4 +84,8 @@ app.UseMicroZenOAuth2(MicroZenProvider.Cognito);
 
 Below you can find information on getting setup with the specific OAuth2 Providers that MicroZen officially supports.
 
-[AWS Cognito](providers/Cognito/README.md)
+[AWS Cognito](../MicroZen.Auth.Cognito/README.md)
+
+# Adding a provider
+
+A provider package (`MicroZen.Auth.<Provider>`) references `MicroZen.Core`, implements `IMicroZenAuthProvider` (adds JWT bearer validation for the requested grant types), and exposes one `AddMicroZen<Provider>(...)` / `UseMicroZen<Provider>()` pair that delegates to `AddMicroZenAuth` / `UseMicroZenAuth`. See `MicroZen.Auth.Cognito` for the reference implementation.

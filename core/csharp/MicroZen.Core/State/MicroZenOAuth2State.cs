@@ -5,12 +5,12 @@ using Grpc.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MicroZen.Grpc.V1;
-using MicroZen.OAuth2.Config;
+using MicroZen.Core.Config;
 
-namespace MicroZen.OAuth2.State;
+namespace MicroZen.Core.State;
 
 /// <summary>
-/// Represents the state of the MicroZen OAuth2 library
+/// Represents the state of the MicroZen auth library
 /// </summary>
 public class MicroZenOAuth2State : IDisposable
 {

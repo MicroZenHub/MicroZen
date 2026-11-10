@@ -14,7 +14,7 @@ diagram plus short prose per layer.
 > Two auth concerns are distinct (see the steering `ecosystem.md`): the
 > dashboard authenticates its **human users** against **Supabase**, which is
 > separate from the **catalogued-client** OAuth2 auth this backend manages via
-> `MicroZen.OAuth2`. This document covers the backend; it does not describe the
+> `MicroZen.Core` + `MicroZen.Auth.Cognito`. This document covers the backend; it does not describe the
 > dashboard's Supabase login.
 
 ## Components
@@ -59,16 +59,17 @@ is external, nothing in this repo builds, serves, or tests it.
 - **CORS / HTTPS.** A permissive default CORS policy is added, HTTPS redirection
   is enabled, and HSTS is applied outside Development.
 
-### Auth: `MicroZen.OAuth2` + API-key policy
+### Auth: `MicroZen.Core` / `MicroZen.Auth.Cognito` + API-key policy
 
 Authentication and authorization are configured in `Program.cs` and implemented
-in the reusable `MicroZen.OAuth2` library.
+in the reusable `MicroZen.Core` library and the `MicroZen.Auth.Cognito` provider package.
 
 - **OAuth2 / OpenID Connect.** `Program.cs` calls
-  `AddMicroZenOAuth2(MicroZenProvider.Cognito, policies, grantTypes: OAuth2GrantType.AuthorizationCodeWithPKCE)`.
-  The `AddMicroZenOAuth2` extension (in `MicroZen.OAuth2/Initialization.cs`) wires
-  the configured provider; for `MicroZenProvider.Cognito` it registers the AWS
-  Cognito provider via `AddAWSCognitoMicroZenOAuth2(...)`. The selected grant type
+  `AddMicroZenCognito(policies, OAuth2GrantType.AuthorizationCodeWithPKCE)`.
+  That entry point (in `MicroZen.Auth.Cognito`) calls `AddMicroZenAuth` in
+  `MicroZen.Core/Initialization.cs`, which registers the authority gRPC client and
+  state, then asks the `IMicroZenAuthProvider` (`CognitoAuthProvider`) to add JWT
+  bearer validation. The selected grant type
   is **Authorization Code with PKCE**.
 - **API-key authorization policy.** `Program.cs` defines an authorization policy
   keyed by `Constants.APIKeyAuthPolicy` (the string `"APIKey"`) that requires the
@@ -116,7 +117,7 @@ flowchart TD
         HEALTH["Health checks + reflection"]
     end
 
-    OAUTH["MicroZen.OAuth2<br/>AddMicroZenOAuth2(Cognito)"]
+    OAUTH["MicroZen.Core + MicroZen.Auth.Cognito<br/>AddMicroZenCognito()"]
     IDP["AWS Cognito<br/>(OpenID Connect provider)"]
     DB[("PostgreSQL via Npgsql<br/>MicroZenContext<br/>(encrypted columns)")]
 
@@ -154,7 +155,7 @@ Flow summary:
 - **Host wiring** — `core/csharp/MicroZen.Api/Program.cs`
 - **gRPC services** — `core/csharp/MicroZen.Api/Services/`
 - **gRPC contracts** — `core/csharp/MicroZen.Api/Protos/`
-- **OAuth2 / OpenID Connect** — `core/csharp/MicroZen.OAuth2/` (`Initialization.cs`, `Providers/`)
+- **OAuth2 / OpenID Connect** — `core/csharp/MicroZen.Core/` (`Initialization.cs`, `IMicroZenAuthProvider.cs`) and `core/csharp/MicroZen.Auth.Cognito/`
 - **API-key auth** — `core/csharp/MicroZen.Api/Security/APIKeys/`
 - **Data context** — `core/csharp/MicroZen.Api/Context/MicroZenContext.cs`
 - **Migrations / seeding** — `core/csharp/MicroZen.Api/Migrations/`, `Context/Functions.cs`
