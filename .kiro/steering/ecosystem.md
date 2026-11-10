@@ -107,8 +107,10 @@ itself a gap to close:
   RefreshToken.
 - gRPC/data enum `GrantType` (`MicroZen.Api/Protos/client.proto`) and the
   dashboard enum `MicroZenOAuth2GrantType`: AuthorizationCode,
-  AuthorizationCodeWithPkce, ClientCredentials, DeviceAuthorization, Implicit,
-  Hybrid, ResourceOwnerPassword.
+  AuthorizationCodeWithPkce, ClientCredentials, DeviceAuthorization,
+  RefreshToken. Implicit (4), Hybrid (5) and ResourceOwnerPassword (6) were
+  formally dropped (OAuth2 security BCP / out of scope); the numbers and names
+  are `reserved` in the proto.
 
 ### What actually works (AWS Cognito)
 
@@ -127,23 +129,20 @@ Any other grant type reaches a `NotImplementedException` in
 
 These are **modeled but not implemented**. Each should become a tracked issue:
 
-| Grant type                         | Modeled in        | Implemented? |
-| ---------------------------------- | ----------------- | ------------ |
-| Device Code / Device Authorization | package + proto   | No           |
-| Refresh Token                      | package only      | No           |
-| Implicit                           | proto + dashboard | No           |
-| Hybrid                             | proto + dashboard | No           |
-| Resource Owner Password            | proto + dashboard | No           |
+| Grant type                         | Modeled in      | Implemented? |
+| ---------------------------------- | --------------- | ------------ |
+| Device Code / Device Authorization | package + proto | No           |
+| Refresh Token                      | package only    | No           |
 
 Additional known gaps:
 
 - **Grant-type enums are inconsistent** across the package, the proto, and the
   dashboard (DeviceCode vs DeviceAuthorization; RefreshToken only in the package;
-  Implicit/Hybrid/ResourceOwnerPassword only in proto+dashboard). Reconcile them.
+  dashboard still lists the dropped Implicit/Hybrid/ResourceOwnerPassword). Reconcile them.
 - **The dashboard offers flows the backend rejects.** The grant-type picker
   (`MicroZen.Web` `libs/clients/src/lib/models/grant-type.model.ts`) marks
   Authorization Code, PKCE, Client Credentials, Implicit, and Resource Owner
-  Password as "available in AWS Cognito", but the package only implements the
+  Password (both now dropped from the backend) as "available in AWS Cognito", but the package only implements the
   first three. A user can save a credential whose flow the package cannot honor.
 - **Only AWS Cognito has any flow implementation.** Supabase/Entra/Auth0/Google
   have no flow handlers yet.

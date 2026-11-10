@@ -19,7 +19,7 @@ using MicroZenOAuth2::MicroZen.OAuth2.Providers.Cognito;
 namespace MicroZen.Core.Api.Test.Definitions;
 
 /// <summary>
-/// Tests for issue #68 — reconcile grant-type enums to the canonical eight-member
+/// Tests for issue #68 — reconcile grant-type enums to the canonical five-member
 /// set (backend side: proto <see cref="GrantType"/> + package
 /// <c>OAuth2GrantType</c>).
 ///
@@ -55,9 +55,6 @@ public class GrantTypeReconciliationTests : IDisposable
 	[InlineData(GrantType.AuthorizationCodeWithPkce, 1)]
 	[InlineData(GrantType.ClientCredentials, 2)]
 	[InlineData(GrantType.DeviceAuthorization, 3)]
-	[InlineData(GrantType.Implicit, 4)]
-	[InlineData(GrantType.Hybrid, 5)]
-	[InlineData(GrantType.ResourceOwnerPassword, 6)]
 	[InlineData(GrantType.RefreshToken, 7)]
 	public void ProtoGrantType_HasCanonicalNumber(GrantType member, int expectedNumber)
 	{
@@ -68,15 +65,24 @@ public class GrantTypeReconciliationTests : IDisposable
 	}
 
 	[Fact]
-	public void ProtoGrantType_HasExactlyEightCanonicalMembers()
+	public void ProtoGrantType_HasExactlyFiveCanonicalMembers()
 	{
 		// GIVEN the proto GrantType enum.
 		// WHEN its declared members are enumerated.
 		var members = Enum.GetValues<GrantType>();
 
-		// THEN exactly the canonical eight are present (guards against a stray addition/removal).
-		Equal(8, members.Length);
+		// THEN exactly the canonical five are present (guards against a stray addition/removal).
+		Equal(5, members.Length);
 		Contains(GrantType.RefreshToken, members);
+	}
+
+	[Fact]
+	public void ProtoGrantType_DroppedNumbers_AreNotDefined()
+	{
+		// GIVEN the dropped Implicit(4), Hybrid(5), ResourceOwnerPassword(6) numbers.
+		// THEN they are reserved in the proto, so no enum member carries them.
+		foreach (var n in new[] { 4, 5, 6 })
+			False(Enum.IsDefined(typeof(GrantType), n));
 	}
 
 	// --- Persistence round-trip (EF InMemory, same provider the tests use) ---
@@ -86,9 +92,6 @@ public class GrantTypeReconciliationTests : IDisposable
 	[InlineData(GrantType.AuthorizationCodeWithPkce)]
 	[InlineData(GrantType.ClientCredentials)]
 	[InlineData(GrantType.DeviceAuthorization)]
-	[InlineData(GrantType.Implicit)]
-	[InlineData(GrantType.Hybrid)]
-	[InlineData(GrantType.ResourceOwnerPassword)]
 	[InlineData(GrantType.RefreshToken)]
 	public async Task OAuth2ClientCredentials_GrantType_RoundTrips(GrantType grantType)
 	{
@@ -133,9 +136,6 @@ public class GrantTypeReconciliationTests : IDisposable
 		Equal("authorization_code_pkce", PackageGrantType.AuthorizationCodeWithPKCE.ToString());
 		Equal("client_credentials", PackageGrantType.ClientCredentials.ToString());
 		Equal("device_authorization", PackageGrantType.DeviceAuthorization.ToString());
-		Equal("implicit", PackageGrantType.Implicit.ToString());
-		Equal("hybrid", PackageGrantType.Hybrid.ToString());
-		Equal("password", PackageGrantType.ResourceOwnerPassword.ToString());
 		Equal("refresh_token", PackageGrantType.RefreshToken.ToString());
 	}
 
@@ -149,19 +149,19 @@ public class GrantTypeReconciliationTests : IDisposable
 		Equal("client_credentials", PackageGrantType.ClientCredentials.ToString());
 	}
 
-	// --- Behavior unchanged (negative): declared-but-unimplemented still throws ---
+	// --- Behavior unchanged (negative): unsupported grants still throw ---
 
 	[Fact]
-	public void WiringDeclaredButUnimplementedGrantType_StillThrowsNotImplemented()
+	public void WiringUnsupportedGrantType_StillThrowsNotImplemented()
 	{
-		// GIVEN a service collection wired with a declared-but-unimplemented grant type.
+		// GIVEN a service collection wired with an unsupported grant-type string.
 		var services = new ServiceCollection();
 
 		// WHEN the Cognito provider is configured with Implicit only.
 		// THEN it still reaches the existing NotImplementedException path —
-		// reconciliation declares the member but adds no runtime support.
+		// removing the named member does not add runtime support.
 		Throws<NotImplementedException>(() =>
-			services.AddAWSCognitoMicroZenOAuth2(PackageGrantType.Implicit));
+			services.AddAWSCognitoMicroZenOAuth2(new PackageGrantType("implicit")));
 	}
 
 	[Fact]
