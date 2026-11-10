@@ -101,12 +101,11 @@ enum GrantType {
   ClientCredentials = 2;
   // Device Authorization Grant (RFC 8628)
   DeviceAuthorization = 3;
-  // Implicit Grant (declared, not implemented; discouraged by OAuth 2.1)
-  Implicit = 4;
-  // Hybrid Grant (declared, not implemented)
-  Hybrid = 5;
-  // Resource Owner Password Grant (declared, not implemented; discouraged)
-  ResourceOwnerPassword = 6;
+  // Implicit (4), Hybrid (5) and ResourceOwnerPassword (6) were dropped:
+  // discouraged by the OAuth2 security BCP or out of scope. Reserved so the
+  // numbers and names are never reused (stored rows and wire compatibility).
+  reserved 4, 5, 6;
+  reserved "Implicit", "Hybrid", "ResourceOwnerPassword";
   // Refresh Token Grant (implemented for AWS Cognito)
   RefreshToken = 7;
 }
