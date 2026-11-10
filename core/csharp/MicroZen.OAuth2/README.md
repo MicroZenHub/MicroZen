@@ -78,7 +78,7 @@ app.UseMicroZenOAuth2(MicroZenProvider.Cognito);
 
 > _**Supported today**_: the only provider is `MicroZenProvider.Cognito`, and
 > the only implemented grant types are `AuthorizationCode`,
-> `AuthorizationCodeWithPKCE`, and `ClientCredentials`. Other providers and
+> `AuthorizationCodeWithPKCE`, `RefreshToken`, and `ClientCredentials`. Other providers and
 > grant types are on the roadmap - see the MicroZen steering `ecosystem.md`.
 
 # Provider Documentation

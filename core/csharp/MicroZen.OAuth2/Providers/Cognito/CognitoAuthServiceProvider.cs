@@ -50,7 +50,9 @@ public static class CognitoAuthServiceProvider
 
 		var builder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 
-		if (grantTypes.Contains(OAuth2GrantType.AuthorizationCode) || grantTypes.Contains(OAuth2GrantType.AuthorizationCodeWithPKCE))
+		// RefreshToken is exchanged at the Cognito token endpoint by the client; the tokens it returns
+		// are user-pool tokens validated exactly like Authorization Code tokens, so it shares that handler.
+		if (grantTypes.Contains(OAuth2GrantType.AuthorizationCode) || grantTypes.Contains(OAuth2GrantType.AuthorizationCodeWithPKCE) || grantTypes.Contains(OAuth2GrantType.RefreshToken))
 		{
 			builder.AddAuthorizationCodeJwtBearer(services);
 		}

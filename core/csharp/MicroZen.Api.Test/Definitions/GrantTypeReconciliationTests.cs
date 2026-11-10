@@ -1,6 +1,8 @@
 extern alias MicroZenOAuth2;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using MicroZen.Api.Context;
 using MicroZen.Api.Entities;
 using MicroZen.Api.Entities.AuthCredentials;
@@ -161,6 +163,28 @@ public class GrantTypeReconciliationTests : IDisposable
 		Throws<NotImplementedException>(() =>
 			services.AddAWSCognitoMicroZenOAuth2(PackageGrantType.DeviceAuthorization));
 	}
+
+	[Fact]
+	public void WiringRefreshToken_IsAccepted()
+	{
+		// GIVEN the OAuth2 state the handler reads (config + a stub gRPC client; the 5s poll never fires here).
+		var config = new ConfigurationBuilder()
+			.AddInMemoryCollection(new Dictionary<string, string?> { ["MicroZen:APIKey"] = "k", ["MicroZen:Interval"] = "1" })
+			.Build();
+		var services = new ServiceCollection();
+		services.AddSingleton(new MicroZenOAuth2::MicroZen.OAuth2.State.MicroZenOAuth2State(
+			config,
+			NullLogger<MicroZenOAuth2::MicroZen.OAuth2.State.MicroZenOAuth2State>.Instance,
+			new StubClient()));
+
+		// WHEN the Cognito provider is configured with RefreshToken only.
+		var ex = Record.Exception(() => services.AddAWSCognitoMicroZenOAuth2(PackageGrantType.RefreshToken));
+
+		// THEN it no longer reaches the NotImplementedException path (issue #64).
+		Null(ex);
+	}
+
+	private sealed class StubClient : MicroZenOAuth2::MicroZen.Grpc.V1.ClientsGrpcService.ClientsGrpcServiceClient;
 
 	public void Dispose()
 	{
