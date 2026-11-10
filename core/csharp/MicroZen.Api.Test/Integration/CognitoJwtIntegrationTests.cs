@@ -173,7 +173,7 @@ public class CognitoJwtIntegrationTests
 	// ---- Known gaps: behaviour the issue asks for that production code does not have yet ----
 	// Each is skipped (not deleted) so the gap stays visible. See the PR description.
 
-	[Fact(Skip = "Gap: Cognito wiring reads allowed clients once at startup (Take(1)); a later removal is never applied.")]
+	[Fact(Skip = "Gap #108: allowed clients are read once at startup (Take(1)); a later removal is never applied.")]
 	public async Task ClientRemovedAfterIssuance_IsDenied()
 	{
 		await using var f = await StartAsync("AuthorizationCode");
@@ -183,13 +183,13 @@ public class CognitoJwtIntegrationTests
 		Equal(HttpStatusCode.Unauthorized, await f.StatusOf(token));
 	}
 
-	[Fact(Skip = "Gap: the API has no scope policy; no code reads the scope claim.")]
+	[Fact(Skip = "Gap #109: the API has no scope policy; no code reads the scope claim.")]
 	public void TokenWithMissingOrInsufficientScope_IsDenied() { }
 
-	[Fact(Skip = "Gap: no check ties a token to the flow that issued it (client_credentials vs user tokens).")]
+	[Fact(Skip = "Gap #110: no check ties a token to the flow that issued it (token_use).")]
 	public void TokenOfOneFlowUsedWhereAnotherIsRequired_IsDenied() { }
 
-	[Fact(Skip = "Gap: with empty state at startup (the real case, polling starts after 5s) no JWT scheme is registered.")]
+	[Fact(Skip = "Gap #111: with empty state at startup (the real case, polling starts after 5s) no JWT scheme is registered.")]
 	public async Task RealStartup_WithNoStateYet_StillRegistersBearerScheme()
 	{
 		var provider = new CognitoProviderUnderTest();
