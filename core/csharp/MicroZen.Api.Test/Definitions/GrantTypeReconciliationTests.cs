@@ -172,10 +172,13 @@ public class GrantTypeReconciliationTests : IDisposable
 			.AddInMemoryCollection(new Dictionary<string, string?> { ["MicroZen:APIKey"] = "k", ["MicroZen:Interval"] = "1" })
 			.Build();
 		var services = new ServiceCollection();
-		services.AddSingleton(new MicroZenCore::MicroZen.Core.State.MicroZenOAuth2State(
+		// Disposed at the end of the test so the 5s poll cannot fire later and crash the test host
+		// when the whole run lasts longer than 5s.
+		using var state = new MicroZenCore::MicroZen.Core.State.MicroZenOAuth2State(
 			config,
 			NullLogger<MicroZenCore::MicroZen.Core.State.MicroZenOAuth2State>.Instance,
-			new StubClient()));
+			new StubClient());
+		services.AddSingleton(state);
 
 		// WHEN the Cognito provider is configured with RefreshToken only.
 		var ex = Record.Exception(() => CognitoWiring.Wire(services, PackageGrantType.RefreshToken));

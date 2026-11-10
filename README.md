@@ -116,6 +116,20 @@ dotnet build core/csharp/MicroZen.Core.sln
 dotnet test core/csharp/MicroZen.Core.sln
 ```
 
+### JWT validation and client access control tests
+
+The tests in `core/csharp/MicroZen.Api.Test/Integration` check token validation and client access
+for every Cognito flow (Authorization Code, with PKCE, Client Credentials, Device Code, Refresh
+Token). They run offline against an in-process fake OIDC authority. They need no database, network
+or Docker, and the one command above runs them. To run only these:
+
+```bash
+dotnet test core/csharp/MicroZen.Core.sln --filter "FullyQualifiedName~Integration"
+```
+
+To add a provider (for example Supabase), implement `IAuthProviderUnderTest` in
+`Integration/Harness` and add a test class that reuses `FakeOidcAuthority` and `JwtTestHost`.
+
 # Contributing
 
 Contributions are welcome. MicroZen is licensed under the Apache-2.0 license (see [LICENSE](LICENSE)).
