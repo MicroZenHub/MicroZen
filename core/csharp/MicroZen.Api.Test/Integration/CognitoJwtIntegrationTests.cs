@@ -173,7 +173,7 @@ public class CognitoJwtIntegrationTests
 	// ---- Known gaps: behaviour the issue asks for that production code does not have yet ----
 	// Each is skipped (not deleted) so the gap stays visible. See the PR description.
 
-	[Fact(Skip = "Gap #108: allowed clients are read once at startup (Take(1)); a later removal is never applied.")]
+	[Fact]
 	public async Task ClientRemovedAfterIssuance_IsDenied()
 	{
 		await using var f = await StartAsync("AuthorizationCode");
