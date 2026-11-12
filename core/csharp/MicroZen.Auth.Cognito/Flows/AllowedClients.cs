@@ -13,13 +13,13 @@ namespace MicroZen.Auth.Cognito.Flows;
 /// </remarks>
 internal static class AllowedClients
 {
-	public static void Require(JwtBearerOptions options, IEnumerable<string> allowedClientIds)
+	public static void Require(JwtBearerOptions options, Func<string?, IEnumerable<string>> allowedClientIdsFor)
 	{
-		var allowed = allowedClientIds.ToHashSet(StringComparer.Ordinal);
 		options.Events = new JwtBearerEvents
 		{
 			OnTokenValidated = context =>
 			{
+				var allowed = allowedClientIdsFor(context.SecurityToken.Issuer).ToHashSet(StringComparer.Ordinal);
 				if (!IsAllowed(context.Principal, allowed))
 					context.Fail("The token was not issued to a client that is allowed for this API.");
 				return Task.CompletedTask;

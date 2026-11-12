@@ -189,7 +189,7 @@ public class CognitoJwtIntegrationTests
 	[Fact(Skip = "Gap #110: no check ties a token to the flow that issued it (token_use).")]
 	public void TokenOfOneFlowUsedWhereAnotherIsRequired_IsDenied() { }
 
-	[Fact(Skip = "Gap #111: with empty state at startup (the real case, polling starts after 5s) no JWT scheme is registered.")]
+	[Fact]
 	public async Task RealStartup_WithNoStateYet_StillRegistersBearerScheme()
 	{
 		var provider = new CognitoProviderUnderTest();
@@ -199,5 +199,17 @@ public class CognitoJwtIntegrationTests
 		host.Publish([CognitoProviderUnderTest.Client(Allowed)]);
 		var token = authority.Mint(new TokenSpec { Issuer = provider.IssuerFor(CognitoProviderUnderTest.Client(Allowed)), ClientId = Allowed, TokenUse = "id" });
 		Equal(HttpStatusCode.OK, (await host.CallAsync(token)).StatusCode);
+	}
+
+	[Theory, MemberData(nameof(FlowNames))]
+	public async Task RealStartup_BeforeStateLoads_FailsClosed(string flow)
+	{
+		var (grant, tokenUse) = Flows[flow];
+		var provider = new CognitoProviderUnderTest();
+		var authority = new FakeOidcAuthority(provider.IssuerFor(CognitoProviderUnderTest.Client(Allowed)));
+		authority.AddKey();
+		await using var host = await JwtTestHost.StartAsync(provider, authority, [], grant);
+		var token = authority.Mint(new TokenSpec { Issuer = provider.IssuerFor(CognitoProviderUnderTest.Client(Allowed)), ClientId = Allowed, TokenUse = tokenUse });
+		Equal(HttpStatusCode.Unauthorized, (await host.CallAsync(token)).StatusCode);
 	}
 }
