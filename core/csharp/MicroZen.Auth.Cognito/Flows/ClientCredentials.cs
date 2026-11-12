@@ -33,12 +33,12 @@ public static class ClientCredentials
 
 				foreach (var regionUserPoolClients in clientsGroupedByUserPoolId)
 				{
-					AddJwtBearer(builder, regionUserPoolClients);
+					AddJwtBearer(builder, oAuth2Service, regionUserPoolClients);
 				}
 			});
 	}
 
-	private static void AddJwtBearer(AuthenticationBuilder builder, UserPoolClients regionUserPoolClients)
+	private static void AddJwtBearer(AuthenticationBuilder builder, MicroZenOAuth2State oAuth2Service, UserPoolClients regionUserPoolClients)
 	{
 		builder.AddJwtBearer(options =>
 		{
@@ -54,7 +54,7 @@ public static class ClientCredentials
 				ValidateAudience = false,
 			};
 			options.MetadataAddress = cognitoIdpUrl + "/.well-known/openid-configuration";
-			AllowedClients.Require(options, regionUserPoolClients.ClientIds);
+			AllowedClients.Require(options, oAuth2Service, regionUserPoolClients.UserPoolId, regionUserPoolClients.Region, regionUserPoolClients.ClientIds);
 		});
 	}
 
