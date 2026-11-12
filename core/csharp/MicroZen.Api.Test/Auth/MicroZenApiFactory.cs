@@ -121,7 +121,8 @@ public class TestAuthHandler(
 		if (!Request.Headers.ContainsKey(MicroZenApiFactory.AuthenticateHeader))
 			return Task.FromResult(AuthenticateResult.NoResult());
 
-		var claims = new[] { new Claim(ClaimTypes.NameIdentifier, "test-user") };
+		// Carries the default required scope (#109) so these tests keep exercising the services, not the scope policy.
+		var claims = new[] { new Claim(ClaimTypes.NameIdentifier, "test-user"), new Claim("scope", "api/read") };
 		var identity = new ClaimsIdentity(claims, SchemeName);
 		var principal = new ClaimsPrincipal(identity);
 		var ticket = new AuthenticationTicket(principal, SchemeName);

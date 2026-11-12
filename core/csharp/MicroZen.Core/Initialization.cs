@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MicroZen.Core.Authorization;
 using MicroZen.Core.Config;
 using MicroZen.Core.Definitions;
 using MicroZen.Core.State;
@@ -31,15 +32,13 @@ public static class Initialization
 		var builder = services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme);
 		provider.AddAuthentication(builder, services, grantTypes);
 
-		var defaultAuthPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+		services.AddMicroZenScopePolicy(services.BuildServiceProvider().GetRequiredService<IConfiguration>());
 		services.AddAuthorization(options =>
 		{
 			if (policies is null) return;
 
 			foreach (var policy in policies)
 				options.AddPolicy(policy.Key, policy.Value);
-
-			options.DefaultPolicy = defaultAuthPolicy;
 		});
 	}
 
