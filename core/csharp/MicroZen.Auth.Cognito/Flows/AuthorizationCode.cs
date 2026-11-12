@@ -51,6 +51,7 @@ public static class AuthorizationCode
 							ValidateAudience = false,
 						};
 						options.MetadataAddress = cognitoIdpUrl + "/.well-known/openid-configuration";
+						AllowedClients.Require(options, regionUserPoolClients.ClientIds);
 					});
 				}
 			});
