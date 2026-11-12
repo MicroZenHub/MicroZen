@@ -93,8 +93,8 @@ public sealed class JwtTestHost : IAsyncDisposable
 			o.BackchannelHttpHandler = authority.Handler;
 			o.RefreshInterval = TimeSpan.FromSeconds(1); // lowest the library allows; makes key rotation testable
 		});
-		builder.Services.AddAuthorization(o =>
-			o.DefaultPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+		// The real default policy (authenticated + required scope), as AddMicroZenAuth registers it.
+		MicroZenCore::MicroZen.Core.Authorization.ScopeAuthorization.AddMicroZenScopePolicy(builder.Services, builder.Configuration);
 
 		var app = builder.Build();
 		app.UseAuthentication();

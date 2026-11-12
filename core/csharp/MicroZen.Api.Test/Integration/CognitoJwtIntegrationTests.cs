@@ -183,8 +183,39 @@ public class CognitoJwtIntegrationTests
 		Equal(HttpStatusCode.Unauthorized, await f.StatusOf(token));
 	}
 
-	[Fact(Skip = "Gap #109: the API has no scope policy; no code reads the scope claim.")]
-	public void TokenWithMissingOrInsufficientScope_IsDenied() { }
+	// #109: access tokens must carry the required scope (default api/read). ID tokens have no scope claim and are exempt.
+	private static HttpStatusCode ScopeDenied(Fixture f) => f.TokenUse == "id" ? HttpStatusCode.OK : HttpStatusCode.Forbidden;
+
+	[Theory, MemberData(nameof(FlowNames))]
+	public async Task TokenWithMissingScope_IsDenied(string flow)
+	{
+		await using var f = await StartAsync(flow);
+		Equal(ScopeDenied(f), await f.StatusOf(f.Mint(f.Spec with { Scope = null })));
+	}
+
+	[Theory, MemberData(nameof(FlowNames))]
+	public async Task TokenWithInsufficientScope_IsDenied(string flow)
+	{
+		await using var f = await StartAsync(flow);
+		Equal(ScopeDenied(f), await f.StatusOf(f.Mint(f.Spec with { Scope = "api/write" })));
+		Equal(ScopeDenied(f), await f.StatusOf(f.Mint(f.Spec with { Scope = "api/read-only" }))); // not a prefix match
+		Equal(ScopeDenied(f), await f.StatusOf(f.Mint(f.Spec with { Scope = "" })));
+	}
+
+	[Theory, MemberData(nameof(FlowNames))]
+	public async Task TokenWithRequiredScopeAmongOthers_IsAccepted(string flow)
+	{
+		await using var f = await StartAsync(flow);
+		Equal(HttpStatusCode.OK, await f.StatusOf(f.Mint(f.Spec with { Scope = "openid api/write api/read" })));
+	}
+
+	[Fact]
+	public async Task IdToken_IsExemptFromScopeCheck()
+	{
+		await using var f = await StartAsync("AuthorizationCode");
+		Equal("id", f.TokenUse);
+		Equal(HttpStatusCode.OK, await f.StatusOf(f.Mint(f.Spec with { Scope = null })));
+	}
 
 	[Fact(Skip = "Gap #110: no check ties a token to the flow that issued it (token_use).")]
 	public void TokenOfOneFlowUsedWhereAnotherIsRequired_IsDenied() { }
