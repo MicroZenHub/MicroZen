@@ -52,6 +52,7 @@ public static class AuthorizationCode
 						};
 						options.MetadataAddress = cognitoIdpUrl + "/.well-known/openid-configuration";
 						AllowedClients.Require(options, regionUserPoolClients.ClientIds);
+						TokenUse.Require(options, machineToken: false);
 					});
 				}
 			});

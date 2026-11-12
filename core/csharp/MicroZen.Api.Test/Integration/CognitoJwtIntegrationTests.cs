@@ -37,8 +37,10 @@ public class CognitoJwtIntegrationTests
 		public required FakeOidcAuthority Authority { get; init; }
 		public required string Issuer { get; init; }
 		public required string TokenUse { get; init; }
+		/// <summary>Cognito M2M tokens have no user: <c>sub</c> is the client id.</summary>
+		public bool Machine { get; init; }
 
-		public TokenSpec Spec => new() { Issuer = Issuer, ClientId = Allowed, TokenUse = TokenUse };
+		public TokenSpec Spec => new() { Issuer = Issuer, ClientId = Allowed, TokenUse = TokenUse, Subject = Machine ? Allowed : "user-1" };
 		public string Mint(TokenSpec? spec = null, SecurityKey? signWith = null) => Authority.Mint(spec ?? Spec, signWith);
 		public async Task<HttpStatusCode> StatusOf(string? token, string scheme = "Bearer") => (await Host.CallAsync(token, scheme)).StatusCode;
 		public ValueTask DisposeAsync() => Host.DisposeAsync();
@@ -53,7 +55,7 @@ public class CognitoJwtIntegrationTests
 		var authority = new FakeOidcAuthority(issuer);
 		authority.AddKey();
 		var host = await JwtTestHost.StartAsync(provider, authority, [allowed], grant);
-		return new Fixture { Host = host, Authority = authority, Issuer = issuer, TokenUse = tokenUse };
+		return new Fixture { Host = host, Authority = authority, Issuer = issuer, TokenUse = tokenUse, Machine = grant == GrantType.ClientCredentials };
 	}
 
 	// ---- Should be allowed --------------------------------------------------------------
@@ -186,8 +188,33 @@ public class CognitoJwtIntegrationTests
 	[Fact(Skip = "Gap #109: the API has no scope policy; no code reads the scope claim.")]
 	public void TokenWithMissingOrInsufficientScope_IsDenied() { }
 
-	[Fact(Skip = "Gap #110: no check ties a token to the flow that issued it (token_use).")]
-	public void TokenOfOneFlowUsedWhereAnotherIsRequired_IsDenied() { }
+	[Theory, MemberData(nameof(FlowNames))]
+	public async Task TokenOfOneFlowUsedWhereAnotherIsRequired_IsDenied(string flow)
+	{
+		await using var f = await StartAsync(flow);
+		var machine = flow == "ClientCredentials";
+		var wrong = f.Spec with
+		{
+			// Machine API gets a user-shaped ID token; user API gets a machine token (access, sub = client id).
+			TokenUse = machine ? "id" : "access",
+			Subject = machine ? "user-1" : Allowed,
+		};
+		Equal(HttpStatusCode.Unauthorized, await f.StatusOf(f.Mint(wrong)));
+	}
+
+	[Theory, MemberData(nameof(FlowNames))]
+	public async Task Token_WithUnknownOrMissingTokenUse_IsDenied(string flow)
+	{
+		await using var f = await StartAsync(flow);
+		Equal(HttpStatusCode.Unauthorized, await f.StatusOf(f.Mint(f.Spec with { TokenUse = "refresh" })));
+	}
+
+	[Fact]
+	public async Task ClientCredentialsApi_RejectsUserAccessToken()
+	{
+		await using var f = await StartAsync("ClientCredentials");
+		Equal(HttpStatusCode.Unauthorized, await f.StatusOf(f.Mint(f.Spec with { Subject = "user-1" })));
+	}
 
 	[Fact(Skip = "Gap #111: with empty state at startup (the real case, polling starts after 5s) no JWT scheme is registered.")]
 	public async Task RealStartup_WithNoStateYet_StillRegistersBearerScheme()
