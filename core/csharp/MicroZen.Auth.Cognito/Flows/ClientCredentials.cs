@@ -20,7 +20,7 @@ public static class ClientCredentials
 	{
 		var oAuth2State = services.BuildServiceProvider().GetRequiredService<MicroZenOAuth2State>();
 		builder.AddJwtBearer(options =>
-			LazyBearer.Configure(options, oAuth2State, pool =>
+			LazyBearer.Configure(options, oAuth2State, machineToken: true, pool =>
 				pool.ClientSecrets.Select(secret => new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)))));
 	}
 }
