@@ -48,6 +48,24 @@ MicroZen__Interval="5"
 
 > NOTE: Interval is optional (defaults to 5) and is measured in minutes
 
+### Required scopes
+
+The default authorization policy (applied to every `[Authorize]` endpoint) requires
+an authenticated user whose space-delimited `scope` claim contains **every** scope
+in `MicroZen:RequiredScopes`. A missing or insufficient scope returns **403**.
+
+```json
+{ "MicroZen": { "RequiredScopes": "api/read" } }
+```
+
+Env var: `MicroZen__RequiredScopes="api/read api/write"`. Separate multiple scopes with
+spaces or commas. If unset or blank it defaults to `api/read` (it never means "no scope required").
+
+> NOTE: Tokens with `token_use` = `id` (Cognito ID tokens from the authorization code
+> flows) carry no `scope` claim and are exempt from this check. Every other token, including
+> one with no `token_use` claim, must carry the scopes. Which `token_use` values are accepted
+> at all is decided by token validation, not by this policy.
+
 6. In your project's `Program.cs` file add the following code to configure the Cognito provider:
 
 ```csharp
