@@ -18,6 +18,6 @@ public static class AuthorizationCode
 	{
 		var oAuth2State = services.BuildServiceProvider().GetRequiredService<MicroZenOAuth2State>();
 		builder.AddJwtBearer(options =>
-			LazyBearer.Configure(options, oAuth2State, _ => []));
+			LazyBearer.Configure(options, oAuth2State, machineToken: false, _ => []));
 	}
 }

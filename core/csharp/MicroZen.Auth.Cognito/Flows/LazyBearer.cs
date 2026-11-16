@@ -39,10 +39,12 @@ internal static class LazyBearer
 	/// <summary>Configures <paramref name="options"/> to validate against the latest state on each request.</summary>
 	/// <param name="options">The bearer options to configure.</param>
 	/// <param name="state">The MicroZen state, read per request.</param>
+	/// <param name="machineToken">True when the API takes client-credentials tokens, false for user tokens.</param>
 	/// <param name="extraKeys">Keys accepted for a pool besides the ones its OIDC discovery document publishes.</param>
 	public static void Configure(
 		JwtBearerOptions options,
 		MicroZenOAuth2State state,
+		bool machineToken,
 		Func<UserPoolClients, IEnumerable<SecurityKey>> extraKeys)
 	{
 		var managers = new ConcurrentDictionary<string, ConfigurationManager<OpenIdConnectConfiguration>>();
@@ -67,6 +69,7 @@ internal static class LazyBearer
 		// The handler needs a configuration source; keys and issuers come from the resolver above, so it is empty.
 		options.Configuration = new OpenIdConnectConfiguration();
 		AllowedClients.Require(options, issuer => PoolFor(issuer)?.ClientIds ?? []);
+		TokenUse.Require(options, machineToken);
 	}
 
 	// The signing keys a pool's OIDC discovery document publishes, cached per pool and refreshed on an unknown kid.
