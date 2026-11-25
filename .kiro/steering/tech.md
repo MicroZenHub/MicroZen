@@ -116,7 +116,7 @@ seeded fresh:
 CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
 and is the authoritative full-gate verification. It has two jobs:
 
-- `main` (Node 20 + .NET 10): checkout (fetch-depth 0), `setup-node`,
+- `main` (Node 26 + .NET 10): checkout (fetch-depth 0), `setup-node`,
   `setup-dotnet` (needed by `@nx/dotnet` graph analysis and `prepare`), `npm ci`,
   `nrwl/nx-set-shas`, then `npx nx format:check` and
   `npx nx affected -t lint test build`.

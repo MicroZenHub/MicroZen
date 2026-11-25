@@ -68,7 +68,7 @@ Do not change the csproj `TargetFramework` values.
 CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
 and is the authoritative full-gate verification. Two jobs:
 
-- `main` (Node 20 + .NET 10): checkout, `setup-node`, `setup-dotnet`, `npm ci`,
+- `main` (Node 26 + .NET 10): checkout, `setup-node`, `setup-dotnet`, `npm ci`,
   `nrwl/nx-set-shas`, then
   `npx nx format:check` and `npx nx affected -t lint test build`. Because there
   are no TypeScript projects, the affected targets resolve to the .NET build via
