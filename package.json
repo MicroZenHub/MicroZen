@@ -3,12 +3,12 @@
   "version": "0.0.0",
   "license": "Apache-2.0",
   "scripts": {
-    "prepare": "nx g @nx-dotnet/core:restore"
+    "prepare": "dotnet restore core/csharp/MicroZen.Core.sln"
   },
   "private": true,
   "devDependencies": {
-    "@nx-dotnet/core": "^3.0.2",
-    "nx": "22.7.12",
+    "@nx/dotnet": "24.0.7",
+    "nx": "24.0.7",
     "prettier": "3.10.1"
   },
   "nx": {

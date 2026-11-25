@@ -12,9 +12,11 @@ single source of truth and must not be contradicted here:
 - `.kiro/steering/tech.md` - authoritative build/test/lint/run commands.
 
 MicroZen is a .NET-only repository: the .NET 10 C# back-end under
-`core/csharp/MicroZen.Core.sln`. Nx is used only through the `@nx-dotnet/core`
-plugin (configured in `nx.json`), which wraps the .NET solution so build, test,
-lint, and format tasks run through the Nx project graph. There are no TypeScript
+`core/csharp/MicroZen.Core.sln`. Nx is used only through the official
+`@nx/dotnet` plugin (configured in `nx.json`), which infers a Nx project and
+`build`/`test` targets from each `.csproj` so those tasks run through the Nx
+project graph. `lint` (`dotnet format --verify-no-changes`) is defined in
+`nx.json` `targetDefaults` and opted into by each project's `project.json`. There are no TypeScript
 projects in this repo; the Angular/Ionic dashboard was moved to a separate
 private repository.
 
@@ -25,8 +27,10 @@ private repository.
 - [Docker](https://docs.docker.com/get-docker/) (used to run the PostgreSQL database)
 
 Install JS dependencies from the repo root with `npm ci`. The only npm script is
-`prepare` (`nx g @nx-dotnet/core:restore`), which runs on install; .NET tasks go
-through the `dotnet` CLI, and Nx wraps those same tasks via `@nx-dotnet/core`.
+`prepare` (`dotnet restore core/csharp/MicroZen.Core.sln`), which runs on
+install. `@nx/dotnet` builds with `--no-restore`, so the solution must be
+restored before Nx builds; `npm ci` does that. .NET tasks go through the `dotnet`
+CLI, and Nx runs those same commands via `@nx/dotnet`.
 There is no `npm run build` or `npm run test`.
 
 ## .NET / C# stack (dotnet CLI, solution `core/csharp/MicroZen.Core.sln`)
@@ -40,7 +44,7 @@ There is no `npm run build` or `npm run test`.
   - The API needs a PostgreSQL database named `MicroZenDb` (typically run via
     Docker). On startup it applies EF Core migrations and seeds development data.
 
-Nx wraps these through `@nx-dotnet/core`, so `npx nx affected -t lint test build`
+Nx wraps these through `@nx/dotnet`, so `npx nx affected -t lint test build`
 resolves to the .NET targets (there are no TypeScript projects to run).
 
 ### Development data seeding
@@ -64,10 +68,11 @@ Do not change the csproj `TargetFramework` values.
 CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
 and is the authoritative full-gate verification. Two jobs:
 
-- `main` (Node 20): checkout, `setup-node`, `npm ci`, `nrwl/nx-set-shas`, then
+- `main` (Node 20 + .NET 10): checkout, `setup-node`, `setup-dotnet`, `npm ci`,
+  `nrwl/nx-set-shas`, then
   `npx nx format:check` and `npx nx affected -t lint test build`. Because there
   are no TypeScript projects, the affected targets resolve to the .NET build via
-  `@nx-dotnet/core`.
+  `@nx/dotnet`.
 - `dotnet` (.NET 10 via `actions/setup-dotnet`): `dotnet restore`,
   `dotnet build`, and `dotnet test core/csharp/MicroZen.Core.sln`.
 

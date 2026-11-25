@@ -41,8 +41,9 @@ request-flow diagram), see [`docs/architecture.md`](../../docs/architecture.md).
 ## Monorepo shape
 
 This repository holds the .NET backend under `core/csharp`. It is a .NET-only Nx
-workspace: the `@nx-dotnet/core` plugin (configured in `nx.json`) wraps the .NET
-solution so the build, test, and format tasks run through the Nx project graph.
+workspace: the official `@nx/dotnet` plugin (configured in `nx.json`) infers a Nx project per
+`.csproj` so the build, test, and format (`lint`) tasks run through the Nx
+project graph.
 There are no TypeScript projects and no in-repo front-end.
 
 ### Dashboard client (separate repository)

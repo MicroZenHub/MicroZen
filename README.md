@@ -21,7 +21,7 @@ From health checks to comprehensive mapping of application and API interactions,
 
 # QuickStart Guide
 
-MicroZen is a .NET (C#) back-end repository. Nx wraps the .NET build via the `@nx-dotnet/core` plugin; there are no TypeScript projects in this repo (the Angular/Ionic dashboard lives in a separate private repository). Follow the steps below to get a local environment running.
+MicroZen is a .NET (C#) back-end repository. Nx wraps the .NET build via the official `@nx/dotnet` plugin; there are no TypeScript projects in this repo (the Angular/Ionic dashboard lives in a separate private repository). Follow the steps below to get a local environment running.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ cd MicroZen
 
 ## 2. Install dependencies
 
-Install the JavaScript dependencies from the repository root. The `npm ci` command runs the `prepare` script, which in turn triggers the `@nx-dotnet` restore:
+Install the JavaScript dependencies from the repository root. The `npm ci` command runs the `prepare` script, which runs `dotnet restore` on the solution (the .NET 10 SDK must be on `PATH`):
 
 ```bash
 npm ci

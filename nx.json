@@ -2,7 +2,12 @@
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": ["default"],
+    "production": [
+      "default",
+      "!{projectRoot}/**/*.Tests/**/*",
+      "!{projectRoot}/**/bin/**/*",
+      "!{projectRoot}/**/obj/**/*"
+    ],
     "sharedGlobals": []
   },
   "defaultBase": "main",
@@ -17,9 +22,16 @@
       "cache": true
     },
     "lint": {
-      "inputs": ["default"],
+      "command": "dotnet format --verify-no-changes --verbosity=minimal",
+      "options": {
+        "cwd": "{projectRoot}"
+      },
+      "inputs": ["default", "{workspaceRoot}/.editorconfig"],
       "cache": true
     }
   },
-  "plugins": ["@nx-dotnet/core"]
+  "plugins": ["@nx/dotnet"],
+  "affected": {
+    "legacy": true
+  }
 }

@@ -2,18 +2,28 @@
 
 This is the authoritative command reference for the .NET stack. The .NET side is
 driven through the `dotnet` CLI against `core/csharp/MicroZen.Core.sln`. Nx is
-used only via the `@nx-dotnet/core` plugin to wrap that build; there are no
+used only via the official `@nx/dotnet` plugin to wrap that build; there are no
 TypeScript projects in this repo. The only npm script is `prepare`
-(`nx g @nx-dotnet/core:restore`); there is no `npm run build` or `npm run test`.
+(`dotnet restore core/csharp/MicroZen.Core.sln`); there is no `npm run build`
+or `npm run test`.
 
 ## JavaScript / Nx workspace
 
 - Install JS dependencies (repo root): `npm ci`
-  - This runs the `prepare` script, which invokes the `@nx-dotnet/core` restore.
+  - This runs the `prepare` script, which runs `dotnet restore` on the solution.
+    `@nx/dotnet` builds with `--no-restore` and keeps `restore` out of the task
+    chain, so re-run `dotnet restore` after changing package references.
 - Format check / write: `npx nx format:check` / `npx nx format:write`
 - Affected lint/test/build: `npx nx affected -t lint test build`
   - Because there are no TypeScript projects, these targets resolve to the .NET
-    build through `@nx-dotnet/core`.
+    build through `@nx/dotnet`:
+    - `build`: `dotnet build --no-restore --no-dependencies` (per project, using
+      the configuration the `.csproj` sets; `build:release` forces Release).
+    - `test`: `dotnet test --no-build --no-restore` (`MicroZen.Api.Test` only).
+    - `lint`: `dotnet format --verify-no-changes` (from `nx.json`
+      `targetDefaults`, opted into by each `project.json`).
+- Run the API through Nx: `npx nx run MicroZen.Api:run` or
+  `npx nx run MicroZen.Api:watch` (`dotnet watch`). The old `serve` target is gone.
 
 ## .NET (dotnet CLI, solution `core/csharp/MicroZen.Core.sln`)
 
@@ -106,7 +116,8 @@ seeded fresh:
 CI (`.github/workflows/ci.yml`) runs on pushes to `main` and on pull requests
 and is the authoritative full-gate verification. It has two jobs:
 
-- `main` (Node 20): checkout (fetch-depth 0), `setup-node`, `npm ci`,
+- `main` (Node 20 + .NET 10): checkout (fetch-depth 0), `setup-node`,
+  `setup-dotnet` (needed by `@nx/dotnet` graph analysis and `prepare`), `npm ci`,
   `nrwl/nx-set-shas`, then `npx nx format:check` and
   `npx nx affected -t lint test build`.
 - `dotnet` (.NET 10 via `actions/setup-dotnet`): `dotnet restore`,

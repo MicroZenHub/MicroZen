@@ -27,6 +27,12 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
+      # @nx/dotnet evaluates the .csproj files with MSBuild to build the Nx
+      # project graph, and `npm ci` runs `dotnet restore` via `prepare`, so this
+      # job needs the same .NET 10 SDK as the dotnet job.
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
       - run: npm ci
       - uses: nrwl/nx-set-shas@v5
 
