@@ -5,7 +5,7 @@
 Root (workspace-level config and tooling):
 
 - `nx.json`, `package.json`, `package-lock.json` - Nx workspace (wrapping the
-  .NET build via `@nx-dotnet/core`) and its pinned dependencies.
+  .NET build via `@nx/dotnet`) and its pinned dependencies.
 - `.prettierrc`, `.prettierignore` - Prettier config.
 - `.editorconfig` - editor/indentation rules.
 - `docker-compose.yml`, `.env.example` - local PostgreSQL database and its
@@ -42,9 +42,12 @@ Backend - `core/csharp` holds `MicroZen.Core.sln` with three projects:
 ## Workspace conventions
 
 - **Prettier** with `singleQuote: true` (`.prettierrc`).
-- **Nx** is used only through the `@nx-dotnet/core` plugin (`nx.json`), which
-  wraps the .NET solution so build, test, lint, and format tasks run through the
-  Nx project graph. There are no TypeScript projects.
+- **Nx** is used only through the official `@nx/dotnet` plugin (`nx.json`),
+  which infers a project (named after the `.csproj`) and its `build`/`test`/
+  `clean`/`pack`/`publish`/`run`/`watch` targets from each `.csproj`. The
+  `lint` target (`dotnet format --verify-no-changes`) is defined once in
+  `nx.json` `targetDefaults`; each project's `project.json` next to its
+  `.csproj` only opts into it. There are no TypeScript projects.
 
 ## C# conventions
 

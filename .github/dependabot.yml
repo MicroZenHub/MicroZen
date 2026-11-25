@@ -5,7 +5,7 @@
 version: 2
 updates:
   # npm (root package.json / package-lock.json): .NET-only toolchain
-  # (nx + @nx-dotnet/core + prettier).
+  # (nx + @nx/dotnet + prettier).
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
@@ -15,7 +15,6 @@ updates:
       nx:
         patterns:
           - '@nx/*'
-          - '@nx-dotnet/*'
           - 'nx'
       npm-minor-patch:
         update-types:

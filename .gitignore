@@ -50,3 +50,7 @@ Thumbs.db
 appsettings.Development.json
 **/bin/**
 **/obj/**
+
+.nx/migrate-runs
+# .NET
+/artifacts/
